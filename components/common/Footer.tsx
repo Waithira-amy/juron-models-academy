@@ -64,7 +64,7 @@ export default function Footer() {
         </div>
 
         <div className="pt-6 border-t border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4 text-[9px] uppercase tracking-widest text-slate-400 font-bold">
-          <p>© {new Date().getFullYear()} Juron Models Academy. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Perfectors Creative Hub. All rights reserved.</p>
           <div className="flex gap-5">
             <span className="hover:text-slate-800 transition-colors cursor-pointer">Privacy Policy</span>
             <span className="hover:text-slate-800 transition-colors cursor-pointer">Terms of Service</span>
