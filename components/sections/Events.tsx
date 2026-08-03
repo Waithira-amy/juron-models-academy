@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Crown, Camera } from "lucide-react";
 
@@ -27,7 +28,7 @@ export default function Events() {
             <div className="absolute top-0 right-0 w-64 h-64 bg-rose-100/50 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
             <div className="relative z-10">
               
-              {/* UPDATED: Mavoko Logo Image */}
+              {/* Mavoko Logo Image */}
               <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mb-8 border border-slate-200 group-hover:scale-105 transition-transform shadow-sm p-2 overflow-hidden">
                 <img 
                   src="/mavoko-logo.png" 
@@ -64,7 +65,7 @@ export default function Events() {
             <div className="absolute top-0 right-0 w-64 h-64 bg-amber-100/50 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
             <div className="relative z-10">
               
-              {/* UPDATED: Machakos Logo Image */}
+              {/* Machakos Logo Image */}
               <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mb-8 border border-slate-200 group-hover:scale-105 transition-transform shadow-sm p-2 overflow-hidden">
                 <img 
                   src="/machakos-logo.png" 
