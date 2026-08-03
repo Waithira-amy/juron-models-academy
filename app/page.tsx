@@ -5,6 +5,7 @@ import Hero from "@/components/sections/Hero";
 import About from "@/components/sections/About";
 import Programs from "@/components/sections/Programs";
 import Events from "@/components/sections/Events";
+import Team from "@/components/sections/Team";
 
 export default function HomePage() {
   return (
@@ -13,6 +14,7 @@ export default function HomePage() {
       
       <Hero />
       <About />
+      <Team />
       <Programs />
       <Events />
 
