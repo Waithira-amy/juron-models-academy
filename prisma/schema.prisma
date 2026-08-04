@@ -1,0 +1,19 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  
+}
+
+model Registration {
+  id        Int      @id @default(autoincrement())
+  fullName  String
+  age       Int
+  phone     String
+  location  String
+  photoUrl  String   
+  status    String   @default("PENDING") 
+  createdAt DateTime @default(now())
+}
