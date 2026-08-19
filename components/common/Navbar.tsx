@@ -9,6 +9,7 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
 
+  /* STREAMING_CHUNK:Initializing scroll listeners... */
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
@@ -17,17 +18,21 @@ export default function Navbar() {
 
   const navLinks = [
     { href: "/", label: "Home" },
-    { href: "/#about", label: "About Us" },
-    { href: "/#team", label: "The Team" },
-    { href: "/#programs", label: "Programs" },
-    { href: "/#events", label: "Events" }
+    { href: "/about", label: "About Us" },
+    { href: "/team", label: "The Team" },
+    { href: "/programs", label: "Programs" },
+    { href: "/events", label: "Events" }
   ];
 
-  // This variable checks if the navbar should have a solid white background
-  const isSolidBg = isScrolled || pathname !== "/";
+  /* STREAMING_CHUNK:Configuring dynamic styling variables... */
+  // Navbar background is ONLY solid white when scrolled down
+  const isScrolledBg = isScrolled;
+  
+  // Text is dark when scrolled, OR when on any page other than the Homepage
+  const isDarkText = isScrolled || pathname !== "/";
 
   return (
-    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${isSolidBg ? "bg-white/95 backdrop-blur-md shadow-sm py-3 border-b border-slate-200" : "bg-transparent py-5"}`}>
+    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolledBg ? "bg-white/95 backdrop-blur-md shadow-sm py-3 border-b border-slate-200" : "bg-transparent py-5"}`}>
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         
         {/* Brand Logo */}
@@ -48,8 +53,7 @@ export default function Navbar() {
             </div>
           </div>
           <div className="flex flex-col">
-            {/* DYNAMIC COLOR: White when at the top, Slate when scrolled! */}
-            <span className={`font-serif font-semibold text-xl leading-none tracking-tight transition-colors drop-shadow-md ${isSolidBg ? "text-slate-900 group-hover:text-rose-600" : "text-white group-hover:text-amber-400"}`}>
+            <span className={`font-serif font-semibold text-xl leading-none tracking-tight transition-colors drop-shadow-md ${isDarkText ? "text-slate-900 group-hover:text-rose-600" : "text-white group-hover:text-amber-400"}`}>
               Juron Models
             </span>
             <span className="text-[9px] uppercase tracking-[0.2em] text-amber-500 font-bold mt-1 drop-shadow-md">Academy</span>
@@ -62,11 +66,10 @@ export default function Navbar() {
             <Link 
               key={link.href}
               href={link.href}
-              // DYNAMIC LINKS: White when transparent, Slate when solid white
               className={`transition-colors duration-300 drop-shadow-md ${
                 pathname === link.href 
-                  ? (isSolidBg ? "text-rose-600" : "text-rose-500") 
-                  : (isSolidBg ? "text-slate-700 hover:text-amber-500" : "text-white/90 hover:text-white")
+                  ? (isDarkText ? "text-rose-600" : "text-rose-500") 
+                  : (isDarkText ? "text-slate-700 hover:text-amber-500" : "text-white/90 hover:text-white")
               }`}
             >
               {link.label}
@@ -74,7 +77,7 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* CTA Button - Strictly locked to /register */}
+        {/* CTA Button */}
         <div className="hidden md:block">
           <Link href="/register" className="bg-gradient-to-r from-rose-500 to-rose-700 text-white px-5 py-2.5 rounded-full text-[11px] font-bold tracking-widest uppercase shadow-[0_4px_15px_rgba(225,29,72,0.3)] hover:shadow-[0_6px_20px_rgba(225,29,72,0.4)] hover:-translate-y-0.5 transition-all duration-300 inline-block">
             Register Now
@@ -82,7 +85,7 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Menu Toggle */}
-        <button onClick={() => setIsOpen(!isOpen)} className={`md:hidden transition-colors ${isSolidBg ? "text-slate-900 hover:text-rose-600" : "text-white hover:text-rose-400"}`}>
+        <button onClick={() => setIsOpen(!isOpen)} className={`md:hidden transition-colors ${isDarkText ? "text-slate-900 hover:text-rose-600" : "text-white hover:text-rose-400"}`}>
           {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
@@ -100,7 +103,6 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-          {/* Mobile CTA Button - Strictly locked to /register */}
           <Link href="/register" onClick={() => setIsOpen(false)} className="bg-gradient-to-r from-rose-500 to-rose-700 text-white text-center px-6 py-4 rounded-xl text-sm font-bold tracking-widest uppercase mt-2 shadow-md">
             Register Now
           </Link>

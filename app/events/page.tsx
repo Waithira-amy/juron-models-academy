@@ -1,17 +1,15 @@
 import React from "react";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
-import Hero from "@/components/sections/Hero";
+import Events from "@/components/sections/Events";
 
-export default function HomePage() {
+export default function EventsPage() {
   return (
     <main className="relative min-h-screen flex flex-col w-full overflow-hidden bg-slate-50">
       <Navbar />
-      
       <div className="flex-grow">
-        <Hero />
+        <Events />
       </div>
-
       <Footer />
     </main>
   );
