@@ -49,7 +49,7 @@ export default function Navbar() {
           </div>
           <div className="flex flex-col">
             {/* DYNAMIC COLOR: White when at the top, Slate when scrolled! */}
-            <span className={`font-bold text-base leading-none tracking-tight transition-colors drop-shadow-md ${isSolidBg ? "text-slate-900 group-hover:text-rose-600" : "text-white group-hover:text-amber-400"}`}>
+            <span className={`font-serif font-semibold text-xl leading-none tracking-tight transition-colors drop-shadow-md ${isSolidBg ? "text-slate-900 group-hover:text-rose-600" : "text-white group-hover:text-amber-400"}`}>
               Juron Models
             </span>
             <span className="text-[9px] uppercase tracking-[0.2em] text-amber-500 font-bold mt-1 drop-shadow-md">Academy</span>
@@ -74,7 +74,7 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* CTA Button */}
+        {/* CTA Button - Strictly locked to /register */}
         <div className="hidden md:block">
           <Link href="/register" className="bg-gradient-to-r from-rose-500 to-rose-700 text-white px-5 py-2.5 rounded-full text-[11px] font-bold tracking-widest uppercase shadow-[0_4px_15px_rgba(225,29,72,0.3)] hover:shadow-[0_6px_20px_rgba(225,29,72,0.4)] hover:-translate-y-0.5 transition-all duration-300 inline-block">
             Register Now
@@ -100,6 +100,7 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
+          {/* Mobile CTA Button - Strictly locked to /register */}
           <Link href="/register" onClick={() => setIsOpen(false)} className="bg-gradient-to-r from-rose-500 to-rose-700 text-white text-center px-6 py-4 rounded-xl text-sm font-bold tracking-widest uppercase mt-2 shadow-md">
             Register Now
           </Link>
