@@ -1,11 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
 
@@ -25,19 +23,18 @@ export default function Navbar() {
   ];
 
   /* STREAMING_CHUNK:Configuring dynamic styling variables... */
-  // Navbar background is ONLY solid white when scrolled down
   const isScrolledBg = isScrolled;
-  
-  // Text is dark when scrolled, OR when on any page other than the Homepage
   const isDarkText = isScrolled || pathname !== "/";
 
   return (
-    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolledBg ? "bg-white/95 backdrop-blur-md shadow-sm py-3 border-b border-slate-200" : "bg-transparent py-5"}`}>
-      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolledBg ? "bg-white/95 backdrop-blur-md shadow-sm py-2 md:py-3 border-b border-slate-200" : "bg-transparent py-4 md:py-5"}`}>
+      
+      {/* Container switches to flex-col on mobile so the logo sits on top of the links */}
+      <div className="max-w-7xl mx-auto px-4 md:px-6 flex flex-col md:flex-row items-center justify-between gap-3 md:gap-0">
         
         {/* Brand Logo */}
-        <Link href="/" onClick={() => setIsOpen(false)} className="flex items-center gap-3 group text-left">
-          <div className="relative w-10 h-10 flex-shrink-0 group-hover:scale-105 transition-transform duration-300 bg-white rounded-full shadow-md border border-slate-100 p-2 flex items-center justify-center">
+        <Link href="/" className="flex items-center gap-3 group">
+          <div className="relative w-9 h-9 md:w-10 md:h-10 flex-shrink-0 group-hover:scale-105 transition-transform duration-300 bg-white rounded-full shadow-md border border-slate-100 p-2 flex items-center justify-center">
             <img 
               src="/jma-logo.png" 
               alt="Juron Models Academy Logo" 
@@ -52,16 +49,16 @@ export default function Navbar() {
               JMA
             </div>
           </div>
-          <div className="flex flex-col">
-            <span className={`font-serif font-semibold text-xl leading-none tracking-tight transition-colors drop-shadow-md ${isDarkText ? "text-slate-900 group-hover:text-rose-600" : "text-white group-hover:text-amber-400"}`}>
+          <div className="flex flex-col text-center md:text-left">
+            <span className={`font-serif font-semibold text-lg md:text-xl leading-none tracking-tight transition-colors drop-shadow-md ${isDarkText ? "text-slate-900 group-hover:text-rose-600" : "text-white group-hover:text-amber-400"}`}>
               Juron Models
             </span>
-            <span className="text-[9px] uppercase tracking-[0.2em] text-amber-500 font-bold mt-1 drop-shadow-md">Academy</span>
+            <span className="text-[8px] md:text-[9px] uppercase tracking-[0.2em] text-amber-500 font-bold mt-1 drop-shadow-md">Academy</span>
           </div>
         </Link>
 
-        {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-6 text-[12px] font-bold uppercase tracking-wider">
+        {/* Desktop & Mobile Links (Now visible on all screen sizes!) */}
+        <div className="flex flex-wrap justify-center items-center gap-x-3 gap-y-1.5 sm:gap-x-5 md:gap-x-6 text-[10px] md:text-[12px] font-bold uppercase tracking-wider w-full md:w-auto">
           {navLinks.map((link) => (
             <Link 
               key={link.href}
@@ -77,37 +74,14 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* CTA Button */}
+        {/* CTA Button (Hidden on tiny mobile screens to save space since Hero has one, visible on tablets/desktops) */}
         <div className="hidden md:block">
           <Link href="/register" className="bg-gradient-to-r from-rose-500 to-rose-700 text-white px-5 py-2.5 rounded-full text-[11px] font-bold tracking-widest uppercase shadow-[0_4px_15px_rgba(225,29,72,0.3)] hover:shadow-[0_6px_20px_rgba(225,29,72,0.4)] hover:-translate-y-0.5 transition-all duration-300 inline-block">
             Register Now
           </Link>
         </div>
-
-        {/* Mobile Menu Toggle */}
-        <button onClick={() => setIsOpen(!isOpen)} className={`md:hidden transition-colors ${isDarkText ? "text-slate-900 hover:text-rose-600" : "text-white hover:text-rose-400"}`}>
-          {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+        
       </div>
-
-      {/* Mobile Drawer */}
-      {isOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-2xl p-6 flex flex-col gap-4 animate-in slide-in-from-top-4 duration-300">
-          {navLinks.map((link) => (
-            <Link 
-              key={link.href}
-              href={link.href}
-              onClick={() => setIsOpen(false)}
-              className={`text-sm font-bold uppercase tracking-wider text-left pb-4 border-b border-slate-100 ${pathname === link.href ? "text-rose-600" : "text-slate-800 hover:text-amber-500"}`}
-            >
-              {link.label}
-            </Link>
-          ))}
-          <Link href="/register" onClick={() => setIsOpen(false)} className="bg-gradient-to-r from-rose-500 to-rose-700 text-white text-center px-6 py-4 rounded-xl text-sm font-bold tracking-widest uppercase mt-2 shadow-md">
-            Register Now
-          </Link>
-        </div>
-      )}
     </nav>
   );
 }
