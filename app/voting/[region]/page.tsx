@@ -22,10 +22,19 @@ interface Nominee {
   photoUrl?: string;
 }
 
-const REGION_DATA: Record<string, { title: string; subtitle: string; nominees: Nominee[] }> = {
+const REGION_DATA: Record<string, { title: string; subtitle: string; theme: any; nominees: Nominee[] }> = {
   mavoko: {
     title: "Mr & Miss Machakos - Mavoko",
     subtitle: "Representing Syokimau, Mlolongo, Athi River, and Mavoko Sub-County",
+    theme: {
+      avatarBg: "bg-rose-100 border-rose-200",
+      avatarText: "text-rose-500",
+      hoverBorder: "hover:border-rose-400",
+      hoverShadow: "hover:shadow-[0_8px_30px_rgba(225,29,72,0.12)]",
+      nameHover: "group-hover:text-rose-600",
+      pillBg: "bg-slate-100 text-slate-500 group-hover:bg-rose-50 group-hover:text-rose-600 group-hover:border-rose-200",
+      arrowHover: "group-hover:text-rose-500"
+    },
     nominees: [
       { id: "mvk-1", name: "King Masconde", code: "MVK01", location: "Mavoko", gender: "mr", votes: 42 },
       { id: "mvk-2", name: "Emmanuel Dennis", code: "MVK02", location: "Syokimau", gender: "mr", votes: 35 },
@@ -37,6 +46,15 @@ const REGION_DATA: Record<string, { title: string; subtitle: string; nominees: N
   township: {
     title: "Mr & Miss Machakos - Township",
     subtitle: "Representing Machakos Town, Machakos University, and Central Environs",
+    theme: {
+      avatarBg: "bg-amber-100 border-amber-200",
+      avatarText: "text-amber-500",
+      hoverBorder: "hover:border-amber-400",
+      hoverShadow: "hover:shadow-[0_8px_30px_rgba(245,158,11,0.12)]",
+      nameHover: "group-hover:text-amber-600",
+      pillBg: "bg-slate-100 text-slate-500 group-hover:bg-amber-50 group-hover:text-amber-600 group-hover:border-amber-200",
+      arrowHover: "group-hover:text-amber-500"
+    },
     nominees: [
       { id: "twn-1", name: "Kennedy Muasa", code: "TWN01", location: "Machakos", gender: "mr", votes: 58 },
       { id: "twn-2", name: "Bruno Brook", code: "TWN02", location: "Machakos", gender: "mr", votes: 64 },
@@ -60,6 +78,15 @@ const REGION_DATA: Record<string, { title: string; subtitle: string; nominees: N
   diaspora: {
     title: "Mr & Miss Machakos - Diaspora",
     subtitle: "Representing Global & Countrywide Ambassadors Outside Machakos County",
+    theme: {
+      avatarBg: "bg-sky-100 border-sky-200",
+      avatarText: "text-sky-500",
+      hoverBorder: "hover:border-sky-400",
+      hoverShadow: "hover:shadow-[0_8px_30px_rgba(14,165,233,0.12)]",
+      nameHover: "group-hover:text-sky-600",
+      pillBg: "bg-slate-100 text-slate-500 group-hover:bg-sky-50 group-hover:text-sky-600 group-hover:border-sky-200",
+      arrowHover: "group-hover:text-sky-500"
+    },
     nominees: [
       { id: "dsp-1", name: "Yussuf Abubakar", code: "DSP01", location: "Nakuru", gender: "mr", votes: 38 },
       { id: "dsp-2", name: "Andrew Muema Muthyokavi", code: "DSP02", location: "Nairobi", gender: "mr", votes: 54 },
@@ -236,7 +263,7 @@ export default function RegionVotingPage() {
         </div>
       </section>
 
-      {/* Clean, Enhanced Nominee List Grid */}
+      {/* Clean, Enhanced Nominee List Grid with Colorful Profile Avatars */}
       <section className="px-6 pb-24 relative z-10 max-w-4xl mx-auto w-full flex-grow">
         {filteredNominees.length === 0 ? (
           <div className="text-center py-20 bg-white border border-slate-200 rounded-3xl p-8 shadow-sm">
@@ -252,31 +279,32 @@ export default function RegionVotingPage() {
                   setSelectedNominee(nominee);
                   router.push(`?nominee=${nominee.code}`, { scroll: false });
                 }}
-                className="group cursor-pointer bg-white border border-slate-200 hover:border-amber-400 rounded-2xl flex items-center justify-between transition-all duration-300 shadow-sm hover:shadow-[0_8px_30px_rgba(245,158,11,0.12)] hover:-translate-y-1 overflow-hidden"
+                className={`group cursor-pointer bg-white border border-slate-200 ${data.theme.hoverBorder} rounded-2xl flex items-center justify-between transition-all duration-300 shadow-sm ${data.theme.hoverShadow} hover:-translate-y-1 overflow-hidden`}
               >
                 <div className="flex items-center gap-4 p-4 md:p-5">
-                  <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-slate-50 flex items-center justify-center border border-slate-200 overflow-hidden flex-shrink-0 transition-colors">
+                  {/* Colorful Avatar! */}
+                  <div className={`w-12 h-12 md:w-14 md:h-14 rounded-full ${data.theme.avatarBg} flex items-center justify-center border overflow-hidden flex-shrink-0 transition-colors`}>
                      {nominee.photoUrl ? (
                         <img src={nominee.photoUrl} alt={nominee.name} className="w-full h-full object-cover" />
                       ) : (
-                        <User className="w-5 h-5 md:w-6 md:h-6 text-slate-300" />
+                        <User className={`w-5 h-5 md:w-6 md:h-6 ${data.theme.avatarText}`} />
                       )}
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-serif font-bold text-base md:text-lg text-slate-900 group-hover:text-amber-600 transition-colors line-clamp-1">{nominee.name}</span>
+                    <span className={`font-serif font-bold text-base md:text-lg text-slate-900 ${data.theme.nameHover} transition-colors line-clamp-1`}>{nominee.name}</span>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-slate-100 text-slate-500 group-hover:bg-amber-50 group-hover:text-amber-600 transition-colors">#{nominee.code}</span>
+                      <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded border border-transparent transition-colors ${data.theme.pillBg}`}>#{nominee.code}</span>
                       <span className="text-xs text-slate-500 font-medium truncate">{nominee.location}</span>
                     </div>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-4 pl-4 pr-5 py-4 md:py-5 border-l border-slate-100 bg-slate-50/50 group-hover:bg-amber-50/30 transition-colors h-full">
+                <div className="flex items-center gap-4 pl-4 pr-5 py-4 md:py-5 border-l border-slate-100 bg-slate-50/50 transition-colors h-full">
                   <div className="text-right hidden xs:block">
                     <span className="block text-slate-900 font-bold text-lg leading-tight">{nominee.votes}</span>
                     <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Votes</span>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-amber-500 transition-transform group-hover:translate-x-1" />
+                  <ChevronRight className={`w-5 h-5 text-slate-400 ${data.theme.arrowHover} transition-transform group-hover:translate-x-1`} />
                 </div>
               </div>
             ))}
