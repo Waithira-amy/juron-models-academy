@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { 
@@ -15,8 +15,7 @@ import {
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 
-
-// Define the Nominee structure based on Supabase
+// --- NOMINEE DATA STORE (Local for now) ---
 interface Nominee {
   id: string;
   name: string;
@@ -24,39 +23,80 @@ interface Nominee {
   location: string;
   gender: "mr" | "miss";
   votes: number;
-  photoUrl: string | null;
-  region: string;
+  photoUrl?: string;
 }
 
-const REGION_META: Record<string, { title: string; subtitle: string }> = {
+const REGION_DATA: Record<string, { title: string; subtitle: string; themeColor: string; nominees: Nominee[] }> = {
   mavoko: {
     title: "Mr & Miss Machakos - Mavoko",
     subtitle: "Representing Syokimau, Mlolongo, Athi River, and Mavoko Sub-County",
+    themeColor: "rose",
+    nominees: [
+      { id: "mvk-1", name: "King Masconde", code: "MVK01", location: "Mavoko", gender: "mr", votes: 42 },
+      { id: "mvk-2", name: "Emmanuel Dennis", code: "MVK02", location: "Syokimau", gender: "mr", votes: 35 },
+      { id: "mvk-3", name: "Abigael Mbula Kioko", code: "MVK03", location: "Mavoko", gender: "miss", votes: 89 },
+      { id: "mvk-4", name: "Jemimah Mutuku Musenya", code: "MVK04", location: "Mlolongo / Mavoko", gender: "miss", votes: 114 },
+      { id: "mvk-5", name: "Everlyne Musyoki", code: "MVK05", location: "Athi River", gender: "miss", votes: 76 }
+    ]
   },
   township: {
     title: "Mr & Miss Machakos - Township",
     subtitle: "Representing Machakos Town, Machakos University, and Central Environs",
+    themeColor: "amber",
+    nominees: [
+      { id: "twn-1", name: "Kennedy Muasa", code: "TWN01", location: "Machakos", gender: "mr", votes: 58 },
+      { id: "twn-2", name: "Bruno Brook", code: "TWN02", location: "Machakos", gender: "mr", votes: 64 },
+      { id: "twn-3", name: "Fidel Mutuku", code: "TWN03", location: "Machakos", gender: "mr", votes: 92 },
+      { id: "twn-4", name: "Benjamin Kimanthi", code: "TWN04", location: "Machakos", gender: "mr", votes: 47 },
+      { id: "twn-5", name: "Shalom Mwendwa", code: "TWN05", location: "Machakos Township", gender: "miss", votes: 142 },
+      { id: "twn-6", name: "Marrion Atieno Juma", code: "TWN06", location: "Machakos University", gender: "miss", votes: 125 },
+      { id: "twn-7", name: "Whitney Kwamboka", code: "TWN07", location: "Machakos Township", gender: "miss", votes: 88 },
+      { id: "twn-8", name: "Reena Akinyi Odhiambo", code: "TWN08", location: "Machakos Township", gender: "miss", votes: 73 },
+      { id: "twn-9", name: "Dorcas Kimeu Muuo", code: "TWN09", location: "Machakos Township", gender: "miss", votes: 65 },
+      { id: "twn-10", name: "Claire Lucy Wanjiku", code: "TWN10", location: "Machakos Township", gender: "miss", votes: 91 },
+      { id: "twn-11", name: "Faith Jeptum", code: "TWN11", location: "Machakos Township", gender: "miss", votes: 84 },
+      { id: "twn-12", name: "Rachael Kamutu Matheka", code: "TWN12", location: "Machakos Township", gender: "miss", votes: 79 },
+      { id: "twn-13", name: "Mutanu Mbuvi", code: "TWN13", location: "Machakos Township", gender: "miss", votes: 53 },
+      { id: "twn-14", name: "Mutuku Irene Mutindi", code: "TWN14", location: "Machakos Township", gender: "miss", votes: 61 },
+      { id: "twn-15", name: "Milan Njeri Murimi", code: "TWN15", location: "Machakos", gender: "miss", votes: 48 },
+      { id: "twn-16", name: "Mevine Truphosa", code: "TWN16", location: "Machakos", gender: "miss", votes: 70 },
+      { id: "twn-17", name: "Damaris Amina", code: "TWN17", location: "Joska / Machakos", gender: "miss", votes: 59 }
+    ]
   },
   diaspora: {
     title: "Mr & Miss Machakos - Diaspora",
     subtitle: "Representing Global & Countrywide Ambassadors Outside Machakos County",
+    themeColor: "sky",
+    nominees: [
+      { id: "dsp-1", name: "Yussuf Abubakar", code: "DSP01", location: "Nakuru", gender: "mr", votes: 38 },
+      { id: "dsp-2", name: "Andrew Muema Muthyokavi", code: "DSP02", location: "Nairobi", gender: "mr", votes: 54 },
+      { id: "dsp-3", name: "Obi Ifaenyi", code: "DSP03", location: "Mombasa", gender: "mr", votes: 41 },
+      { id: "dsp-4", name: "Whitney Kwamboka", code: "DSP04", location: "Nakuru", gender: "miss", votes: 63 },
+      { id: "dsp-5", name: "Esther Odikara", code: "DSP05", location: "Nairobi", gender: "miss", votes: 77 },
+      { id: "dsp-6", name: "Adah Nabocho", code: "DSP06", location: "Nairobi", gender: "miss", votes: 45 },
+      { id: "dsp-7", name: "Jennifer Simon", code: "DSP07", location: "Nairobi", gender: "miss", votes: 82 },
+      { id: "dsp-8", name: "Beatrice Ingoka", code: "DSP08", location: "Nairobi", gender: "miss", votes: 51 },
+      { id: "dsp-9", name: "Amy Ngunjiri", code: "DSP09", location: "Nairobi", gender: "miss", votes: 94 },
+      { id: "dsp-10", name: "Teresia Nduku", code: "DSP10", location: "Embakasi Central", gender: "miss", votes: 59 },
+      { id: "dsp-11", name: "Sharon Ingasian", code: "DSP11", location: "Kahawa West", gender: "miss", votes: 36 },
+      { id: "dsp-12", name: "Stephanie Saiteyia", code: "DSP12", location: "Kitengela", gender: "miss", votes: 71 },
+      { id: "dsp-13", name: "Peggycate", code: "DSP13", location: "Kitengela", gender: "miss", votes: 68 },
+      { id: "dsp-14", name: "Miriam Monique", code: "DSP14", location: "Malindi", gender: "miss", votes: 80 }
+    ]
   }
 };
 
 export default function RegionVotingPage() {
   const params = useParams();
   const rawRegion = typeof params?.region === "string" ? params.region.toLowerCase() : "mavoko";
-  const currentRegion = REGION_META[rawRegion] ? rawRegion : "mavoko";
-  const meta = REGION_META[currentRegion];
+  const currentRegion = REGION_DATA[rawRegion] ? rawRegion : "mavoko";
+  const data = REGION_DATA[currentRegion];
 
-  // State Management
-  const [nominees, setNominees] = useState<Nominee[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"mr" | "miss">("miss");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedNominee, setSelectedNominee] = useState<Nominee | null>(null);
   
-  // Modal State
+  // Modal voting form state
   const [voteCount, setVoteCount] = useState<number>(10);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -64,60 +104,12 @@ export default function RegionVotingPage() {
 
   const VOTE_COST_KES = 10;
 
-  // Fetch from Supabase
-  useEffect(() => {
-    const fetchNominees = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('nominees') // Ensure your table is named 'nominees'
-          .select('*');
-        
-        if (error) throw error;
-
-        if (data) {
-          const formattedNominees: Nominee[] = data.map((item: any) => {
-            const loc = (item.location || "").toLowerCase();
-            
-            // Automatic Region Sorting based on our previous logic
-            let region = "diaspora"; 
-            if (loc.includes("mavoko") || loc.includes("syokimau") || loc.includes("mlolongo") || loc.includes("mulolongo") || loc.includes("athi")) {
-              region = "mavoko";
-            } else if (loc.includes("machakos") || loc.includes("joska")) {
-              region = "township";
-            }
-
-            return {
-              id: item.id?.toString() || Math.random().toString(),
-              name: item.full_name || item.applicant_name || "Unknown",
-              code: item.code || `JMA${(item.id || Math.floor(Math.random() * 100)).toString().padStart(3, '0')}`, // Fallback if no code column exists yet
-              location: item.location || "Kenya",
-              gender: item.gender?.toLowerCase() === "mr" ? "mr" : "miss", // Fallback to miss if undefined
-              votes: item.votes || 0,
-              photoUrl: item.photo_url || null,
-              region: region
-            };
-          });
-
-          setNominees(formattedNominees);
-        }
-      } catch (err) {
-        console.error("Error fetching nominees:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchNominees();
-  }, []);
-
-  // Filter the fetched nominees by Region, Gender, and Search Query
-  const filteredNominees = nominees.filter((nom) => {
-    const matchesRegion = nom.region === currentRegion;
+  const filteredNominees = data.nominees.filter((nom) => {
     const matchesGender = nom.gender === activeTab;
     const matchesSearch = nom.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           nom.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           nom.location.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesRegion && matchesGender && matchesSearch;
+    return matchesGender && matchesSearch;
   });
 
   const handleVoteSubmit = async (e: React.FormEvent) => {
@@ -125,7 +117,7 @@ export default function RegionVotingPage() {
     if (!phoneNumber) return alert("Please enter a valid M-Pesa phone number");
     setIsProcessing(true);
 
-    // Simulate STK Push payment trigger (ready to connect to Daraja API)
+    // Simulate STK Push payment trigger (similar to MTA & BUVA)
     setTimeout(() => {
       setIsProcessing(false);
       setPaymentSuccess(true);
@@ -134,7 +126,7 @@ export default function RegionVotingPage() {
         setSelectedNominee(null);
         setPhoneNumber("");
         setVoteCount(10);
-      }, 3000);
+      }, 2500);
     }, 2000);
   };
 
@@ -144,6 +136,7 @@ export default function RegionVotingPage() {
 
       {/* Hero Header Area */}
       <section className="relative pt-32 pb-16 px-6 overflow-hidden">
+        {/* Ambient Glows */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-500/10 rounded-full blur-[120px] pointer-events-none" />
 
         <div className="max-w-6xl mx-auto relative z-10">
@@ -160,13 +153,14 @@ export default function RegionVotingPage() {
                 Official Juron Pageant Portal
               </span>
               <h1 className="font-serif text-3xl md:text-5xl font-bold tracking-tight text-white mb-2">
-                {meta.title}
+                {data.title}
               </h1>
               <p className="text-slate-400 text-sm md:text-base max-w-xl">
-                {meta.subtitle}
+                {data.subtitle}
               </p>
             </div>
 
+            {/* Live Search */}
             <div className="relative min-w-[260px] md:min-w-[320px]">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input 
@@ -179,6 +173,7 @@ export default function RegionVotingPage() {
             </div>
           </div>
 
+          {/* Sub-Category Switcher: Mr vs Miss */}
           <div className="flex items-center justify-center gap-4 mt-8">
             <button
               onClick={() => setActiveTab("miss")}
@@ -188,7 +183,7 @@ export default function RegionVotingPage() {
                   : "bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10"
               }`}
             >
-              <Crown className="w-4 h-4" /> Miss Machakos
+              <Crown className="w-4 h-4" /> Miss Machakos ({data.nominees.filter(n => n.gender === "miss").length})
             </button>
 
             <button
@@ -199,24 +194,19 @@ export default function RegionVotingPage() {
                   : "bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10"
               }`}
             >
-              <Crown className="w-4 h-4" /> Mr Machakos
+              <Crown className="w-4 h-4" /> Mr Machakos ({data.nominees.filter(n => n.gender === "mr").length})
             </button>
           </div>
         </div>
       </section>
 
-      {/* Nominees Grid */}
+      {/* Nominees Grid with Generated Posters */}
       <section className="px-6 pb-24 relative z-10 max-w-6xl mx-auto w-full flex-grow">
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20 text-amber-500">
-            <Loader2 className="w-10 h-10 animate-spin mb-4" />
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Loading Nominees...</p>
-          </div>
-        ) : filteredNominees.length === 0 ? (
+        {filteredNominees.length === 0 ? (
           <div className="text-center py-20 bg-white/5 border border-white/10 rounded-3xl p-8">
             <Crown className="w-12 h-12 text-slate-600 mx-auto mb-4" />
             <h3 className="text-lg font-bold text-white mb-1">No Nominees Found</h3>
-            <p className="text-xs text-slate-400">There are currently no nominees matching this search in this region.</p>
+            <p className="text-xs text-slate-400">Try searching with a different name or code.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -225,10 +215,13 @@ export default function RegionVotingPage() {
                 key={nominee.id}
                 className="group relative bg-gradient-to-b from-slate-900 to-slate-950 border border-white/10 hover:border-amber-400/60 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1.5 shadow-xl flex flex-col"
               >
+                {/* Generated Campaign Poster Graphic */}
                 <div className="relative aspect-[3/4] w-full bg-gradient-to-tr from-slate-950 via-slate-900 to-slate-800 flex flex-col justify-between p-4 overflow-hidden border-b border-white/10">
+                  {/* Subtle Poster Backing Elements */}
                   <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#d4af37_1px,transparent_1px)] [background-size:16px_16px]" />
                   <div className="absolute -top-12 -right-12 w-28 h-28 bg-amber-500/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
                   
+                  {/* Top Badges */}
                   <div className="relative z-10 flex items-center justify-between">
                     <span className="bg-black/60 backdrop-blur-md border border-white/20 text-white text-[9px] font-black px-2.5 py-1 rounded-md tracking-widest uppercase">
                       #{nominee.code}
@@ -238,6 +231,7 @@ export default function RegionVotingPage() {
                     </span>
                   </div>
 
+                  {/* Centered Poster Silhouette / Portrait */}
                   <div className="relative z-10 my-auto flex flex-col items-center justify-center text-center">
                     <div className="w-20 h-20 rounded-full bg-gradient-to-b from-amber-400 to-amber-600 p-0.5 shadow-lg group-hover:scale-105 transition-transform duration-300 mb-3">
                       <div className="w-full h-full rounded-full bg-slate-950 flex items-center justify-center overflow-hidden">
@@ -255,6 +249,7 @@ export default function RegionVotingPage() {
                     </span>
                   </div>
 
+                  {/* Bottom Poster Title Stripe */}
                   <div className="relative z-10 bg-black/60 backdrop-blur-md border border-white/10 rounded-xl p-2.5 text-center">
                     <p className="text-white font-serif font-bold text-sm tracking-tight truncate">
                       {nominee.name}
@@ -265,6 +260,7 @@ export default function RegionVotingPage() {
                   </div>
                 </div>
 
+                {/* Card Action Section */}
                 <div className="p-4 flex flex-col flex-grow justify-between gap-3 bg-slate-900/60">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-slate-400 font-semibold">Total Votes:</span>
@@ -284,11 +280,12 @@ export default function RegionVotingPage() {
         )}
       </section>
 
-      {/* M-Pesa Modal */}
+      {/* MTA / BUVA Style Voting Popup Modal */}
       {selectedNominee && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
           <div className="relative w-full max-w-md bg-slate-900 border border-white/15 rounded-3xl p-6 md:p-8 shadow-2xl text-white">
             
+            {/* Close Button */}
             <button 
               onClick={() => setSelectedNominee(null)}
               className="absolute top-5 right-5 text-slate-400 hover:text-white bg-white/5 p-2 rounded-full border border-white/10"
@@ -312,6 +309,7 @@ export default function RegionVotingPage() {
                   <p className="text-xs text-slate-400">Code: #{selectedNominee.code} • {selectedNominee.location}</p>
                 </div>
 
+                {/* Quick Vote Quantity Selector */}
                 <div>
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
                     Select Number of Votes:
@@ -334,6 +332,7 @@ export default function RegionVotingPage() {
                   </div>
                 </div>
 
+                {/* Custom Quantity Stepper */}
                 <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl p-3">
                   <span className="text-xs text-slate-300 font-medium">Votes:</span>
                   <div className="flex items-center gap-3">
@@ -355,6 +354,7 @@ export default function RegionVotingPage() {
                   </div>
                 </div>
 
+                {/* Phone Number Field */}
                 <div>
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
                     M-Pesa Phone Number:
@@ -372,6 +372,7 @@ export default function RegionVotingPage() {
                   </div>
                 </div>
 
+                {/* Total Cost Calculation Banner */}
                 <div className="bg-amber-400/10 border border-amber-400/20 rounded-xl p-3.5 flex items-center justify-between">
                   <span className="text-xs text-amber-300 font-semibold">Total Amount:</span>
                   <span className="text-lg font-serif font-black text-amber-400">
@@ -379,6 +380,7 @@ export default function RegionVotingPage() {
                   </span>
                 </div>
 
+                {/* Submit Action */}
                 <button
                   type="submit"
                   disabled={isProcessing}
