@@ -19,7 +19,8 @@ export default function Navbar() {
     { href: "/about", label: "About Us" },
     { href: "/team", label: "The Team" },
     { href: "/programs", label: "Programs" },
-    { href: "/events", label: "Events" }
+    { href: "/events", label: "Events" },
+    { href: "/voting", label: "Voting" }
   ];
 
   /* STREAMING_CHUNK:Configuring dynamic styling variables... */
