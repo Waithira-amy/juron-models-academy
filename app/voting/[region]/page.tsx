@@ -22,19 +22,10 @@ interface Nominee {
   photoUrl?: string;
 }
 
-const REGION_DATA: Record<string, { title: string; subtitle: string; themeColor: string; themeStyles: any; nominees: Nominee[] }> = {
+const REGION_DATA: Record<string, { title: string; subtitle: string; nominees: Nominee[] }> = {
   mavoko: {
     title: "Mr & Miss Machakos - Mavoko",
     subtitle: "Representing Syokimau, Mlolongo, Athi River, and Mavoko Sub-County",
-    themeColor: "rose",
-    themeStyles: {
-      bg: "bg-rose-50/50",
-      border: "border-rose-100",
-      hover: "hover:border-rose-300",
-      text: "text-rose-600",
-      pill: "bg-rose-100/80 text-rose-700 border-rose-200",
-      voteBox: "bg-rose-100/50"
-    },
     nominees: [
       { id: "mvk-1", name: "King Masconde", code: "MVK01", location: "Mavoko", gender: "mr", votes: 42 },
       { id: "mvk-2", name: "Emmanuel Dennis", code: "MVK02", location: "Syokimau", gender: "mr", votes: 35 },
@@ -46,15 +37,6 @@ const REGION_DATA: Record<string, { title: string; subtitle: string; themeColor:
   township: {
     title: "Mr & Miss Machakos - Township",
     subtitle: "Representing Machakos Town, Machakos University, and Central Environs",
-    themeColor: "amber",
-    themeStyles: {
-      bg: "bg-amber-50/50",
-      border: "border-amber-100",
-      hover: "hover:border-amber-300",
-      text: "text-amber-600",
-      pill: "bg-amber-100/80 text-amber-700 border-amber-200",
-      voteBox: "bg-amber-100/50"
-    },
     nominees: [
       { id: "twn-1", name: "Kennedy Muasa", code: "TWN01", location: "Machakos", gender: "mr", votes: 58 },
       { id: "twn-2", name: "Bruno Brook", code: "TWN02", location: "Machakos", gender: "mr", votes: 64 },
@@ -78,15 +60,6 @@ const REGION_DATA: Record<string, { title: string; subtitle: string; themeColor:
   diaspora: {
     title: "Mr & Miss Machakos - Diaspora",
     subtitle: "Representing Global & Countrywide Ambassadors Outside Machakos County",
-    themeColor: "sky",
-    themeStyles: {
-      bg: "bg-sky-50/50",
-      border: "border-sky-100",
-      hover: "hover:border-sky-300",
-      text: "text-sky-600",
-      pill: "bg-sky-100/80 text-sky-700 border-sky-200",
-      voteBox: "bg-sky-100/50"
-    },
     nominees: [
       { id: "dsp-1", name: "Yussuf Abubakar", code: "DSP01", location: "Nakuru", gender: "mr", votes: 38 },
       { id: "dsp-2", name: "Andrew Muema Muthyokavi", code: "DSP02", location: "Nairobi", gender: "mr", votes: 54 },
@@ -175,13 +148,10 @@ export default function RegionVotingPage() {
     if (!posterRef.current || !selectedNominee) return;
     
     try {
-      // Converts the HTML poster element into a high-quality JPEG
       const dataUrl = await htmlToImage.toJpeg(posterRef.current, { 
         quality: 0.95,
-        backgroundColor: '#020617' // Ensures the dark background renders perfectly behind transparent edges
+        backgroundColor: '#020617' 
       });
-      
-      // Triggers the browser download
       download(dataUrl, `${selectedNominee.name.replace(/\s+/g, '_')}_JMA_Voting_Poster.jpg`);
     } catch (err) {
       console.error('Error downloading poster:', err);
@@ -199,7 +169,6 @@ export default function RegionVotingPage() {
   return (
     <main className="relative min-h-screen flex flex-col w-full bg-slate-50 text-slate-900 overflow-x-hidden">
       
-      {/* Background with light overlay */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <img src="/main-bg.jpg" alt="Background" className="fixed inset-0 w-full h-screen object-cover object-center" />
         <div className="fixed inset-0 bg-slate-50/90 backdrop-blur-sm" /> 
@@ -267,7 +236,7 @@ export default function RegionVotingPage() {
         </div>
       </section>
 
-      {/* Colorful Nominee List Grid */}
+      {/* Clean, Enhanced Nominee List Grid */}
       <section className="px-6 pb-24 relative z-10 max-w-4xl mx-auto w-full flex-grow">
         {filteredNominees.length === 0 ? (
           <div className="text-center py-20 bg-white border border-slate-200 rounded-3xl p-8 shadow-sm">
@@ -275,7 +244,7 @@ export default function RegionVotingPage() {
             <h3 className="text-lg font-bold text-slate-900 mb-1">No Nominees Found</h3>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {filteredNominees.map((nominee) => (
               <div 
                 key={nominee.id}
@@ -283,32 +252,31 @@ export default function RegionVotingPage() {
                   setSelectedNominee(nominee);
                   router.push(`?nominee=${nominee.code}`, { scroll: false });
                 }}
-                className={`group cursor-pointer ${data.themeStyles.bg} border ${data.themeStyles.border} ${data.themeStyles.hover} rounded-2xl flex items-center justify-between transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1 overflow-hidden`}
+                className="group cursor-pointer bg-white border border-slate-200 hover:border-amber-400 rounded-2xl flex items-center justify-between transition-all duration-300 shadow-sm hover:shadow-[0_8px_30px_rgba(245,158,11,0.12)] hover:-translate-y-1 overflow-hidden"
               >
-                <div className="flex items-center gap-4 p-4">
-                  <div className={`w-12 h-12 rounded-full bg-white flex items-center justify-center border ${data.themeStyles.border} overflow-hidden flex-shrink-0 transition-colors shadow-sm`}>
+                <div className="flex items-center gap-4 p-4 md:p-5">
+                  <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-slate-50 flex items-center justify-center border border-slate-200 overflow-hidden flex-shrink-0 transition-colors">
                      {nominee.photoUrl ? (
                         <img src={nominee.photoUrl} alt={nominee.name} className="w-full h-full object-cover" />
                       ) : (
-                        <User className={`w-5 h-5 ${data.themeStyles.text} opacity-50`} />
+                        <User className="w-5 h-5 md:w-6 md:h-6 text-slate-300" />
                       )}
                   </div>
                   <div className="flex flex-col">
-                    <span className={`font-serif font-bold text-base text-slate-900 ${data.themeStyles.text.replace('text', 'group-hover:text')} transition-colors line-clamp-1`}>{nominee.name}</span>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded border ${data.themeStyles.pill}`}>#{nominee.code}</span>
+                    <span className="font-serif font-bold text-base md:text-lg text-slate-900 group-hover:text-amber-600 transition-colors line-clamp-1">{nominee.name}</span>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-slate-100 text-slate-500 group-hover:bg-amber-50 group-hover:text-amber-600 transition-colors">#{nominee.code}</span>
                       <span className="text-xs text-slate-500 font-medium truncate">{nominee.location}</span>
                     </div>
                   </div>
                 </div>
                 
-                {/* Distinct Voting Block */}
-                <div className={`flex items-center gap-3 pl-4 pr-4 py-6 ${data.themeStyles.voteBox} border-l ${data.themeStyles.border}`}>
+                <div className="flex items-center gap-4 pl-4 pr-5 py-4 md:py-5 border-l border-slate-100 bg-slate-50/50 group-hover:bg-amber-50/30 transition-colors h-full">
                   <div className="text-right hidden xs:block">
-                    <span className={`block ${data.themeStyles.text} font-bold text-lg leading-tight`}>{nominee.votes}</span>
-                    <span className={`text-[9px] ${data.themeStyles.text} opacity-70 font-bold uppercase tracking-widest`}>Votes</span>
+                    <span className="block text-slate-900 font-bold text-lg leading-tight">{nominee.votes}</span>
+                    <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Votes</span>
                   </div>
-                  <ChevronRight className={`w-5 h-5 ${data.themeStyles.text} transition-transform group-hover:translate-x-1`} />
+                  <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-amber-500 transition-transform group-hover:translate-x-1" />
                 </div>
               </div>
             ))}
