@@ -6,6 +6,8 @@ import {
   Crown, ArrowLeft, CheckCircle2, Search, Sparkles, X, 
   Smartphone, Loader2, Download, Share2, ChevronRight, User
 } from "lucide-react";
+import * as htmlToImage from 'html-to-image';
+import download from 'downloadjs';
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 
@@ -95,7 +97,6 @@ export default function RegionVotingPage() {
   
   const posterRef = useRef<HTMLDivElement>(null);
 
-  // Modal voting form state
   const [voteCount, setVoteCount] = useState<number>(10);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -104,7 +105,6 @@ export default function RegionVotingPage() {
 
   const VOTE_COST_KES = 10;
 
-  // Auto-open modal if a nominee code is in the URL (e.g., ?nominee=MVK01)
   useEffect(() => {
     const nomineeCode = searchParams?.get('nominee');
     if (nomineeCode) {
@@ -129,7 +129,6 @@ export default function RegionVotingPage() {
     if (!phoneNumber) return alert("Please enter a valid M-Pesa phone number");
     setIsProcessing(true);
 
-    // Simulate STK Push
     setTimeout(() => {
       setIsProcessing(false);
       setPaymentSuccess(true);
@@ -149,54 +148,59 @@ export default function RegionVotingPage() {
   };
 
   const handleDownloadPoster = async () => {
-    alert("To enable downloads, run: npm install html-to-image downloadjs\nThen implement the download logic here.");
-    /* 
-      // UNCOMMENT THIS ONCE YOU INSTALL THE LIBRARIES:
-      import * as htmlToImage from 'html-to-image';
-      import download from 'downloadjs';
-
-      if (!posterRef.current || !selectedNominee) return;
-      try {
-        const dataUrl = await htmlToImage.toJpeg(posterRef.current, { quality: 0.95 });
-        download(dataUrl, `${selectedNominee.name.replace(/\s+/g, '_')}_JMA_Voting_Poster.jpg`);
-      } catch (err) {
-        console.error('Error downloading poster:', err);
-      }
-    */
+    if (!posterRef.current || !selectedNominee) return;
+    
+    try {
+      // Converts the HTML poster element into a high-quality JPEG
+      const dataUrl = await htmlToImage.toJpeg(posterRef.current, { 
+        quality: 0.95,
+        backgroundColor: '#020617' // Ensures the dark background renders perfectly behind transparent edges
+      });
+      
+      // Triggers the browser download
+      download(dataUrl, `${selectedNominee.name.replace(/\s+/g, '_')}_JMA_Voting_Poster.jpg`);
+    } catch (err) {
+      console.error('Error downloading poster:', err);
+      alert("Oops! Something went wrong while saving the poster. Please try again.");
+    }
   };
 
   const closeModal = () => {
     setSelectedNominee(null);
     setPhoneNumber("");
     setVoteCount(10);
-    // Remove query param from URL without reloading
     router.replace(`/voting/${currentRegion}`, { scroll: false });
   };
 
   return (
-    <main className="relative min-h-screen flex flex-col w-full bg-slate-950 text-white overflow-x-hidden">
+    <main className="relative min-h-screen flex flex-col w-full bg-slate-50 text-slate-900 overflow-x-hidden">
+      
+      {/* Background with light overlay */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <img src="/main-bg.jpg" alt="Background" className="fixed inset-0 w-full h-screen object-cover object-center" />
+        <div className="fixed inset-0 bg-slate-50/90 backdrop-blur-sm" /> 
+      </div>
+
       <Navbar />
 
-      <section className="relative pt-32 pb-16 px-6 overflow-hidden">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-500/10 rounded-full blur-[120px] pointer-events-none" />
-
+      <section className="relative pt-32 pb-16 px-6 overflow-hidden z-10">
         <div className="max-w-4xl mx-auto relative z-10">
           <Link 
             href="/voting" 
-            className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest mb-6 bg-white/5 border border-white/10 px-4 py-2 rounded-full"
+            className="inline-flex items-center gap-2 text-slate-500 hover:text-amber-600 transition-colors text-xs font-bold uppercase tracking-widest mb-6 bg-white border border-slate-200 px-4 py-2 rounded-full shadow-sm hover:shadow-md"
           >
             <ArrowLeft className="w-4 h-4" /> All Categories
           </Link>
 
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-white/10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-slate-200">
             <div>
-              <span className="inline-block text-amber-400 text-xs font-bold uppercase tracking-widest mb-2">
+              <span className="inline-block text-amber-500 text-xs font-bold uppercase tracking-widest mb-2 drop-shadow-sm">
                 Official Juron Pageant Portal
               </span>
-              <h1 className="font-serif text-3xl md:text-5xl font-bold tracking-tight text-white mb-2">
+              <h1 className="font-serif text-3xl md:text-5xl font-bold tracking-tight text-slate-900 mb-2">
                 {data.title}
               </h1>
-              <p className="text-slate-400 text-sm max-w-xl">
+              <p className="text-slate-600 text-sm max-w-xl font-medium">
                 {data.subtitle}
               </p>
             </div>
@@ -208,7 +212,7 @@ export default function RegionVotingPage() {
                 placeholder="Search nominee..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white/5 border border-white/15 focus:border-amber-400 rounded-full py-3 pl-11 pr-4 text-xs text-white placeholder-slate-500 focus:outline-none transition-all"
+                className="w-full bg-white border border-slate-200 focus:border-amber-400 focus:ring-2 focus:ring-amber-100 rounded-full py-3 pl-11 pr-4 text-xs text-slate-900 placeholder-slate-400 shadow-sm focus:outline-none transition-all"
               />
             </div>
           </div>
@@ -218,8 +222,8 @@ export default function RegionVotingPage() {
               onClick={() => setActiveTab("miss")}
               className={`flex items-center gap-2 px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${
                 activeTab === "miss" 
-                  ? "bg-gradient-to-r from-rose-500 to-pink-600 text-white shadow-lg shadow-rose-500/25 scale-105" 
-                  : "bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10"
+                  ? "bg-gradient-to-r from-rose-500 to-rose-600 text-white shadow-[0_5px_15px_rgba(225,29,72,0.3)] scale-105 border border-rose-500" 
+                  : "bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 shadow-sm"
               }`}
             >
               <Crown className="w-4 h-4" /> Miss Machakos ({data.nominees.filter(n => n.gender === "miss").length})
@@ -229,8 +233,8 @@ export default function RegionVotingPage() {
               onClick={() => setActiveTab("mr")}
               className={`flex items-center gap-2 px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${
                 activeTab === "mr" 
-                  ? "bg-gradient-to-r from-amber-500 to-yellow-600 text-slate-950 shadow-lg shadow-amber-500/25 scale-105" 
-                  : "bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10"
+                  ? "bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-[0_5px_15px_rgba(245,158,11,0.3)] scale-105 border border-amber-500" 
+                  : "bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 shadow-sm"
               }`}
             >
               <Crown className="w-4 h-4" /> Mr Machakos ({data.nominees.filter(n => n.gender === "mr").length})
@@ -239,12 +243,12 @@ export default function RegionVotingPage() {
         </div>
       </section>
 
-      {/* Clean Nominee List Grid */}
+      {/* Clean Nominee List Grid - Light Theme */}
       <section className="px-6 pb-24 relative z-10 max-w-4xl mx-auto w-full flex-grow">
         {filteredNominees.length === 0 ? (
-          <div className="text-center py-20 bg-white/5 border border-white/10 rounded-3xl p-8">
-            <Crown className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-            <h3 className="text-lg font-bold text-white mb-1">No Nominees Found</h3>
+          <div className="text-center py-20 bg-white border border-slate-200 rounded-3xl p-8 shadow-sm">
+            <Crown className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+            <h3 className="text-lg font-bold text-slate-900 mb-1">No Nominees Found</h3>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -255,10 +259,10 @@ export default function RegionVotingPage() {
                   setSelectedNominee(nominee);
                   router.push(`?nominee=${nominee.code}`, { scroll: false });
                 }}
-                className="group cursor-pointer bg-slate-900 border border-white/10 hover:border-amber-400/50 rounded-2xl p-4 flex items-center justify-between transition-all duration-300 hover:shadow-[0_0_20px_rgba(251,191,36,0.1)] hover:-translate-y-1"
+                className="group cursor-pointer bg-white border border-slate-200 hover:border-amber-300 rounded-2xl p-4 flex items-center justify-between transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-b from-slate-700 to-slate-800 flex items-center justify-center border border-white/10 overflow-hidden flex-shrink-0 group-hover:border-amber-400/50 transition-colors">
+                  <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 overflow-hidden flex-shrink-0 group-hover:border-amber-300 transition-colors">
                      {nominee.photoUrl ? (
                         <img src={nominee.photoUrl} alt={nominee.name} className="w-full h-full object-cover" />
                       ) : (
@@ -266,20 +270,20 @@ export default function RegionVotingPage() {
                       )}
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-serif font-bold text-base text-white group-hover:text-amber-400 transition-colors line-clamp-1">{nominee.name}</span>
+                    <span className="font-serif font-bold text-base text-slate-900 group-hover:text-amber-600 transition-colors line-clamp-1">{nominee.name}</span>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest px-1.5 py-0.5 bg-amber-400/10 rounded">#{nominee.code}</span>
-                      <span className="text-xs text-slate-400 truncate">{nominee.location}</span>
+                      <span className="text-[10px] font-bold text-amber-600 uppercase tracking-widest px-1.5 py-0.5 bg-amber-50 rounded border border-amber-200">#{nominee.code}</span>
+                      <span className="text-xs text-slate-500 font-medium truncate">{nominee.location}</span>
                     </div>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-3 pl-4 border-l border-white/10">
+                <div className="flex items-center gap-3 pl-4 border-l border-slate-100">
                   <div className="text-right hidden xs:block">
-                    <span className="block text-white font-bold text-sm leading-tight">{nominee.votes}</span>
-                    <span className="text-[9px] text-slate-500 uppercase tracking-widest">Votes</span>
+                    <span className="block text-slate-900 font-bold text-sm leading-tight">{nominee.votes}</span>
+                    <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Votes</span>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-slate-600 group-hover:text-amber-400 transition-colors" />
+                  <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-amber-500 transition-colors" />
                 </div>
               </div>
             ))}
@@ -287,25 +291,24 @@ export default function RegionVotingPage() {
         )}
       </section>
 
-      {/* Split-Screen Modal: Poster on Left, Voting on Right */}
+      {/* Split-Screen Modal: Light UI outside, Dark Poster inside */}
       {selectedNominee && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto">
-          <div className="relative w-full max-w-4xl bg-slate-900 border border-white/15 rounded-[2rem] shadow-2xl text-white flex flex-col md:flex-row overflow-hidden my-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto">
+          <div className="relative w-full max-w-4xl bg-white border border-slate-100 rounded-[2rem] shadow-2xl flex flex-col md:flex-row overflow-hidden my-auto">
             
             <button 
               onClick={closeModal}
-              className="absolute top-4 right-4 z-50 text-slate-400 hover:text-white bg-slate-800/80 backdrop-blur p-2 rounded-full border border-white/10 transition-colors"
+              className="absolute top-4 right-4 z-50 text-slate-400 hover:text-slate-900 bg-white/90 backdrop-blur p-2 rounded-full border border-slate-200 shadow-sm transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
 
-            {/* LEFT SIDE: The Downloadable Poster */}
-            <div className="w-full md:w-1/2 bg-slate-950 p-6 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-white/10 relative">
+            {/* LEFT SIDE: The Downloadable Poster (Kept dark for premium pageant look) */}
+            <div className="w-full md:w-1/2 bg-slate-50 p-6 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-200 relative">
               
-              {/* THE POSTER ELEMENT (Target for downloading) */}
               <div 
                 ref={posterRef}
-                className="relative aspect-[3/4] w-full max-w-[320px] bg-gradient-to-tr from-slate-950 via-slate-900 to-slate-800 flex flex-col justify-between p-5 overflow-hidden border border-white/10 rounded-2xl"
+                className="relative aspect-[3/4] w-full max-w-[320px] bg-gradient-to-tr from-slate-950 via-slate-900 to-slate-800 flex flex-col justify-between p-5 overflow-hidden border border-slate-800 rounded-2xl shadow-xl"
               >
                 <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#d4af37_1px,transparent_1px)] [background-size:16px_16px]" />
                 <div className="absolute -top-12 -right-12 w-32 h-32 bg-amber-500/20 rounded-full blur-2xl" />
@@ -348,52 +351,50 @@ export default function RegionVotingPage() {
                   </p>
                 </div>
               </div>
-              {/* END POSTER ELEMENT */}
 
               {/* Share & Download Actions */}
               <div className="flex items-center gap-3 mt-6 w-full max-w-[320px]">
                 <button 
                   onClick={handleShare}
-                  className="flex-1 py-2.5 px-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2"
+                  className="flex-1 py-2.5 px-4 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold uppercase tracking-widest shadow-sm transition-all flex items-center justify-center gap-2"
                 >
-                  {shareCopied ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Share2 className="w-4 h-4" />}
+                  {shareCopied ? <CheckCircle2 className="w-4 h-4 text-emerald-500" /> : <Share2 className="w-4 h-4" />}
                   {shareCopied ? "Copied!" : "Copy Link"}
                 </button>
                 <button 
                   onClick={handleDownloadPoster}
-                  className="flex-1 py-2.5 px-4 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 text-xs font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2"
+                  className="flex-1 py-2.5 px-4 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 text-xs font-bold uppercase tracking-widest shadow-sm transition-all flex items-center justify-center gap-2"
                 >
                   <Download className="w-4 h-4" /> Save
                 </button>
               </div>
             </div>
 
-            {/* RIGHT SIDE: M-Pesa Voting Controls */}
-            <div className="w-full md:w-1/2 p-6 md:p-10 flex flex-col justify-center relative">
+            {/* RIGHT SIDE: M-Pesa Voting Controls - Light Theme */}
+            <div className="w-full md:w-1/2 p-6 md:p-10 flex flex-col justify-center relative bg-white">
               
               {paymentSuccess ? (
                 <div className="py-8 text-center flex flex-col items-center">
-                  <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mb-6">
-                    <CheckCircle2 className="w-10 h-10 text-emerald-400 animate-bounce" />
+                  <div className="w-20 h-20 bg-emerald-50 border border-emerald-100 rounded-full flex items-center justify-center mb-6 shadow-sm">
+                    <CheckCircle2 className="w-10 h-10 text-emerald-500 animate-bounce" />
                   </div>
-                  <h3 className="text-2xl font-bold font-serif mb-2">Check Your Phone!</h3>
-                  <p className="text-sm text-slate-300 leading-relaxed mb-6">
-                    An M-Pesa prompt has been sent to your phone. Enter your PIN to confirm {voteCount} votes for <span className="text-amber-400 font-bold">{selectedNominee.name}</span>.
+                  <h3 className="text-2xl font-bold font-serif text-slate-900 mb-2">Check Your Phone!</h3>
+                  <p className="text-sm text-slate-500 font-medium leading-relaxed mb-6">
+                    An M-Pesa prompt has been sent to your phone. Enter your PIN to confirm {voteCount} votes for <span className="text-amber-600 font-bold">{selectedNominee.name}</span>.
                   </p>
-                  <button onClick={closeModal} className="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-white underline underline-offset-4">
+                  <button onClick={closeModal} className="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-slate-700 underline underline-offset-4">
                     Return to Nominees
                   </button>
                 </div>
               ) : (
                 <form onSubmit={handleVoteSubmit} className="space-y-6">
                   <div>
-                    <h3 className="text-2xl font-serif font-bold text-white mb-1">Cast Your Vote</h3>
-                    <p className="text-xs text-slate-400">Securely support {selectedNominee.name} via M-Pesa.</p>
+                    <h3 className="text-2xl font-serif font-bold text-slate-900 mb-1">Cast Your Vote</h3>
+                    <p className="text-xs text-slate-500 font-medium">Securely support {selectedNominee.name} via M-Pesa.</p>
                   </div>
 
-                  {/* Quantity Selector */}
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-3">
                       Select Vote Bundle:
                     </label>
                     <div className="grid grid-cols-4 gap-2 mb-3">
@@ -404,8 +405,8 @@ export default function RegionVotingPage() {
                           onClick={() => setVoteCount(qty)}
                           className={`py-2.5 rounded-xl text-xs font-bold transition-all border ${
                             voteCount === qty 
-                              ? "bg-amber-400 text-slate-950 border-amber-400 shadow-lg shadow-amber-400/20" 
-                              : "bg-white/5 text-slate-300 border-white/10 hover:border-white/30"
+                              ? "bg-amber-400 text-slate-900 border-amber-400 shadow-md" 
+                              : "bg-white text-slate-600 border-slate-200 hover:border-amber-300 shadow-sm"
                           }`}
                         >
                           +{qty}
@@ -413,21 +414,21 @@ export default function RegionVotingPage() {
                       ))}
                     </div>
 
-                    <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl p-3">
-                      <span className="text-xs text-slate-300 font-medium ml-2">Custom Amount:</span>
+                    <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl p-3 shadow-sm">
+                      <span className="text-xs text-slate-600 font-bold ml-2">Custom Amount:</span>
                       <div className="flex items-center gap-3">
                         <button 
                           type="button" 
                           onClick={() => setVoteCount(prev => Math.max(1, prev - 1))}
-                          className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white font-bold text-sm flex items-center justify-center transition-colors"
+                          className="w-8 h-8 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-sm flex items-center justify-center transition-colors shadow-sm"
                         >
                           -
                         </button>
-                        <span className="font-mono font-bold text-lg text-amber-400 min-w-[32px] text-center">{voteCount}</span>
+                        <span className="font-mono font-bold text-lg text-amber-600 min-w-[32px] text-center">{voteCount}</span>
                         <button 
                           type="button" 
                           onClick={() => setVoteCount(prev => prev + 1)}
-                          className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white font-bold text-sm flex items-center justify-center transition-colors"
+                          className="w-8 h-8 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-sm flex items-center justify-center transition-colors shadow-sm"
                         >
                           +
                         </button>
@@ -435,9 +436,8 @@ export default function RegionVotingPage() {
                     </div>
                   </div>
 
-                  {/* Phone Input */}
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-3">
                       M-Pesa Phone Number:
                     </label>
                     <div className="relative">
@@ -447,17 +447,16 @@ export default function RegionVotingPage() {
                         placeholder="0712345678"
                         value={phoneNumber}
                         onChange={(e) => setPhoneNumber(e.target.value)}
-                        className="w-full bg-slate-950 border border-white/15 focus:border-amber-400 rounded-xl py-3.5 pl-11 pr-4 text-sm text-white placeholder-slate-500 focus:outline-none transition-colors"
+                        className="w-full bg-white border border-slate-200 focus:border-amber-400 focus:ring-2 focus:ring-amber-100 rounded-xl py-3.5 pl-11 pr-4 text-sm text-slate-900 placeholder-slate-400 shadow-sm focus:outline-none transition-all"
                         required
                       />
                     </div>
                   </div>
 
-                  {/* Submit Area */}
-                  <div className="pt-2 border-t border-white/10">
+                  <div className="pt-4 border-t border-slate-100">
                     <div className="flex items-center justify-between mb-4 px-1">
-                      <span className="text-sm text-slate-300 font-medium">Total Cost:</span>
-                      <span className="text-xl font-serif font-black text-amber-400">
+                      <span className="text-sm text-slate-600 font-bold">Total Cost:</span>
+                      <span className="text-xl font-serif font-black text-amber-500 drop-shadow-sm">
                         KES {(voteCount * VOTE_COST_KES).toLocaleString()}
                       </span>
                     </div>
@@ -465,7 +464,7 @@ export default function RegionVotingPage() {
                     <button
                       type="submit"
                       disabled={isProcessing}
-                      className="w-full py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white font-bold text-sm uppercase tracking-widest transition-all shadow-lg shadow-emerald-500/20 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                      className="w-full py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-bold text-sm uppercase tracking-widest transition-all shadow-[0_5px_15px_rgba(16,185,129,0.3)] hover:shadow-[0_8px_20px_rgba(16,185,129,0.4)] active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                       {isProcessing ? (
                         <>
@@ -479,7 +478,6 @@ export default function RegionVotingPage() {
                 </form>
               )}
             </div>
-            {/* END RIGHT SIDE */}
           </div>
         </div>
       )}
