@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Crown, Camera } from "lucide-react";
+import { Crown, Camera, Globe } from "lucide-react";
 
 export default function Events() {
   return (
@@ -14,7 +14,7 @@ export default function Events() {
       </div>
 
       {}
-      <div className="max-w-5xl mx-auto px-6 relative z-10 w-full animate-in fade-in slide-in-from-bottom-12 duration-1000 ease-out fill-mode-forwards">
+      <div className="max-w-[1400px] mx-auto px-6 relative z-10 w-full animate-in fade-in slide-in-from-bottom-12 duration-1000 ease-out fill-mode-forwards">
         
         {/* Header */}
         <div className="flex justify-center mb-10">
@@ -30,7 +30,7 @@ export default function Events() {
         </div>
 
         {}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           
           {/* Mr & Miss Machakos - Mavoko */}
           <div className="bg-white/95 backdrop-blur-2xl border border-white rounded-[2rem] p-6 md:p-8 relative overflow-hidden group hover:shadow-2xl transition-all duration-500 flex flex-col shadow-xl">
@@ -76,6 +76,30 @@ export default function Events() {
                     </li>
                   ))}
                 </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Mr & Miss Machakos - Diaspora */}
+          <div className="bg-white/95 backdrop-blur-2xl border border-white rounded-[2rem] p-6 md:p-8 relative overflow-hidden group hover:shadow-2xl transition-all duration-500 flex flex-col shadow-xl">
+            <div className="relative z-10 flex-grow flex flex-col">
+              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center mb-5 border border-slate-100 group-hover:scale-105 transition-transform shadow-sm p-1.5 overflow-hidden">
+                <img src="/machakos-logo.png" alt="Mr & Miss Machakos - Diaspora Logo" className="w-full h-full object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; const fallback = document.getElementById('icon-fallback-diaspora'); if (fallback) fallback.style.display = 'block'; }} />
+                <Globe id="icon-fallback-diaspora" className="w-5 h-5 text-sky-500 hidden" />
+              </div>
+              <h3 className="font-serif text-xl md:text-2xl font-semibold text-slate-900 mb-2 tracking-tight">Mr. & Miss Machakos - Diaspora</h3>
+              <p className="text-slate-600 mb-5 leading-relaxed text-[12px] flex-grow">
+                A unique global platform celebrating beauty, brains, and culture while connecting the Kenyan diaspora back to Machakos County. Honoring young leaders who bridge the gap and champion development from abroad.
+              </p>
+              <div className="mt-auto bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
+                <h4 className="font-bold text-slate-900 mb-3 uppercase tracking-widest text-[9px]">Diaspora Focus Areas:</h4>
+                <div className="grid grid-cols-1 gap-2.5">
+                  {["Global Advocacy", "Cultural Exchange", "Investment Promotion", "Networking Opportunities"].map((item, i) => (
+                    <div key={i} className="flex items-center gap-2 text-[10px] font-bold text-slate-600 uppercase tracking-wider">
+                      <div className="w-1.5 h-1.5 rounded-full bg-sky-500 shrink-0" /> {item}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
