@@ -22,7 +22,7 @@ export default function Events() {
             <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center mx-auto mb-3 border border-slate-200 shadow-sm">
               <Crown className="w-6 h-6 text-amber-500" />
             </div>
-            <h2 className="font-serif text-2xl md:text-3xl font-semibold text-slate-900 mb-3 tracking-tight drop-shadow-sm">Signature Events</h2>
+            <h2 className="font-serif text-2xl md:text-3xl font-semibold text-slate-900 mb-3 tracking-tight drop-shadow-sm">Upcoming Voting categories</h2>
             <p className="text-slate-700 text-[13px] leading-relaxed max-w-lg mx-auto font-medium drop-shadow-sm">
               Platforms dedicated to identifying, mentoring, and celebrating outstanding young leaders and ambassadors from the region.
             </p>
@@ -32,14 +32,14 @@ export default function Events() {
         {}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           
-          {/* Mr & Miss Mavoko */}
+          {/* Mr & Miss Machakos - Mavoko */}
           <div className="bg-white/95 backdrop-blur-2xl border border-white rounded-[2rem] p-6 md:p-8 relative overflow-hidden group hover:shadow-2xl transition-all duration-500 flex flex-col shadow-xl">
             <div className="relative z-10 flex-grow flex flex-col">
               <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center mb-5 border border-slate-100 group-hover:scale-105 transition-transform shadow-sm p-1.5 overflow-hidden">
-                <img src="/mavoko-logo.png" alt="Mr & Miss Mavoko Logo" className="w-full h-full object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; const fallback = document.getElementById('icon-fallback-mavoko'); if (fallback) fallback.style.display = 'block'; }} />
+                <img src="/machakos-logo.png" alt="Mr & Miss Machakos - Mavoko Logo" className="w-full h-full object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; const fallback = document.getElementById('icon-fallback-mavoko'); if (fallback) fallback.style.display = 'block'; }} />
                 <Crown id="icon-fallback-mavoko" className="w-5 h-5 text-rose-500 hidden" />
               </div>
-              <h3 className="font-serif text-xl md:text-2xl font-semibold text-slate-900 mb-2 tracking-tight">Mr. & Miss Mavoko</h3>
+              <h3 className="font-serif text-xl md:text-2xl font-semibold text-slate-900 mb-2 tracking-tight">Mr. & Miss Machakos - Mavoko</h3>
               <p className="text-slate-600 mb-5 leading-relaxed text-[12px] flex-grow">
                 One of our flagship annual events, this is a premier beauty pageant and leadership platform. Winners become ambassadors who champion positive social change while representing the region at various public engagements.
               </p>
@@ -56,14 +56,14 @@ export default function Events() {
             </div>
           </div>
 
-          {/* Mr & Miss Machakos */}
+          {/* Mr & Miss Machakos - Township */}
           <div className="bg-white/95 backdrop-blur-2xl border border-white rounded-[2rem] p-6 md:p-8 relative overflow-hidden group hover:shadow-2xl transition-all duration-500 flex flex-col shadow-xl">
             <div className="relative z-10 flex-grow flex flex-col">
               <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center mb-5 border border-slate-100 group-hover:scale-105 transition-transform shadow-sm p-1.5 overflow-hidden">
-                <img src="/machakos-logo.png" alt="Mr & Miss Machakos Logo" className="w-full h-full object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; const fallback = document.getElementById('icon-fallback-machakos'); if (fallback) fallback.style.display = 'block'; }} />
+                <img src="/machakos-logo.png" alt="Mr & Miss Machakos - Township Logo" className="w-full h-full object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; const fallback = document.getElementById('icon-fallback-machakos'); if (fallback) fallback.style.display = 'block'; }} />
                 <Camera id="icon-fallback-machakos" className="w-5 h-5 text-amber-500 hidden" />
               </div>
-              <h3 className="font-serif text-xl md:text-2xl font-semibold text-slate-900 mb-2 tracking-tight">Mr. & Miss Machakos</h3>
+              <h3 className="font-serif text-xl md:text-2xl font-semibold text-slate-900 mb-2 tracking-tight">Mr. & Miss Machakos - Township</h3>
               <p className="text-slate-600 mb-5 leading-relaxed text-[12px] flex-grow">
                 Our county flagship pageant that showcases the beauty, culture, diversity, tourism potential, and talent within Machakos County. A respected platform for nurturing future leaders and brand ambassadors.
               </p>
