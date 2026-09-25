@@ -17,3 +17,29 @@ model Registration {
   status    String   @default("PENDING") 
   createdAt DateTime @default(now())
 }
+
+model Voting {
+  id        Int      @id @default(autoincrement())
+  fullName  String
+  code      String   @unique
+  category  String   // e.g., "Machakos- Mavoko", "Machakos Township", "Machakos- Diaspora"
+  title     String   // e.g., "Mr", "Miss"
+  photoUrl  String?
+  votes     Int      @default(0)
+  
+  // Connects the nominee to their M-Pesa payments
+  transactions VoteTransaction[]
+}
+
+// The financial ledger for tracking exact M-Pesa receipts
+model VoteTransaction {
+  id            Int      @id @default(autoincrement())
+  amount        Int
+  votesAwarded  Int
+  phone         String
+  receiptNumber String
+  nomineeCode   String
+  
+  voting        Voting   @relation(fields: [nomineeCode], references: [code])
+  createdAt     DateTime @default(now())
+}

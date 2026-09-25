@@ -7,9 +7,9 @@ export async function GET() {
   try {
     const prisma = new PrismaClient();
     
-    // Using "(prisma.registration as any)" safely bypasses the local type cache errors,
-    // exactly like we did in the M-Pesa webhook!
-    const nominees = await (prisma.registration as any).findMany({
+    // Adding "(prisma as any)" forces Next.js to ignore the cached types 
+    // and just pull the data directly from the new Voting table.
+    const nominees = await (prisma as any).voting.findMany({
       orderBy: {
         votes: 'desc'
       },
@@ -17,8 +17,8 @@ export async function GET() {
         id: true,
         fullName: true,
         code: true,
-        location: true, 
-        category: true, // Pulls the category if you have this field
+        category: true, 
+        title: true, 
         votes: true,
         photoUrl: true
       }

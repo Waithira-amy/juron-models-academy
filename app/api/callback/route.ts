@@ -5,46 +5,50 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {
-    // MOVE PRISMA INSIDE THE FUNCTION: Now it only runs during a real payment, not during the Vercel build!
     const prisma = new PrismaClient();
-    
-    // 1. Grab the tracking info from the URL query parameters
     const url = new URL(req.url);
-    const nomineeId = url.searchParams.get("nomineeId"); // e.g. "MVK01"
+    const nomineeCode = url.searchParams.get("nomineeId"); 
     const votes = Number(url.searchParams.get("votes"));
 
-    // 2. Read Safaricom's payment receipt
     const body = await req.json();
     const callbackData = body?.Body?.stkCallback;
 
     if (!callbackData) {
-      return NextResponse.json({ error: "Invalid Safaricom payload" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
     }
 
-    // 3. Process the payment result (ResultCode 0 = Success)
-    if (callbackData.ResultCode === 0 && nomineeId && votes) {
+    if (callbackData.ResultCode === 0 && nomineeCode && votes) {
+      const metadata = callbackData.CallbackMetadata?.Item || [];
+      const getMeta = (name: string) => metadata.find((i: any) => i.Name === name)?.Value;
       
-      // Award the votes in the Neon Database matching the frontend CODE.
-      await (prisma.registration as any).update({
-        where: { code: nomineeId as string },
+      const receipt = getMeta("MpesaReceiptNumber") || "UNKNOWN";
+      const voterPhone = getMeta("PhoneNumber")?.toString() || "UNKNOWN";
+      const paidAmount = Number(getMeta("Amount")) || 0;
+
+      // 1. Log the receipt in the ledger using the bypass
+      await (prisma as any).voteTransaction.create({
         data: {
-          votes: {
-            increment: votes
-          }
+          amount: paidAmount,
+          votesAwarded: votes,
+          phone: voterPhone,
+          receiptNumber: receipt,
+          nomineeCode: nomineeCode as string,
         }
       });
       
-      console.log(`✅ Payment Confirmed: Awarded ${votes} votes to Nominee ${nomineeId}`);
-    } else {
-      console.log(`❌ Payment Failed/Cancelled: ${callbackData.ResultDesc}`);
+      // 2. Add the votes to the official competition table using the bypass
+      await (prisma as any).voting.update({
+        where: { code: nomineeCode as string },
+        data: { votes: { increment: votes } }
+      });
+      
+      console.log(`✅ Payment ${receipt}: ${votes} votes to ${nomineeCode} from ${voterPhone}`);
     }
 
-    // 4. Safaricom requires a fast HTTP 200 acknowledgment
     return NextResponse.json({ ResultCode: 0, ResultDesc: "Accepted" });
 
   } catch (error) {
     console.error("Webhook Error:", error);
-    // Even if our DB fails, we must tell Safaricom we received the message to stop retries
     return NextResponse.json({ ResultCode: 0, ResultDesc: "Accepted with internal errors" });
   }
 }

@@ -1,14 +1,14 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Activity, Trophy, Users, Loader2, Filter } from "lucide-react";
-import Navbar from "@/components/common/Navbar"; 
+import { Activity, Trophy, Users, Loader2, Filter, Crown } from "lucide-react";
+import Navbar from "@/components/common/Navbar";
 
 interface Nominee {
   id: number;
   fullName: string;
   code: string;
-  location: string;
-  category?: string;
+  category: string;
+  title: string;
   votes: number;
   photoUrl: string;
 }
@@ -17,14 +17,16 @@ export default function LiveDashboard() {
   const [nominees, setNominees] = useState<Nominee[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+  
   const [activeCategory, setActiveCategory] = useState<string>("All");
+  const [activeTitle, setActiveTitle] = useState<string>("All");
 
   const fetchVotes = async () => {
     try {
-      const res = await fetch('/api/dashboard');
+      const res = await fetch('/api/dashboard', { cache: 'no-store' });
       const data = await res.json();
       if (data.success) {
-        setNominees(data.nominees);
+        setNominees(data.nominees.map((n: any) => ({ ...n, votes: n.votes || 0 })));
         setLastUpdated(new Date());
       }
     } catch (error) {
@@ -40,13 +42,14 @@ export default function LiveDashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  // Extract unique categories (uses 'category' field if it exists, otherwise falls back to 'location')
-  const categories = ["All", ...Array.from(new Set(nominees.map(n => n.category || n.location)))];
+  const categories = ["All", "Machakos- Mavoko", "Machakos Township", "Machakos- Diaspora"];
+  const titles = ["All", "Mr", "Miss"];
 
-  // Filter nominees based on the selected tab
-  const filteredNominees = activeCategory === "All" 
-    ? nominees 
-    : nominees.filter(n => (n.category || n.location) === activeCategory);
+  const filteredNominees = nominees.filter(n => {
+    const matchCategory = activeCategory === "All" || n.category === activeCategory;
+    const matchTitle = activeTitle === "All" || n.title === activeTitle;
+    return matchCategory && matchTitle;
+  });
 
   const totalVotes = nominees.reduce((sum, nom) => sum + nom.votes, 0);
   const highestVotes = filteredNominees.length > 0 && filteredNominees[0].votes > 0 ? filteredNominees[0].votes : 1; 
@@ -91,22 +94,40 @@ export default function LiveDashboard() {
           </div>
         </div>
 
-        {/* Category Filters */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-4 scrollbar-hide">
-          <Filter className="w-4 h-4 text-slate-400 mr-2 flex-shrink-0" />
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all ${
-                activeCategory === cat 
-                  ? "bg-slate-900 text-white shadow-md" 
-                  : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+        <div className="bg-white p-4 rounded-2xl border border-slate-200 mb-6 shadow-sm">
+          <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-3 border-b border-slate-100 scrollbar-hide">
+            <Filter className="w-4 h-4 text-slate-400 mr-1 flex-shrink-0" />
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap transition-all ${
+                  activeCategory === cat 
+                    ? "bg-slate-900 text-white shadow-md" 
+                    : "bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pl-6">
+            <Crown className="w-4 h-4 text-amber-500 mr-1 flex-shrink-0" />
+            {titles.map((title) => (
+              <button
+                key={title}
+                onClick={() => setActiveTitle(title)}
+                className={`px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap transition-all ${
+                  activeTitle === title 
+                    ? "bg-amber-500 text-white shadow-sm" 
+                    : "bg-white text-slate-500 border border-slate-200 hover:bg-slate-50"
+                }`}
+              >
+                {title === "All" ? "Both Categories" : title}
+              </button>
+            ))}
+          </div>
         </div>
 
         {isLoading ? (
@@ -119,13 +140,14 @@ export default function LiveDashboard() {
             <div className="space-y-6">
               {filteredNominees.map((nominee, index) => (
                 <div key={nominee.code} className="group flex items-center gap-4">
-                  
-                  {/* Rank */}
                   <div className="w-8 font-black text-xl text-slate-300 text-right">
-                    {index === 0 && activeCategory !== "All" ? <Trophy className="w-6 h-6 text-amber-500 inline" /> : `#${index + 1}`}
+                    {index === 0 && activeCategory !== "All" && activeTitle !== "All" ? (
+                      <Trophy className="w-6 h-6 text-amber-500 inline" /> 
+                    ) : (
+                      `#${index + 1}`
+                    )}
                   </div>
 
-                  {/* Avatar */}
                   <div className="w-12 h-12 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0">
                     {nominee.photoUrl ? (
                       <img src={nominee.photoUrl} alt={nominee.fullName} className="w-full h-full object-cover object-top" />
@@ -136,14 +158,15 @@ export default function LiveDashboard() {
                     )}
                   </div>
 
-                  {/* Details and Bar */}
                   <div className="flex-1">
                     <div className="flex justify-between items-end mb-2">
                       <div>
-                        <h3 className="font-bold text-slate-900 leading-tight">{nominee.fullName}</h3>
+                        <h3 className="font-bold text-slate-900 leading-tight">
+                          {nominee.fullName}
+                        </h3>
                         <div className="flex items-center gap-2 mt-1">
-                          <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest">
-                            {nominee.category || nominee.location}
+                          <span className="bg-amber-50 text-amber-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest border border-amber-200">
+                            {nominee.title} {nominee.category}
                           </span>
                           <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
                             Code: {nominee.code}
@@ -156,11 +179,12 @@ export default function LiveDashboard() {
                       </div>
                     </div>
                     
-                    {/* Visual Progress Bar */}
                     <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
                       <div 
                         className={`h-full rounded-full transition-all duration-1000 ease-out ${
-                          index === 0 && activeCategory !== "All" ? 'bg-gradient-to-r from-amber-400 to-amber-500' : 'bg-slate-800'
+                          index === 0 && activeCategory !== "All" && activeTitle !== "All" 
+                            ? 'bg-gradient-to-r from-amber-400 to-amber-500' 
+                            : 'bg-slate-800'
                         }`}
                         style={{ width: `${Math.max((nominee.votes / highestVotes) * 100, 1)}%` }} 
                       />
@@ -170,8 +194,8 @@ export default function LiveDashboard() {
               ))}
               
               {filteredNominees.length === 0 && (
-                <div className="text-center py-10 text-slate-500">
-                  No nominees found in this category.
+                <div className="text-center py-12 text-slate-400 font-medium">
+                  No nominees found in this exact category and title combination.
                 </div>
               )}
             </div>
