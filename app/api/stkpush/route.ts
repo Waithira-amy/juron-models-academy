@@ -6,7 +6,7 @@ export async function POST(req: Request) {
   try {
     const { phone, amount, nomineeId, nomineeName, votes } = await req.json();
 
-    // 1. Format Phone Number
+    // 1. Format Phone Number (e.g., 0712345678 -> 254712345678)
     let formattedPhone = phone.replace(/\s+/g, "");
     if (formattedPhone.startsWith("0")) {
       formattedPhone = `254${formattedPhone.substring(1)}`;
@@ -14,16 +14,20 @@ export async function POST(req: Request) {
       formattedPhone = formattedPhone.substring(1);
     }
 
-    // 2. Generate Safaricom Access Token (Bypass Next.js caching)
+    // 2. Generate Safaricom Access Token (Bypass Vercel env bugs with hardcoded URL)
     const auth = Buffer.from(`${process.env.MPESA_CONSUMER_KEY}:${process.env.MPESA_CONSUMER_SECRET}`).toString("base64");
     
-    const tokenResponse = await fetch(process.env.MPESA_OAUTH_URL!, {
+    // HARDCODED URL guarantees Safaricom sees the grant_type perfectly
+    const oauthUrl = "https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials";
+    
+    const tokenResponse = await fetch(oauthUrl, {
       headers: { Authorization: `Basic ${auth}` },
       cache: "no-store", 
     });
     
     const tokenData = await tokenResponse.json();
     
+    // Safety check: log exact reason if Safaricom rejects the login
     if (!tokenResponse.ok || !tokenData.access_token) {
       console.error("Safaricom Auth Error:", tokenData);
       return NextResponse.json({ 
@@ -38,10 +42,10 @@ export async function POST(req: Request) {
     const timestamp = new Date().toISOString().replace(/[^0-9]/g, "").slice(0, 14);
     const passkey = process.env.MPESA_PASSKEY!;
     
-    // CRITICAL FIX FOR BUY GOODS TILLS: 
-    // The password is generated using the STORE NUMBER, not the Till Number.
+    // CRITICAL FOR BUY GOODS TILLS:
+    // Password generation uses the STORE NUMBER, while PartyB uses the TILL NUMBER.
     const storeNumber = process.env.MPESA_STORE_NUMBER || process.env.MPESA_SHORTCODE!;
-    const tillNumber = process.env.MPESA_TILL_NUMBER!;
+    const tillNumber = process.env.MPESA_TILL_NUMBER || process.env.MPESA_SHORTCODE!;
     
     const password = Buffer.from(`${storeNumber}${passkey}${timestamp}`).toString("base64");
 
@@ -51,20 +55,23 @@ export async function POST(req: Request) {
 
     // 5. Send STK Push Request
     const stkPayload = {
-      BusinessShortCode: storeNumber, // Must be the Store Number
+      BusinessShortCode: storeNumber, // Must be the Store Number (Backend)
       Password: password,
       Timestamp: timestamp,
-      TransactionType: "CustomerBuyGoodsOnline", // Mandatory for Till Numbers
+      TransactionType: "CustomerBuyGoodsOnline", // Mandatory for Buy Goods Tills
       Amount: Math.round(Number(amount)),
-      PartyA: formattedPhone,
-      PartyB: tillNumber, // Must be the Till Number
+      PartyA: formattedPhone, // Customer phone number
+      PartyB: tillNumber,     // The public Till Number
       PhoneNumber: formattedPhone,
       CallBackURL: callbackUrl,
       AccountReference: "Juron Models",
       TransactionDesc: `Voting for ${nomineeName}`,
     };
 
-    const stkResponse = await fetch(process.env.MPESA_STKPUSH_URL!, {
+    // Use Live STK push URL (Falls back to live URL if env var is missing)
+    const stkUrl = process.env.MPESA_STKPUSH_URL || "https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest";
+
+    const stkResponse = await fetch(stkUrl, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,
