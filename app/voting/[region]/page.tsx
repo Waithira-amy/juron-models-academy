@@ -160,10 +160,11 @@ export default function RegionVotingPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          phoneNumber: phoneNumber,
+          phone: phoneNumber,
           amount: voteCount * VOTE_COST_KES,
           nomineeId: selectedNominee.code,
-          voteCount: voteCount
+          nomineeName: selectedNominee.name,
+          votes: voteCount
         })
       });
 
@@ -174,13 +175,13 @@ export default function RegionVotingPage() {
         setTimeout(() => {
           setPaymentSuccess(false);
           closeModal();
-        }, 5000); 
+        }, 6000); 
       } else {
-        alert("Failed to initiate payment: " + resData.error);
+        alert("Payment initialization failed: " + (resData.error || "Please verify your credentials and try again."));
       }
     } catch (error) {
       console.error("Payment error:", error);
-      alert("Something went wrong connecting to M-Pesa. Please try again.");
+      alert("Something went wrong connecting to M-Pesa. Please check your internet connection.");
     } finally {
       setIsProcessing(false);
     }
@@ -251,7 +252,7 @@ export default function RegionVotingPage() {
             <div className="relative min-w-[260px]">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input 
-                type="text"
+                type="text" 
                 placeholder="Search nominee..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
