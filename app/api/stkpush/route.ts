@@ -49,9 +49,14 @@ export async function POST(req: Request) {
     
     const password = Buffer.from(`${storeNumber}${passkey}${timestamp}`).toString("base64");
 
-    // 4. Construct Callback URL
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-    const callbackUrl = `${baseUrl}/api/callback?nomineeId=${nomineeId}&votes=${votes}`;
+    // 4. Construct Callback URL using your specific Environment Variable
+    const rawEnvUrl = process.env.MPESA_CALLBACK_URL || "https://juronmodels.co.ke";
+    
+    // This safely extracts just the base domain (e.g., https://juron-models-academy.vercel.app)
+    const baseDomain = new URL(rawEnvUrl).origin;
+    
+    // This builds the exact correct path to our new file and attaches the nominee tracking
+    const callbackUrl = `${baseDomain}/api/callback?nomineeId=${encodeURIComponent(nomineeId)}&votes=${votes}`;
 
     // 5. Send STK Push Request
     const stkPayload = {
@@ -68,7 +73,7 @@ export async function POST(req: Request) {
       TransactionDesc: `Voting for ${nomineeName}`,
     };
 
-    // Use Live STK push URL (Falls back to live URL if env var is missing)
+    // Use Live STK push URL
     const stkUrl = process.env.MPESA_STKPUSH_URL || "https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest";
 
     const stkResponse = await fetch(stkUrl, {
