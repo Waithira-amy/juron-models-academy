@@ -3,10 +3,11 @@ import { PrismaClient } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
-const prisma = new PrismaClient();
-
 export async function POST(req: Request) {
   try {
+    // MOVE PRISMA INSIDE THE FUNCTION: Now it only runs during a real payment, not during the Vercel build!
+    const prisma = new PrismaClient();
+    
     // 1. Grab the tracking info from the URL query parameters
     const url = new URL(req.url);
     const nomineeId = url.searchParams.get("nomineeId"); // e.g. "MVK01"
@@ -24,7 +25,6 @@ export async function POST(req: Request) {
     if (callbackData.ResultCode === 0 && nomineeId && votes) {
       
       // Award the votes in the Neon Database matching the frontend CODE.
-      // Using "(prisma.registration as any)" safely bypasses the local VS Code cache errors.
       await (prisma.registration as any).update({
         where: { code: nomineeId as string },
         data: {
