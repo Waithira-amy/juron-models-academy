@@ -1,207 +1,107 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import { Activity, Trophy, Users, Loader2, Filter, Crown } from "lucide-react";
-import Navbar from "@/components/common/Navbar";
+import { PrismaClient } from "@prisma/client";
 
-interface Nominee {
-  id: number;
-  fullName: string;
-  code: string;
-  category: string;
-  title: string;
-  votes: number;
-  photoUrl: string;
-}
+// Force the page to fetch live data every time it is refreshed so votes are always up to date
+export const dynamic = "force-dynamic";
 
-export default function LiveDashboard() {
-  const [nominees, setNominees] = useState<Nominee[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+export default async function AdminDashboard() {
+  const prisma = new PrismaClient();
   
-  const [activeCategory, setActiveCategory] = useState<string>("All");
-  const [activeTitle, setActiveTitle] = useState<string>("All");
-
-  const fetchVotes = async () => {
-    try {
-      const res = await fetch('/api/dashboard', { cache: 'no-store' });
-      const data = await res.json();
-      if (data.success) {
-        setNominees(data.nominees.map((n: any) => ({ ...n, votes: n.votes || 0 })));
-        setLastUpdated(new Date());
-      }
-    } catch (error) {
-      console.error("Error fetching live votes:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchVotes();
-    const interval = setInterval(fetchVotes, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const categories = ["All", "Machakos- Mavoko", "Machakos Township", "Machakos- Diaspora"];
-  const titles = ["All", "Mr", "Miss"];
-
-  const filteredNominees = nominees.filter(n => {
-    const matchCategory = activeCategory === "All" || n.category === activeCategory;
-    const matchTitle = activeTitle === "All" || n.title === activeTitle;
-    return matchCategory && matchTitle;
+  // Fetch all nominees from the new Voting table using the bypass
+  const nominees = await (prisma as any).voting.findMany({
+    orderBy: { votes: 'desc' }
   });
 
-  const totalVotes = nominees.reduce((sum, nom) => sum + nom.votes, 0);
-  const highestVotes = filteredNominees.length > 0 && filteredNominees[0].votes > 0 ? filteredNominees[0].votes : 1; 
+  // Group them dynamically based on what is ACTUALLY in the DB
+  // This ensures NO ONE is ever hidden, even if their category is spelled differently!
+  const groupedCategories: Record<string, any[]> = {};
+  
+  nominees.forEach((nominee: any) => {
+    const cat = nominee.category || "Uncategorized";
+    const title = nominee.title || "Nominee";
+    const groupName = `${cat} (${title})`; // e.g., "Machakos- Mavoko (Miss)"
+    
+    if (!groupedCategories[groupName]) {
+      groupedCategories[groupName] = [];
+    }
+    groupedCategories[groupName].push(nominee);
+  });
+
+  // Sort the groups alphabetically
+  const sortedGroupNames = Object.keys(groupedCategories).sort();
+
+  // Calculate total platform votes and revenue
+  const totalPlatformVotes = nominees.reduce((sum: number, n: any) => sum + (n.votes || 0), 0);
+  const totalRevenue = totalPlatformVotes * 10;
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900 pb-20">
-      <Navbar />
-      
-      <div className="pt-32 px-6 max-w-5xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-              </span>
-              <span className="text-emerald-600 text-xs font-bold uppercase tracking-widest">Live Feed</span>
-            </div>
-            <h1 className="font-serif text-4xl font-bold tracking-tight text-slate-900">
-              Leaderboard
-            </h1>
-            <p className="text-slate-500 text-sm mt-1">
-              Last synced: {lastUpdated.toLocaleTimeString()}
-            </p>
+    <div className="min-h-screen bg-zinc-950 text-white p-6 md:p-12 pb-24">
+      <div className="max-w-5xl mx-auto">
+        
+        {/* Header Section */}
+        <header className="mb-10 border-b border-zinc-800 pb-6 mt-8">
+          <h1 className="text-3xl font-bold text-amber-500 mb-2">Juron Models Live Leaderboard</h1>
+          <div className="flex gap-6 text-sm text-zinc-400">
+            <p>Total Votes Cast: <span className="text-white font-bold">{totalPlatformVotes}</span></p>
+            <p>Estimated Revenue: <span className="text-emerald-400 font-bold">Ksh {totalRevenue.toLocaleString()}</span></p>
           </div>
+        </header>
 
-          <div className="flex gap-4">
-            <div className="bg-white border border-slate-200 rounded-2xl p-4 min-w-[120px] shadow-sm">
-              <div className="flex items-center gap-2 text-slate-400 mb-1">
-                <Users className="w-4 h-4" />
-                <span className="text-[10px] font-bold uppercase tracking-widest">Nominees</span>
-              </div>
-              <span className="text-2xl font-black text-slate-800">{nominees.length}</span>
-            </div>
-            <div className="bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl p-4 min-w-[120px] shadow-md text-white">
-              <div className="flex items-center gap-2 text-amber-100 mb-1">
-                <Activity className="w-4 h-4" />
-                <span className="text-[10px] font-bold uppercase tracking-widest">Total Votes</span>
-              </div>
-              <span className="text-2xl font-black">{totalVotes.toLocaleString()}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 mb-6 shadow-sm">
-          <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-3 border-b border-slate-100 scrollbar-hide">
-            <Filter className="w-4 h-4 text-slate-400 mr-1 flex-shrink-0" />
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap transition-all ${
-                  activeCategory === cat 
-                    ? "bg-slate-900 text-white shadow-md" 
-                    : "bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pl-6">
-            <Crown className="w-4 h-4 text-amber-500 mr-1 flex-shrink-0" />
-            {titles.map((title) => (
-              <button
-                key={title}
-                onClick={() => setActiveTitle(title)}
-                className={`px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap transition-all ${
-                  activeTitle === title 
-                    ? "bg-amber-500 text-white shadow-sm" 
-                    : "bg-white text-slate-500 border border-slate-200 hover:bg-slate-50"
-                }`}
-              >
-                {title === "All" ? "Both Categories" : title}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20 text-slate-400">
-            <Loader2 className="w-8 h-8 animate-spin mb-4" />
-            <p className="text-sm font-medium uppercase tracking-widest">Connecting to Database...</p>
-          </div>
-        ) : (
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm">
-            <div className="space-y-6">
-              {filteredNominees.map((nominee, index) => (
-                <div key={nominee.code} className="group flex items-center gap-4">
-                  <div className="w-8 font-black text-xl text-slate-300 text-right">
-                    {index === 0 && activeCategory !== "All" && activeTitle !== "All" ? (
-                      <Trophy className="w-6 h-6 text-amber-500 inline" /> 
-                    ) : (
-                      `#${index + 1}`
-                    )}
-                  </div>
-
-                  <div className="w-12 h-12 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0">
-                    {nominee.photoUrl ? (
-                      <img src={nominee.photoUrl} alt={nominee.fullName} className="w-full h-full object-cover object-top" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center font-bold text-slate-400 text-lg">
-                        {nominee.fullName.charAt(0)}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex-1">
-                    <div className="flex justify-between items-end mb-2">
-                      <div>
-                        <h3 className="font-bold text-slate-900 leading-tight">
-                          {nominee.fullName}
-                        </h3>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="bg-amber-50 text-amber-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest border border-amber-200">
-                            {nominee.title} {nominee.category}
-                          </span>
-                          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                            Code: {nominee.code}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <span className="font-black text-lg text-amber-600">{nominee.votes.toLocaleString()}</span>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">Votes</span>
-                      </div>
-                    </div>
-                    
-                    <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full rounded-full transition-all duration-1000 ease-out ${
-                          index === 0 && activeCategory !== "All" && activeTitle !== "All" 
-                            ? 'bg-gradient-to-r from-amber-400 to-amber-500' 
-                            : 'bg-slate-800'
-                        }`}
-                        style={{ width: `${Math.max((nominee.votes / highestVotes) * 100, 1)}%` }} 
-                      />
-                    </div>
-                  </div>
-                </div>
-              ))}
+        {/* Categories Grid */}
+        <div className="space-y-12">
+          {sortedGroupNames.map((groupName) => (
+            <div key={groupName} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-xl">
+              <h2 className="text-xl font-bold text-white mb-4 border-b border-zinc-800 pb-2">
+                {groupName}
+              </h2>
               
-              {filteredNominees.length === 0 && (
-                <div className="text-center py-12 text-slate-400 font-medium">
-                  No nominees found in this exact category and title combination.
-                </div>
-              )}
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                  <thead>
+                    <tr className="text-zinc-500 border-b border-zinc-800">
+                      <th className="pb-3 font-medium w-16">Rank</th>
+                      <th className="pb-3 font-medium">Nominee Name</th>
+                      <th className="pb-3 font-medium">Voting Code</th>
+                      <th className="pb-3 font-medium text-right">Total Votes</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {groupedCategories[groupName].map((nominee: any, index: number) => (
+                      <tr key={nominee.code} className="border-b border-zinc-800/50 last:border-0 hover:bg-zinc-800/30 transition-colors">
+                        <td className="py-3 text-zinc-400">#{index + 1}</td>
+                        <td className="py-3 font-semibold text-zinc-200">
+                          <div className="flex items-center gap-3">
+                            {nominee.photoUrl ? (
+                              <img src={nominee.photoUrl} alt={nominee.fullName} className="w-8 h-8 rounded-full object-cover border border-zinc-700" />
+                            ) : (
+                              <div className="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center font-bold text-zinc-500">
+                                {nominee.fullName.charAt(0)}
+                              </div>
+                            )}
+                            {nominee.fullName}
+                          </div>
+                        </td>
+                        <td className="py-3 text-zinc-400 font-mono text-xs">{nominee.code}</td>
+                        <td className="py-3 text-right">
+                          <span className="bg-amber-500/10 text-amber-500 px-3 py-1 rounded-full font-bold shadow-inner border border-amber-500/20">
+                            {nominee.votes || 0}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
-        )}
+          ))}
+          
+          {sortedGroupNames.length === 0 && (
+            <div className="text-center py-20 text-zinc-500 border border-zinc-800 rounded-2xl border-dashed">
+              No nominees found in the Voting table. Please check Prisma Studio.
+            </div>
+          )}
+        </div>
+        
       </div>
-    </main>
+    </div>
   );
 }
