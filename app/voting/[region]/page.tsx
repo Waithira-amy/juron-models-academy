@@ -33,7 +33,9 @@ const NOMINEES_DATA: Record<string, Nominee[]> = {
 
 export default function VotingPage() {
   const params = useParams();
-  const rawRegion = params.region as string; 
+  
+  // CRITICAL FIX: Forces the URL parameter to lowercase so it always matches the object keys above!
+  const rawRegion = (params.region as string).toLowerCase();
   
   // Clean up the region name for display
   const displayCategory = rawRegion.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
