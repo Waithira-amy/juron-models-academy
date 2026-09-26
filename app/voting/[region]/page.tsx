@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import { useParams } from "next/navigation";
 import { Crown, Loader2, Phone, CheckCircle2, AlertCircle } from "lucide-react";
@@ -13,7 +14,8 @@ interface Nominee {
   title: string;
 }
 
-// Your original hardcoded list of nominees
+// Your original hardcoded list of nominees.
+// Ensure the keys exactly match the URL structure you intend to use.
 const NOMINEES_DATA: Record<string, Nominee[]> = {
   "machakos-mavoko": [
     { id: "JM1", name: "Eliana Mutuku", votes: 0, image: "/images/nominees/machakos-mavoko/miss/eliana.jpg", title: "Miss" },
@@ -23,27 +25,26 @@ const NOMINEES_DATA: Record<string, Nominee[]> = {
     { id: "JM5", name: "Ian Musyoka", votes: 0, image: "/images/nominees/machakos-mavoko/mr/ian.jpg", title: "Mr" },
   ],
   "machakos-township": [
-    // Add your Township nominees here if you have them, e.g.,
-    // { id: "JM6", name: "Jane Doe", votes: 0, image: "/path", title: "Miss" }
+    // Add your Township nominees here
   ],
   "machakos-diaspora": [
-    // Add your Diaspora nominees here if you have them
+    // Add your Diaspora nominees here
   ]
 };
 
 export default function VotingPage() {
   const params = useParams();
   
-  // CRITICAL FIX: Forces the URL parameter to lowercase so it always matches the object keys above!
-  const rawRegion = (params.region as string).toLowerCase();
+  // Safely extract the region and force it to lowercase to match the object keys above
+  const rawRegion = params?.region ? String(params.region).toLowerCase() : "";
   
-  // Clean up the region name for display
+  // Clean up the region name for display purposes (e.g., "Machakos Mavoko")
   const displayCategory = rawRegion.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
 
   // Load the hardcoded nominees for this specific region
   const nominees = NOMINEES_DATA[rawRegion] || [];
 
-  const [activeTitle, setActiveTitle] = useState<string>("Miss"); // Defaults to Miss
+  const [activeTitle, setActiveTitle] = useState<string>("Miss");
 
   // Payment Modal State
   const [selectedNominee, setSelectedNominee] = useState<Nominee | null>(null);
@@ -94,7 +95,7 @@ export default function VotingPage() {
       <div className="pt-32 px-6 max-w-5xl mx-auto">
         <div className="text-center mb-10">
           <h1 className="font-serif text-4xl md:text-5xl font-bold text-slate-900 mb-3">
-            {displayCategory}
+            {displayCategory || "Select Region"}
           </h1>
           <p className="text-slate-500 max-w-2xl mx-auto">
             Select a category below and vote for your favorite candidate to help them secure the crown.
@@ -102,25 +103,31 @@ export default function VotingPage() {
         </div>
 
         {/* Mr & Miss Tabs */}
-        <div className="flex justify-center gap-4 mb-10">
-          {["Miss", "Mr"].map((title) => (
-            <button
-              key={title}
-              onClick={() => setActiveTitle(title)}
-              className={`flex items-center gap-2 px-8 py-3 rounded-full font-bold text-sm transition-all ${
-                activeTitle === title 
-                  ? "bg-amber-500 text-white shadow-lg shadow-amber-500/30 scale-105" 
-                  : "bg-white text-slate-500 border border-slate-200 hover:bg-slate-50"
-              }`}
-            >
-              <Crown className={`w-4 h-4 ${activeTitle === title ? "text-amber-100" : "text-amber-500"}`} />
-              {title} {displayCategory.split(" ")[0]}
-            </button>
-          ))}
-        </div>
+        {rawRegion && (
+          <div className="flex justify-center gap-4 mb-10">
+            {["Miss", "Mr"].map((title) => (
+              <button
+                key={title}
+                onClick={() => setActiveTitle(title)}
+                className={`flex items-center gap-2 px-8 py-3 rounded-full font-bold text-sm transition-all ${
+                  activeTitle === title 
+                    ? "bg-amber-500 text-white shadow-lg shadow-amber-500/30 scale-105" 
+                    : "bg-white text-slate-500 border border-slate-200 hover:bg-slate-50"
+                }`}
+              >
+                <Crown className={`w-4 h-4 ${activeTitle === title ? "text-amber-100" : "text-amber-500"}`} />
+                {title} {displayCategory.split(" ")[0]}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Nominee Grid */}
-        {filteredNominees.length === 0 ? (
+        {!rawRegion ? (
+          <div className="text-center py-20 text-slate-400 bg-white rounded-3xl border border-slate-200">
+            Please select a region to view nominees.
+          </div>
+        ) : filteredNominees.length === 0 ? (
           <div className="text-center py-20 text-slate-400 bg-white rounded-3xl border border-slate-200">
             No nominees found for {activeTitle} {displayCategory} yet.
           </div>
