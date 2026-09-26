@@ -119,8 +119,7 @@ export default function EventTickets() {
                 <h3 className="font-bold text-lg text-slate-900 mb-6">Crown Ticket <br/><span className="text-[10px] text-slate-500 uppercase">For Students</span></h3>
                 <div className="mb-6"><span className="text-3xl font-black">500</span><span className="text-sm font-bold text-slate-500 ml-1">KES</span></div>
                 
-                {/* Changed to 1 KES for your testing! Change back to 500 later */}
-                <button onClick={() => openTicketModal("TKT-CRN", "Crown Ticket", 1)} className="w-full py-3.5 bg-slate-900 text-white rounded-xl text-xs font-bold uppercase mt-auto">Buy Ticket</button>
+                <button onClick={() => openTicketModal("TKT-CRN", "Crown Ticket", 500)} className="w-full py-3.5 bg-slate-900 text-white rounded-xl text-xs font-bold uppercase mt-auto">Buy Ticket</button>
               </div>
 
               {/* Royal Ticket */}
@@ -129,8 +128,7 @@ export default function EventTickets() {
                 <h3 className="font-bold text-lg text-white mb-6">Royal Ticket <br/><span className="text-[10px] text-slate-400 uppercase">For Guests</span></h3>
                 <div className="mb-6"><span className="text-4xl font-black text-white">1,000</span><span className="text-sm font-bold text-slate-400 ml-1">KES</span></div>
                 
-                {/* Changed to 1 KES for your testing! Change back to 1000 later */}
-                <button onClick={() => openTicketModal("TKT-RYL", "Royal Ticket", 1)} className="w-full py-3.5 bg-amber-500 text-slate-900 rounded-xl text-xs font-black uppercase mt-auto">Buy Ticket</button>
+                <button onClick={() => openTicketModal("TKT-RYL", "Royal Ticket", 1000)} className="w-full py-3.5 bg-amber-500 text-slate-900 rounded-xl text-xs font-black uppercase mt-auto">Buy Ticket</button>
               </div>
 
               {/* Omni Ticket */}
