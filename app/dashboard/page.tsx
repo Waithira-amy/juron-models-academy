@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Loader2, TrendingUp, Users } from "lucide-react";
+import { Loader2, TrendingUp, Users, Wallet, Calculator } from "lucide-react";
 
 const REGION_DATA: Record<string, any> = {
   mavoko: {
@@ -115,6 +115,12 @@ export default function AdminDashboard() {
     );
   }
 
+  // --- DEDUCTION MATH ---
+  const rawVotes = globalTotalVotes;
+  const netVotes = Math.floor(rawVotes * 0.8); // 20% Deduction
+  const grossRevenue = rawVotes * 10;
+  const netRevenue = Math.max(0, (netVotes * 10) - 7000); // 7000 KES One-Time Deduction
+
   return (
     <div className="min-h-screen bg-slate-950 text-white p-6 md:p-12 pb-24 font-sans">
       <div className="max-w-6xl mx-auto">
@@ -127,30 +133,57 @@ export default function AdminDashboard() {
             <span className="text-emerald-500 text-xs font-bold uppercase tracking-widest">Live System Active</span>
           </div>
           
-          <h1 className="text-3xl md:text-5xl font-serif font-bold text-white mb-6">
+          <h1 className="text-3xl md:text-5xl font-serif font-bold text-white mb-8">
             JMA '26 <span className="text-amber-500">Live Leaderboard</span>
           </h1>
           
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="bg-slate-900 px-6 py-4 rounded-2xl border border-slate-800 flex items-center gap-4 flex-1">
-              <div className="p-3 bg-amber-500/10 rounded-xl text-amber-500">
+          {/* New 4-Card Financial Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            {/* 1. Total Raw Votes */}
+            <div className="bg-slate-900 px-6 py-5 rounded-2xl border border-slate-800 flex items-center gap-4">
+              <div className="p-3 bg-blue-500/10 rounded-xl text-blue-500 flex-shrink-0">
                 <Users className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Total Votes</p>
-                <p className="text-2xl font-black text-white">{globalTotalVotes.toLocaleString()}</p>
+                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Total Raw Votes</p>
+                <p className="text-2xl font-black text-white">{rawVotes.toLocaleString()}</p>
               </div>
             </div>
             
-            <div className="bg-slate-900 px-6 py-4 rounded-2xl border border-slate-800 flex items-center gap-4 flex-1">
-              <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-500">
+            {/* 2. Net Votes (-20%) */}
+            <div className="bg-slate-900 px-6 py-5 rounded-2xl border border-slate-800 flex items-center gap-4">
+              <div className="p-3 bg-amber-500/10 rounded-xl text-amber-500 flex-shrink-0">
+                <Calculator className="w-6 h-6" />
+              </div>
+              <div>
+                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Net Votes (-20%)</p>
+                <p className="text-2xl font-black text-white">{netVotes.toLocaleString()}</p>
+              </div>
+            </div>
+
+            {/* 3. Gross Revenue */}
+            <div className="bg-slate-900 px-6 py-5 rounded-2xl border border-slate-800 flex items-center gap-4">
+              <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-500 flex-shrink-0">
                 <TrendingUp className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Total Revenue</p>
-                <p className="text-2xl font-black text-emerald-400">KES {(globalTotalVotes * 10).toLocaleString()}</p>
+                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Gross Revenue</p>
+                <p className="text-2xl font-black text-emerald-400">KES {grossRevenue.toLocaleString()}</p>
               </div>
             </div>
+
+            {/* 4. Net Payout (-7000 KES) */}
+            <div className="bg-slate-900 px-6 py-5 rounded-2xl border border-slate-800 flex items-center gap-4 shadow-lg shadow-purple-900/20">
+              <div className="p-3 bg-purple-500/10 rounded-xl text-purple-500 flex-shrink-0">
+                <Wallet className="w-6 h-6" />
+              </div>
+              <div>
+                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Net Payout (-7K)</p>
+                <p className="text-2xl font-black text-purple-400">KES {netRevenue.toLocaleString()}</p>
+              </div>
+            </div>
+
           </div>
         </header>
 
@@ -171,7 +204,7 @@ export default function AdminDashboard() {
                       <th className="py-4 px-6 font-bold uppercase tracking-widest text-xs">Nominee Details</th>
                       <th className="py-4 px-6 font-bold uppercase tracking-widest text-xs">Code</th>
                       <th className="py-4 px-6 font-bold uppercase tracking-widest text-xs">Category</th>
-                      <th className="py-4 px-6 font-bold uppercase tracking-widest text-xs text-right">Live Votes</th>
+                      <th className="py-4 px-6 font-bold uppercase tracking-widest text-xs text-right">Raw Votes</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800">
