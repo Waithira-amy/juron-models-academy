@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Loader2, TrendingUp, Users, Wallet, Calculator } from "lucide-react";
+import { Loader2, TrendingUp, Users, Wallet } from "lucide-react";
 
 const REGION_DATA: Record<string, any> = {
   mavoko: {
@@ -117,9 +117,9 @@ export default function AdminDashboard() {
 
   // --- DEDUCTION MATH ---
   const rawVotes = globalTotalVotes;
-  const netVotes = Math.floor(rawVotes * 0.8); // 20% Deduction
   const grossRevenue = rawVotes * 10;
-  const netRevenue = Math.max(0, (netVotes * 10) - 7000); // 7000 KES One-Time Deduction
+  // 20% off the total gross revenue, then subtract 7000 flat fee
+  const amountAfterDeductions = Math.max(0, (grossRevenue * 0.8) - 7000); 
 
   return (
     <div className="min-h-screen bg-slate-950 text-white p-6 md:p-12 pb-24 font-sans">
@@ -137,8 +137,8 @@ export default function AdminDashboard() {
             JMA '26 <span className="text-amber-500">Live Leaderboard</span>
           </h1>
           
-          {/* New 4-Card Financial Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* New 3-Card Financial Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             
             {/* 1. Total Raw Votes */}
             <div className="bg-slate-900 px-6 py-5 rounded-2xl border border-slate-800 flex items-center gap-4">
@@ -146,23 +146,12 @@ export default function AdminDashboard() {
                 <Users className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Total Raw Votes</p>
+                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Total Votes</p>
                 <p className="text-2xl font-black text-white">{rawVotes.toLocaleString()}</p>
               </div>
             </div>
             
-            {/* 2. Net Votes (-20%) */}
-            <div className="bg-slate-900 px-6 py-5 rounded-2xl border border-slate-800 flex items-center gap-4">
-              <div className="p-3 bg-amber-500/10 rounded-xl text-amber-500 flex-shrink-0">
-                <Calculator className="w-6 h-6" />
-              </div>
-              <div>
-                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Net Votes (-20%)</p>
-                <p className="text-2xl font-black text-white">{netVotes.toLocaleString()}</p>
-              </div>
-            </div>
-
-            {/* 3. Gross Revenue */}
+            {/* 2. Gross Revenue */}
             <div className="bg-slate-900 px-6 py-5 rounded-2xl border border-slate-800 flex items-center gap-4">
               <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-500 flex-shrink-0">
                 <TrendingUp className="w-6 h-6" />
@@ -173,14 +162,14 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* 4. Net Payout (-7000 KES) */}
+            {/* 3. Amount After Deductions */}
             <div className="bg-slate-900 px-6 py-5 rounded-2xl border border-slate-800 flex items-center gap-4 shadow-lg shadow-purple-900/20">
               <div className="p-3 bg-purple-500/10 rounded-xl text-purple-500 flex-shrink-0">
                 <Wallet className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Net Payout (-7K)</p>
-                <p className="text-2xl font-black text-purple-400">KES {netRevenue.toLocaleString()}</p>
+                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Amount after deductions</p>
+                <p className="text-2xl font-black text-purple-400">KES {amountAfterDeductions.toLocaleString()}</p>
               </div>
             </div>
 
@@ -204,7 +193,7 @@ export default function AdminDashboard() {
                       <th className="py-4 px-6 font-bold uppercase tracking-widest text-xs">Nominee Details</th>
                       <th className="py-4 px-6 font-bold uppercase tracking-widest text-xs">Code</th>
                       <th className="py-4 px-6 font-bold uppercase tracking-widest text-xs">Category</th>
-                      <th className="py-4 px-6 font-bold uppercase tracking-widest text-xs text-right">Raw Votes</th>
+                      <th className="py-4 px-6 font-bold uppercase tracking-widest text-xs text-right">Votes</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800">
