@@ -43,3 +43,12 @@ model VoteTransaction {
   voting        Voting   @relation(fields: [nomineeCode], references: [code])
   createdAt     DateTime @default(now())
 }
+model EventTicket {
+  id         String   @id @default(cuid())
+  ticketCode String   @unique
+  ticketType String   // "Crown Ticket" or "Royal Ticket"
+  phone      String
+  receipt    String   // M-Pesa Receipt
+  status     String   @default("PAID") // Will change to "SCANNED" at the door
+  createdAt  DateTime @default(now())
+}
