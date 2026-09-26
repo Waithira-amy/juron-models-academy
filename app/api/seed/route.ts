@@ -10,16 +10,14 @@ export async function GET() {
     // 1. Fetch all existing registrations
     const registrations = await (prisma as any).registration.findMany();
 
-    if (registrations.length === 0) {
+    if (!registrations || registrations.length === 0) {
       return NextResponse.json({ message: "No registrations found to copy." });
     }
 
     let count = 0;
     
-    // 2. Loop through and copy them to the official Voting table
+    // 2. Loop through and copy them
     for (const reg of registrations) {
-      
-      // Safety check to prevent duplicates if you run this twice
       const exists = await (prisma as any).voting.findFirst({
         where: { fullName: reg.fullName }
       });
@@ -28,11 +26,8 @@ export async function GET() {
         await (prisma as any).voting.create({
           data: {
             fullName: reg.fullName,
-            // Automatically generates a unique voting code (e.g., JM1, JM2)
             code: `JM${reg.id}`, 
-            // Maps their registered location to the category
             category: reg.location || "Machakos- Mavoko", 
-            // Defaults everyone to Miss (you can quickly flip the guys to Mr in Prisma Studio)
             title: "Miss", 
             photoUrl: reg.photoUrl || "",
             votes: 0,
@@ -47,8 +42,13 @@ export async function GET() {
       message: `Successfully copied ${count} nominees to the live Voting board!` 
     });
     
-  } catch (error) {
+  } catch (error: any) {
     console.error("Seed Error:", error);
-    return NextResponse.json({ success: false, error: "Failed to migrate data" }, { status: 500 });
+    // CRITICAL: This will now print the EXACT error on your screen
+    return NextResponse.json({ 
+      success: false, 
+      error: "Failed to migrate data",
+      detailedReason: error.message || String(error)
+    }, { status: 500 });
   }
 }
