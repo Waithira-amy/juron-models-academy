@@ -30,7 +30,7 @@ export async function POST(req: Request) {
       const voterPhone = getMeta("PhoneNumber")?.toString() || "UNKNOWN";
       const paidAmount = Number(getMeta("Amount")) || 0;
 
-      // 1. Log the receipt in the ledger using the bypass
+      // 1. Record transaction in ledger
       await (prisma as any).voteTransaction.create({
         data: {
           amount: paidAmount,
@@ -41,10 +41,17 @@ export async function POST(req: Request) {
         }
       });
       
-      // 2. Add the votes to the official competition table using the bypass
-      await (prisma as any).voting.update({
+      // 2. Safely increment or insert using UPSERT (prevents RecordNotFound crashes)
+      await (prisma as any).voting.upsert({
         where: { code: nomineeCode as string },
-        data: { votes: { increment: votes } }
+        update: { votes: { increment: votes } },
+        create: {
+          code: nomineeCode as string,
+          fullName: nomineeCode as string,
+          category: "General",
+          title: "Nominee",
+          votes: votes
+        }
       });
       
       console.log(`✅ Payment ${receipt}: ${votes} votes to ${nomineeCode} from ${voterPhone}`);
