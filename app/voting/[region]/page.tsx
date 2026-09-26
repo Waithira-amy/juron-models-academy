@@ -6,16 +6,13 @@ import Navbar from "@/components/common/Navbar";
 
 export default function VotingPage() {
   const params = useParams();
-  const rawRegion = params.region as string;
+  const rawRegion = params.region as string; // e.g., "machakos-mavoko"
   
-  // Strict decoder: Keeps nominees safely isolated in their exact region
-  const categoryMap: Record<string, string> = {
-    "machakos-mavoko": "Machakos- Mavoko",
-    "machakos-township": "Machakos Township",
-    "machakos-diaspora": "Machakos- Diaspora"
-  };
+  // Extracts the unique region keyword to make filtering bulletproof (e.g., "mavoko")
+  const regionKeyword = rawRegion.split("-").pop()?.toLowerCase() || "";
   
-  const activeCategory = categoryMap[rawRegion] || decodeURIComponent(rawRegion);
+  // Creates a clean title for the page header (e.g., "Machakos Mavoko")
+  const displayCategory = rawRegion.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
 
   const [nominees, setNominees] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -31,11 +28,14 @@ export default function VotingPage() {
   useEffect(() => {
     const fetchNominees = async () => {
       try {
+        // We still fetch from the Voting table so M-Pesa votes work perfectly
         const res = await fetch('/api/dashboard', { cache: 'no-store' });
         const data = await res.json();
         if (data.success) {
-          // STRICT filter: Only shows nominees for this exact page
-          const regionNominees = data.nominees.filter((n: any) => n.category === activeCategory);
+          // BULLETPROOF FILTER: Only keeps nominees whose category contains "mavoko", "township", etc.
+          const regionNominees = data.nominees.filter((n: any) => 
+            n.category && n.category.toLowerCase().includes(regionKeyword)
+          );
           setNominees(regionNominees);
         }
       } catch (error) {
@@ -45,7 +45,7 @@ export default function VotingPage() {
       }
     };
     fetchNominees();
-  }, [activeCategory]);
+  }, [regionKeyword]);
 
   const filteredNominees = nominees.filter(n => n.title === activeTitle);
   const votesToAward = Number(amount) > 0 ? Math.floor(Number(amount) / 10) : 0; 
@@ -89,7 +89,7 @@ export default function VotingPage() {
       <div className="pt-32 px-6 max-w-5xl mx-auto">
         <div className="text-center mb-10">
           <h1 className="font-serif text-4xl md:text-5xl font-bold text-slate-900 mb-3">
-            {activeCategory}
+            {displayCategory}
           </h1>
           <p className="text-slate-500 max-w-2xl mx-auto">
             Select a category below and vote for your favorite candidate to help them secure the crown.
@@ -109,7 +109,7 @@ export default function VotingPage() {
               }`}
             >
               <Crown className={`w-4 h-4 ${activeTitle === title ? "text-amber-100" : "text-amber-500"}`} />
-              {title} {activeCategory.split("-")[0]}
+              {title} {displayCategory.split(" ")[0]}
             </button>
           ))}
         </div>
@@ -119,7 +119,7 @@ export default function VotingPage() {
           <div className="flex justify-center py-20"><Loader2 className="w-10 h-10 text-amber-500 animate-spin" /></div>
         ) : filteredNominees.length === 0 ? (
           <div className="text-center py-20 text-slate-400 bg-white rounded-3xl border border-slate-200">
-            No nominees have been added to the {activeTitle} {activeCategory} category yet.
+            No nominees found for {activeTitle} {displayCategory} yet.
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
