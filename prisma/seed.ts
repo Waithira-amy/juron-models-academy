@@ -1,6 +1,22 @@
-import { PrismaClient } from '@prisma/client';
+// 1. Force the script to read your .env file
+import { loadEnvConfig } from '@next/env';
+loadEnvConfig(process.cwd());
 
-const prisma = new PrismaClient();
+import { PrismaClient } from '@prisma/client';
+import { Pool } from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
+
+// Now this will successfully grab your Neon URL!
+const connectionString = process.env.DATABASE_URL as string;
+
+if (!connectionString) {
+  console.error("❌ Error: DATABASE_URL is not set in your .env file!");
+  process.exit(1);
+}
+
+const pool = new Pool({ connectionString });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
 const ALL_NOMINEES = [
   // Mavoko
@@ -52,35 +68,41 @@ const ALL_NOMINEES = [
 ];
 
 async function main() {
-  console.log("Seeding nominees...");
+  console.log("Seeding nominees to database:", connectionString.split('@')[1] || "Hidden URL");
+  
   for (const n of ALL_NOMINEES) {
-    await (prisma as any).voting.upsert({
-      where: { code: n.code },
-      update: {
-        fullName: n.name,
-        category: n.category,
-        title: n.title,
-        photoUrl: n.photoUrl,
-      },
-      create: {
-        code: n.code,
-        fullName: n.name,
-        category: n.category,
-        title: n.title,
-        photoUrl: n.photoUrl,
-        votes: 0
-      }
-    });
-    console.log(`Synced ${n.code} - ${n.name}`);
+    try {
+      await (prisma as any).voting.upsert({
+        where: { code: n.code },
+        update: {
+          fullName: n.name,
+          category: n.category,
+          title: n.title,
+          photoUrl: n.photoUrl,
+        },
+        create: {
+          code: n.code,
+          fullName: n.name,
+          category: n.category,
+          title: n.title,
+          photoUrl: n.photoUrl,
+          votes: 0 // Only sets to 0 on creation, doesn't wipe existing votes during an update!
+        }
+      });
+      console.log(`✅ Synced ${n.code} - ${n.name}`);
+    } catch (err: any) {
+      console.error(`❌ Failed to sync ${n.code}:`, err.message);
+    }
   }
-  console.log("Done seeding.");
+  console.log("🎉 Done seeding.");
 }
 
 main()
   .catch((e) => {
-    console.error(e);
+    console.error("CRITICAL ERROR:", e);
     process.exit(1);
   })
   .finally(async () => {
     await prisma.$disconnect();
+    await pool.end();
   });
