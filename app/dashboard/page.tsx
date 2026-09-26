@@ -118,8 +118,8 @@ export default function AdminDashboard() {
   // --- DEDUCTION MATH ---
   const rawVotes = globalTotalVotes;
   const grossRevenue = rawVotes * 10;
-  // 20% off the total gross revenue, then subtract 7000 flat fee
-  const amountAfterDeductions = Math.max(0, (grossRevenue * 0.8) - 7000); 
+  // REMOVED Math.max limit: 20% off the total gross revenue, then subtract 7000 flat fee. Will show negative!
+  const amountAfterDeductions = (grossRevenue * 0.8) - 7000; 
 
   return (
     <div className="min-h-screen bg-slate-950 text-white p-6 md:p-12 pb-24 font-sans">
@@ -169,7 +169,9 @@ export default function AdminDashboard() {
               </div>
               <div>
                 <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Amount after deductions</p>
-                <p className="text-2xl font-black text-purple-400">KES {amountAfterDeductions.toLocaleString()}</p>
+                <p className={`text-2xl font-black ${amountAfterDeductions < 0 ? 'text-red-400' : 'text-purple-400'}`}>
+                  KES {amountAfterDeductions.toLocaleString()}
+                </p>
               </div>
             </div>
 
