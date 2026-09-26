@@ -1,8 +1,66 @@
 "use client";
-import React from "react";
-import { Crown, Camera, Globe, Ticket, Users, Star } from "lucide-react";
+import React, { useState } from "react";
+import { Crown, Camera, Globe, Ticket, Users, Star, X, Smartphone, Loader2, CheckCircle2 } from "lucide-react";
 
 export default function EventTickets() {
+  // --- M-PESA TICKETING STATE ---
+  const [selectedTicket, setSelectedTicket] = useState<{ id: string, name: string, price: number } | null>(null);
+  const [ticketCount, setTicketCount] = useState(1);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+
+  const openTicketModal = (id: string, name: string, price: number) => {
+    setSelectedTicket({ id, name, price });
+    setTicketCount(1);
+    setPhoneNumber("");
+    setPaymentSuccess(false);
+  };
+
+  const closeModal = () => {
+    setSelectedTicket(null);
+    setPaymentSuccess(false);
+  };
+
+  const handlePurchaseSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!phoneNumber) return alert("Please enter a valid M-Pesa phone number");
+    if (!selectedTicket) return;
+    
+    setIsProcessing(true);
+
+    try {
+      // Re-using your exact Voting STK Push route!
+      const response = await fetch('/api/stkpush', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone: phoneNumber,
+          amount: selectedTicket.price * ticketCount,
+          nomineeId: selectedTicket.id, // e.g., TKT-CROWN
+          nomineeName: selectedTicket.name,
+          votes: ticketCount // The webhook will tally ticket quantities as "votes" in the DB!
+        })
+      });
+
+      const resData = await response.json();
+
+      if (resData.success) {
+        setPaymentSuccess(true);
+        setTimeout(() => {
+          closeModal();
+        }, 6000); 
+      } else {
+        alert("Payment initialization failed: " + (resData.error || "Please verify your credentials and try again."));
+      }
+    } catch (error) {
+      console.error("Payment error:", error);
+      alert("Something went wrong connecting to M-Pesa. Please check your internet connection.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   return (
     <section id="events" className="pt-24 pb-20 md:pt-28 md:pb-32 relative overflow-hidden">
       
@@ -34,7 +92,7 @@ export default function EventTickets() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
             {/* Crown Ticket (Students) */}
-            <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-lg relative overflow-hidden group hover:-translate-y-1 transition-all duration-300">
+            <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-lg relative overflow-hidden group hover:-translate-y-1 transition-all duration-300 flex flex-col">
               <div className="absolute top-0 left-0 w-full h-1 bg-amber-400" />
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center">
@@ -49,7 +107,7 @@ export default function EventTickets() {
                 <span className="text-3xl font-black text-slate-900">500</span>
                 <span className="text-sm font-bold text-slate-500 ml-1">KES</span>
               </div>
-              <div className="space-y-3 mb-8">
+              <div className="space-y-3 mb-8 flex-grow">
                 <div className="flex items-center gap-2 text-xs font-medium text-slate-600">
                   <Crown className="w-4 h-4 text-amber-500" /> General Admission
                 </div>
@@ -60,13 +118,16 @@ export default function EventTickets() {
                   150 Tickets Available
                 </div>
               </div>
-              <button className="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-colors">
+              <button 
+                onClick={() => openTicketModal("TKT-CROWN", "Crown Ticket", 500)}
+                className="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-colors mt-auto"
+              >
                 Buy Ticket
               </button>
             </div>
 
             {/* Royal Ticket (Guests) */}
-            <div className="bg-slate-900 rounded-3xl p-8 border border-slate-800 shadow-xl relative overflow-hidden group hover:-translate-y-1 transition-all duration-300 transform md:scale-105 z-10">
+            <div className="bg-slate-900 rounded-3xl p-8 border border-slate-800 shadow-xl relative overflow-hidden group hover:-translate-y-1 transition-all duration-300 transform md:scale-105 z-10 flex flex-col">
               <div className="absolute top-0 right-0 p-4 opacity-10">
                 <Crown className="w-24 h-24 text-white" />
               </div>
@@ -89,7 +150,7 @@ export default function EventTickets() {
                 <span className="text-4xl font-black text-white">1,000</span>
                 <span className="text-sm font-bold text-slate-400 ml-1">KES</span>
               </div>
-              <div className="space-y-3 mb-8 relative z-10">
+              <div className="space-y-3 mb-8 relative z-10 flex-grow">
                 <div className="flex items-center gap-2 text-xs font-medium text-slate-300">
                   <Star className="w-4 h-4 text-amber-400" /> Premium Seating Area
                 </div>
@@ -100,13 +161,16 @@ export default function EventTickets() {
                   100 Tickets Available
                 </div>
               </div>
-              <button className="w-full py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-900 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-[0_5px_15px_rgba(245,158,11,0.3)] hover:shadow-[0_8px_20px_rgba(245,158,11,0.4)] relative z-10">
+              <button 
+                onClick={() => openTicketModal("TKT-ROYAL", "Royal Ticket", 1000)}
+                className="w-full py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-900 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-[0_5px_15px_rgba(245,158,11,0.3)] hover:shadow-[0_8px_20px_rgba(245,158,11,0.4)] relative z-10 mt-auto"
+              >
                 Buy Ticket
               </button>
             </div>
 
             {/* Omni Ticket (Partners) */}
-            <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm relative overflow-hidden opacity-90">
+            <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm relative overflow-hidden opacity-90 flex flex-col">
               <div className="absolute top-0 left-0 w-full h-1 bg-slate-300" />
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
@@ -120,7 +184,7 @@ export default function EventTickets() {
               <div className="mb-6">
                 <span className="text-2xl font-black text-slate-400 uppercase tracking-widest">Invite Only</span>
               </div>
-              <div className="space-y-3 mb-8">
+              <div className="space-y-3 mb-8 flex-grow">
                 <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
                   <Star className="w-4 h-4 text-slate-400" /> VIP Backstage Access
                 </div>
@@ -131,7 +195,7 @@ export default function EventTickets() {
                   Not For Sale
                 </div>
               </div>
-              <button disabled className="w-full py-3.5 bg-slate-100 text-slate-400 rounded-xl text-xs font-bold uppercase tracking-widest cursor-not-allowed">
+              <button disabled className="w-full py-3.5 bg-slate-100 text-slate-400 rounded-xl text-xs font-bold uppercase tracking-widest cursor-not-allowed mt-auto">
                 Closed
               </button>
             </div>
@@ -225,6 +289,108 @@ export default function EventTickets() {
 
         </div>
       </div>
+
+      {/* --- M-PESA TICKETING MODAL --- */}
+      {selectedTicket && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-md bg-white border border-slate-100 rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+            
+            <button 
+              onClick={closeModal}
+              className="absolute top-4 right-4 z-50 text-slate-400 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 p-2 rounded-full transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="bg-slate-50 p-6 md:p-8 flex flex-col justify-center relative">
+              {paymentSuccess ? (
+                <div className="py-8 text-center flex flex-col items-center">
+                  <div className="w-20 h-20 bg-emerald-50 border border-emerald-100 rounded-full flex items-center justify-center mb-6 shadow-sm">
+                    <CheckCircle2 className="w-10 h-10 text-emerald-500 animate-bounce" />
+                  </div>
+                  <h3 className="text-2xl font-bold font-serif text-slate-900 mb-2">Check Your Phone!</h3>
+                  <p className="text-sm text-slate-500 font-medium leading-relaxed mb-6">
+                    An M-Pesa prompt has been sent to your phone. Enter your PIN to purchase {ticketCount}x <span className="text-amber-600 font-bold">{selectedTicket.name}</span>.
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handlePurchaseSubmit} className="space-y-6">
+                  <div>
+                    <h3 className="text-2xl font-serif font-bold text-slate-900 mb-1">Buy {selectedTicket.name}</h3>
+                    <p className="text-xs text-slate-500 font-medium">Pay securely via M-Pesa.</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-3">
+                      Number of Tickets:
+                    </label>
+                    <div className="flex items-center justify-between bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
+                      <span className="text-xs text-slate-600 font-bold ml-2">Quantity:</span>
+                      <div className="flex items-center gap-3">
+                        <button 
+                          type="button" 
+                          onClick={() => setTicketCount(prev => Math.max(1, prev - 1))}
+                          className="w-8 h-8 rounded-lg bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-sm flex items-center justify-center transition-colors shadow-sm"
+                        >
+                          -
+                        </button>
+                        <span className="font-mono font-bold text-lg text-amber-600 min-w-[32px] text-center">{ticketCount}</span>
+                        <button 
+                          type="button" 
+                          onClick={() => setTicketCount(prev => Math.min(5, prev + 1))} // Max 5 per transaction to avoid high M-Pesa limits
+                          className="w-8 h-8 rounded-lg bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-sm flex items-center justify-center transition-colors shadow-sm"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-3">
+                      M-Pesa Phone Number:
+                    </label>
+                    <div className="relative">
+                      <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                      <input 
+                        type="tel" 
+                        placeholder="0712345678"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        className="w-full bg-white border border-slate-200 focus:border-amber-400 focus:ring-2 focus:ring-amber-100 rounded-xl py-3.5 pl-11 pr-4 text-sm text-slate-900 placeholder-slate-400 shadow-sm focus:outline-none transition-all"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-slate-200">
+                    <div className="flex items-center justify-between mb-4 px-1">
+                      <span className="text-sm text-slate-600 font-bold">Total Cost:</span>
+                      <span className="text-xl font-serif font-black text-amber-500 drop-shadow-sm">
+                        KES {(selectedTicket.price * ticketCount).toLocaleString()}
+                      </span>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isProcessing}
+                      className="w-full py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-bold text-sm uppercase tracking-widest transition-all shadow-[0_5px_15px_rgba(16,185,129,0.3)] hover:shadow-[0_8px_20px_rgba(16,185,129,0.4)] active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {isProcessing ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" /> Initiating Payment...
+                        </>
+                      ) : (
+                        `Pay KES ${selectedTicket.price * ticketCount}`
+                      )}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
