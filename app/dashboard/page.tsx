@@ -1,24 +1,41 @@
-import { PrismaClient } from "@prisma/client";
+"use client";
+import React, { useState, useEffect } from "react";
+import { Loader2 } from "lucide-react";
+import Navbar from "@/components/common/Navbar"; // Remove this line if you don't want the navbar on the admin dashboard
 
-// Force the page to fetch live data every time it is refreshed so votes are always up to date
-export const dynamic = "force-dynamic";
+export default function AdminDashboard() {
+  const [nominees, setNominees] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-export default async function AdminDashboard() {
-  const prisma = new PrismaClient();
-  
-  // Fetch all nominees from the new Voting table using the bypass
-  const nominees = await (prisma as any).voting.findMany({
-    orderBy: { votes: 'desc' }
-  });
+  const fetchVotes = async () => {
+    try {
+      // Pulls from your working API route every 5 seconds
+      const res = await fetch('/api/dashboard', { cache: 'no-store' });
+      const data = await res.json();
+      if (data.success) {
+        setNominees(data.nominees);
+      }
+    } catch (error) {
+      console.error("Error fetching live votes:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchVotes();
+    const interval = setInterval(fetchVotes, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Group them dynamically based on what is ACTUALLY in the DB
-  // This ensures NO ONE is ever hidden, even if their category is spelled differently!
+  // This ensures NO ONE is ever hidden!
   const groupedCategories: Record<string, any[]> = {};
   
   nominees.forEach((nominee: any) => {
     const cat = nominee.category || "Uncategorized";
     const title = nominee.title || "Nominee";
-    const groupName = `${cat} (${title})`; // e.g., "Machakos- Mavoko (Miss)"
+    const groupName = `${cat} (${title})`; 
     
     if (!groupedCategories[groupName]) {
       groupedCategories[groupName] = [];
@@ -33,16 +50,36 @@ export default async function AdminDashboard() {
   const totalPlatformVotes = nominees.reduce((sum: number, n: any) => sum + (n.votes || 0), 0);
   const totalRevenue = totalPlatformVotes * 10;
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center text-amber-500">
+        <Loader2 className="w-10 h-10 animate-spin mb-4" />
+        <p className="text-zinc-400 font-medium tracking-widest uppercase text-sm">Loading Live Feed...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-zinc-950 text-white p-6 md:p-12 pb-24">
       <div className="max-w-5xl mx-auto">
         
         {/* Header Section */}
         <header className="mb-10 border-b border-zinc-800 pb-6 mt-8">
-          <h1 className="text-3xl font-bold text-amber-500 mb-2">Juron Models Live Leaderboard</h1>
-          <div className="flex gap-6 text-sm text-zinc-400">
-            <p>Total Votes Cast: <span className="text-white font-bold">{totalPlatformVotes}</span></p>
-            <p>Estimated Revenue: <span className="text-emerald-400 font-bold">Ksh {totalRevenue.toLocaleString()}</span></p>
+          <div className="flex items-center gap-3 mb-2">
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+            </span>
+            <span className="text-emerald-500 text-xs font-bold uppercase tracking-widest">Live Polling Active</span>
+          </div>
+          <h1 className="text-3xl md:text-4xl font-bold text-amber-500 mb-2">Juron Models Leaderboard</h1>
+          <div className="flex flex-col md:flex-row gap-2 md:gap-6 text-sm text-zinc-400 mt-4">
+            <p className="bg-zinc-900 px-4 py-2 rounded-lg border border-zinc-800">
+              Total Votes Cast: <span className="text-white font-black text-lg ml-2">{totalPlatformVotes.toLocaleString()}</span>
+            </p>
+            <p className="bg-zinc-900 px-4 py-2 rounded-lg border border-zinc-800">
+              Estimated Revenue: <span className="text-emerald-400 font-black text-lg ml-2">Ksh {totalRevenue.toLocaleString()}</span>
+            </p>
           </div>
         </header>
 
@@ -67,7 +104,9 @@ export default async function AdminDashboard() {
                   <tbody>
                     {groupedCategories[groupName].map((nominee: any, index: number) => (
                       <tr key={nominee.code} className="border-b border-zinc-800/50 last:border-0 hover:bg-zinc-800/30 transition-colors">
-                        <td className="py-3 text-zinc-400">#{index + 1}</td>
+                        <td className="py-3 text-zinc-400 font-medium">
+                          {index === 0 ? <span className="text-amber-500">#1</span> : `#${index + 1}`}
+                        </td>
                         <td className="py-3 font-semibold text-zinc-200">
                           <div className="flex items-center gap-3">
                             {nominee.photoUrl ? (
@@ -80,9 +119,13 @@ export default async function AdminDashboard() {
                             {nominee.fullName}
                           </div>
                         </td>
-                        <td className="py-3 text-zinc-400 font-mono text-xs">{nominee.code}</td>
+                        <td className="py-3 text-zinc-500 font-mono text-xs">{nominee.code}</td>
                         <td className="py-3 text-right">
-                          <span className="bg-amber-500/10 text-amber-500 px-3 py-1 rounded-full font-bold shadow-inner border border-amber-500/20">
+                          <span className={`px-3 py-1 rounded-full font-bold shadow-inner border ${
+                            index === 0 
+                              ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' 
+                              : 'bg-zinc-800 text-zinc-300 border-zinc-700'
+                          }`}>
                             {nominee.votes || 0}
                           </span>
                         </td>
@@ -96,7 +139,7 @@ export default async function AdminDashboard() {
           
           {sortedGroupNames.length === 0 && (
             <div className="text-center py-20 text-zinc-500 border border-zinc-800 rounded-2xl border-dashed">
-              No nominees found in the Voting table. Please check Prisma Studio.
+              No nominees found. Check Prisma Studio to make sure they are in the Voting table.
             </div>
           )}
         </div>
