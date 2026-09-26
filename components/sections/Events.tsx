@@ -1,35 +1,154 @@
 "use client";
 import React from "react";
-import { Crown, Camera, Globe } from "lucide-react";
+import { Crown, Camera, Globe, Ticket, Users, Star } from "lucide-react";
 
-export default function Events() {
+export default function EventTickets() {
   return (
     <section id="events" className="pt-24 pb-20 md:pt-28 md:pb-32 relative overflow-hidden">
       
       {/* CLEAR HERO BACKGROUND */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <img src="/main-bg.jpg" alt="Background" className="fixed inset-0 w-full h-screen object-cover object-center" />
-        {}
         <div className="fixed inset-0 bg-white/30" /> 
       </div>
 
-      {}
       <div className="max-w-[1400px] mx-auto px-6 relative z-10 w-full animate-in fade-in slide-in-from-bottom-12 duration-1000 ease-out fill-mode-forwards">
         
         {/* Header */}
         <div className="flex justify-center mb-10">
           <div className="max-w-xl w-full text-center">
             <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center mx-auto mb-3 border border-slate-200 shadow-sm">
-              <Crown className="w-6 h-6 text-amber-500" />
+              <Ticket className="w-6 h-6 text-amber-500" />
             </div>
-            <h2 className="font-serif text-2xl md:text-3xl font-semibold text-slate-900 mb-3 tracking-tight drop-shadow-sm">Upcoming Voting categories</h2>
+            <h2 className="font-serif text-2xl md:text-3xl font-semibold text-slate-900 mb-3 tracking-tight drop-shadow-sm">
+              Event <span className="text-amber-600">Tickets</span>
+            </h2>
             <p className="text-slate-700 text-[13px] leading-relaxed max-w-lg mx-auto font-medium drop-shadow-sm">
-              Platforms dedicated to identifying, mentoring, and celebrating outstanding young leaders and ambassadors from the region.
+              Secure your pass to East Africa's premier modeling and leadership showcase. Join us in celebrating outstanding young talent.
             </p>
           </div>
         </div>
 
-        {}
+        {/* --- NEW TICKET SECTION --- */}
+        <div className="max-w-5xl mx-auto mb-20">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            {/* Crown Ticket (Students) */}
+            <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-lg relative overflow-hidden group hover:-translate-y-1 transition-all duration-300">
+              <div className="absolute top-0 left-0 w-full h-1 bg-amber-400" />
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center">
+                  <Users className="w-5 h-5 text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg text-slate-900 leading-none">Crown Ticket</h3>
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500">For Students</span>
+                </div>
+              </div>
+              <div className="mb-6">
+                <span className="text-3xl font-black text-slate-900">500</span>
+                <span className="text-sm font-bold text-slate-500 ml-1">KES</span>
+              </div>
+              <div className="space-y-3 mb-8">
+                <div className="flex items-center gap-2 text-xs font-medium text-slate-600">
+                  <Crown className="w-4 h-4 text-amber-500" /> General Admission
+                </div>
+                <div className="flex items-center gap-2 text-xs font-medium text-slate-600">
+                  <Crown className="w-4 h-4 text-amber-500" /> Student ID Required
+                </div>
+                <div className="inline-block px-2.5 py-1 bg-amber-50 text-amber-700 rounded text-[10px] font-bold uppercase tracking-widest mt-2 border border-amber-100">
+                  150 Tickets Available
+                </div>
+              </div>
+              <button className="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-colors">
+                Buy Ticket
+              </button>
+            </div>
+
+            {/* Royal Ticket (Guests) */}
+            <div className="bg-slate-900 rounded-3xl p-8 border border-slate-800 shadow-xl relative overflow-hidden group hover:-translate-y-1 transition-all duration-300 transform md:scale-105 z-10">
+              <div className="absolute top-0 right-0 p-4 opacity-10">
+                <Crown className="w-24 h-24 text-white" />
+              </div>
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 to-amber-600" />
+              
+              <div className="inline-block px-3 py-1 bg-amber-500 text-slate-900 rounded-full text-[9px] font-black uppercase tracking-widest absolute top-4 right-4 shadow-sm">
+                Most Popular
+              </div>
+
+              <div className="flex items-center gap-3 mb-6 relative z-10">
+                <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center border border-slate-700">
+                  <Crown className="w-5 h-5 text-amber-400" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg text-white leading-none">Royal Ticket</h3>
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">For Guests</span>
+                </div>
+              </div>
+              <div className="mb-6 relative z-10">
+                <span className="text-4xl font-black text-white">1,000</span>
+                <span className="text-sm font-bold text-slate-400 ml-1">KES</span>
+              </div>
+              <div className="space-y-3 mb-8 relative z-10">
+                <div className="flex items-center gap-2 text-xs font-medium text-slate-300">
+                  <Star className="w-4 h-4 text-amber-400" /> Premium Seating Area
+                </div>
+                <div className="flex items-center gap-2 text-xs font-medium text-slate-300">
+                  <Star className="w-4 h-4 text-amber-400" /> Red Carpet Access
+                </div>
+                <div className="inline-block px-2.5 py-1 bg-slate-800 text-amber-400 rounded text-[10px] font-bold uppercase tracking-widest mt-2 border border-slate-700">
+                  100 Tickets Available
+                </div>
+              </div>
+              <button className="w-full py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-900 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-[0_5px_15px_rgba(245,158,11,0.3)] hover:shadow-[0_8px_20px_rgba(245,158,11,0.4)] relative z-10">
+                Buy Ticket
+              </button>
+            </div>
+
+            {/* Omni Ticket (Partners) */}
+            <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm relative overflow-hidden opacity-90">
+              <div className="absolute top-0 left-0 w-full h-1 bg-slate-300" />
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+                  <Globe className="w-5 h-5 text-slate-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg text-slate-900 leading-none">Omni Ticket</h3>
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500">Partners & Services</span>
+                </div>
+              </div>
+              <div className="mb-6">
+                <span className="text-2xl font-black text-slate-400 uppercase tracking-widest">Invite Only</span>
+              </div>
+              <div className="space-y-3 mb-8">
+                <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
+                  <Star className="w-4 h-4 text-slate-400" /> VIP Backstage Access
+                </div>
+                <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
+                  <Star className="w-4 h-4 text-slate-400" /> Service Provider Clearance
+                </div>
+                <div className="inline-block px-2.5 py-1 bg-slate-100 text-slate-500 rounded text-[10px] font-bold uppercase tracking-widest mt-2">
+                  Not For Sale
+                </div>
+              </div>
+              <button disabled className="w-full py-3.5 bg-slate-100 text-slate-400 rounded-xl text-xs font-bold uppercase tracking-widest cursor-not-allowed">
+                Closed
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        {/* --- CATEGORIES SECTION --- */}
+        <div className="flex justify-center mb-10 border-t border-slate-200 pt-16">
+          <div className="max-w-xl w-full text-center">
+            <h2 className="font-serif text-2xl md:text-3xl font-semibold text-slate-900 mb-3 tracking-tight drop-shadow-sm">Upcoming Categories</h2>
+            <p className="text-slate-700 text-[13px] leading-relaxed max-w-lg mx-auto font-medium drop-shadow-sm">
+              Platforms dedicated to identifying, mentoring, and celebrating outstanding young leaders.
+            </p>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           
           {/* Mr & Miss Machakos - Mavoko */}

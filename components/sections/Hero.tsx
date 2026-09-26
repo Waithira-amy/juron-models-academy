@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { ArrowRight, Crown, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles, Ticket } from "lucide-react";
 import Link from "next/link";
 
 export default function Hero() {
@@ -17,11 +17,11 @@ export default function Hero() {
       </div>
 
       {/* Main Centered Content Container */}
-      <div className="max-w-3xl mx-auto px-6 relative z-10 w-full flex flex-col items-center text-center animate-in zoom-in-95 duration-1000">
+      <div className="max-w-4xl mx-auto px-6 relative z-10 w-full flex flex-col items-center text-center animate-in zoom-in-95 duration-1000">
         
         {/* Top Badge */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 shadow-sm border border-rose-100 text-rose-600 text-[9px] font-extrabold uppercase tracking-[0.25em] mb-4">
-          <Crown className="w-3 h-3 text-amber-500" /> Premier Modeling Institution
+          <Sparkles className="w-3 h-3 text-amber-500" /> Premier Modeling Institution
         </div>
         
         {/* Main Headline */}
@@ -35,23 +35,31 @@ export default function Hero() {
           East Africa's premier institution for discovering, nurturing, and empowering the next generation of professional models, pageant titleholders, and creative stars.
         </p>
         
-        {/* Buttons Section - Updated to feature Voting prominently */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
+        {/* Buttons Section - Now with 3 Action Buttons */}
+        <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-4 w-full">
           
           {/* Apply Button */}
           <Link 
             href="/register" 
             className="group w-full sm:w-auto bg-gradient-to-r from-rose-600 to-rose-700 text-white px-8 py-4 rounded-full font-bold tracking-[0.1em] uppercase text-[11px] shadow-[0_8px_20px_rgba(225,29,72,0.3)] hover:shadow-[0_8px_30px_rgba(225,29,72,0.5)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
           >
-            Apply for Mr & Miss Machakos <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            Apply for Pageant <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
           
-          {/* New Voting Button */}
+          {/* Voting Button */}
           <Link 
             href="/voting" 
+            className="group w-full sm:w-auto bg-white/90 backdrop-blur-md text-slate-900 px-8 py-4 rounded-full font-bold tracking-[0.1em] uppercase text-[11px] border border-slate-200 hover:border-amber-500 hover:text-amber-600 transition-all flex items-center justify-center gap-2 shadow-sm hover:-translate-y-0.5"
+          >
+            Vote Nominees <Sparkles className="w-4 h-4" />
+          </Link>
+
+          {/* New Tickets Button */}
+          <Link 
+            href="/events" 
             className="group w-full sm:w-auto bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 px-8 py-4 rounded-full font-black tracking-[0.1em] uppercase text-[11px] shadow-[0_8px_20px_rgba(245,158,11,0.3)] hover:shadow-[0_8px_30px_rgba(245,158,11,0.5)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
           >
-            Vote For Nominees <Sparkles className="w-4 h-4 text-slate-900 group-hover:rotate-12 transition-transform" />
+            Buy Tickets <Ticket className="w-4 h-4 group-hover:rotate-12 transition-transform" />
           </Link>
           
         </div>
