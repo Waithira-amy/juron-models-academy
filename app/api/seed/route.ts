@@ -1,13 +1,17 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { Pool } from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const prisma = new PrismaClient();
+    // 1. Initialize Prisma with the Neon Adapter
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL as string });
+    const adapter = new PrismaPg(pool);
+    const prisma = new PrismaClient({ adapter });
 
-    // 1. Fetch all existing registrations
     const registrations = await (prisma as any).registration.findMany();
 
     if (!registrations || registrations.length === 0) {
@@ -16,7 +20,6 @@ export async function GET() {
 
     let count = 0;
     
-    // 2. Loop through and copy them
     for (const reg of registrations) {
       const exists = await (prisma as any).voting.findFirst({
         where: { fullName: reg.fullName }
@@ -44,7 +47,6 @@ export async function GET() {
     
   } catch (error: any) {
     console.error("Seed Error:", error);
-    // CRITICAL: This will now print the EXACT error on your screen
     return NextResponse.json({ 
       success: false, 
       error: "Failed to migrate data",

@@ -1,27 +1,18 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { Pool } from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const prisma = new PrismaClient();
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL as string });
+    const adapter = new PrismaPg(pool);
+    const prisma = new PrismaClient({ adapter });
     
-    // Adding "(prisma as any)" forces Next.js to ignore the cached types 
-    // and just pull the data directly from the new Voting table.
     const nominees = await (prisma as any).voting.findMany({
-      orderBy: {
-        votes: 'desc'
-      },
-      select: {
-        id: true,
-        fullName: true,
-        code: true,
-        category: true, 
-        title: true, 
-        votes: true,
-        photoUrl: true
-      }
+      orderBy: { votes: 'desc' }
     });
 
     return NextResponse.json({ success: true, nominees });

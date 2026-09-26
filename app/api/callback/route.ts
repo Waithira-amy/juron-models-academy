@@ -1,11 +1,16 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { Pool } from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {
-    const prisma = new PrismaClient();
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL as string });
+    const adapter = new PrismaPg(pool);
+    const prisma = new PrismaClient({ adapter });
+    
     const url = new URL(req.url);
     const nomineeCode = url.searchParams.get("nomineeId"); 
     const votes = Number(url.searchParams.get("votes"));
