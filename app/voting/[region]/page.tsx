@@ -1,51 +1,54 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useParams } from "next/navigation";
 import { Crown, Loader2, Phone, CheckCircle2, AlertCircle } from "lucide-react";
-import Navbar from "@/components/common/Navbar"; 
+import Navbar from "@/components/common/Navbar";
+
+// Define the structure of a nominee
+interface Nominee {
+  id: string;
+  name: string;
+  votes: number;
+  image: string;
+  title: string;
+}
+
+// Your original hardcoded list of nominees
+const NOMINEES_DATA: Record<string, Nominee[]> = {
+  "machakos-mavoko": [
+    { id: "JM1", name: "Eliana Mutuku", votes: 0, image: "/images/nominees/machakos-mavoko/miss/eliana.jpg", title: "Miss" },
+    { id: "JM2", name: "Peace Nzilani", votes: 0, image: "/images/nominees/machakos-mavoko/miss/peace.jpg", title: "Miss" },
+    { id: "JM3", name: "Abby Ndinda", votes: 0, image: "/images/nominees/machakos-mavoko/miss/abby.jpg", title: "Miss" },
+    { id: "JM4", name: "Dave Kioko", votes: 0, image: "/images/nominees/machakos-mavoko/mr/dave.jpg", title: "Mr" },
+    { id: "JM5", name: "Ian Musyoka", votes: 0, image: "/images/nominees/machakos-mavoko/mr/ian.jpg", title: "Mr" },
+  ],
+  "machakos-township": [
+    // Add your Township nominees here if you have them, e.g.,
+    // { id: "JM6", name: "Jane Doe", votes: 0, image: "/path", title: "Miss" }
+  ],
+  "machakos-diaspora": [
+    // Add your Diaspora nominees here if you have them
+  ]
+};
 
 export default function VotingPage() {
   const params = useParams();
-  const rawRegion = params.region as string; // e.g., "machakos-mavoko"
+  const rawRegion = params.region as string; 
   
-  // Extracts the unique region keyword to make filtering bulletproof (e.g., "mavoko")
-  const regionKeyword = rawRegion.split("-").pop()?.toLowerCase() || "";
-  
-  // Creates a clean title for the page header (e.g., "Machakos Mavoko")
+  // Clean up the region name for display
   const displayCategory = rawRegion.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
 
-  const [nominees, setNominees] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // Load the hardcoded nominees for this specific region
+  const nominees = NOMINEES_DATA[rawRegion] || [];
+
   const [activeTitle, setActiveTitle] = useState<string>("Miss"); // Defaults to Miss
 
   // Payment Modal State
-  const [selectedNominee, setSelectedNominee] = useState<any>(null);
+  const [selectedNominee, setSelectedNominee] = useState<Nominee | null>(null);
   const [phone, setPhone] = useState("");
   const [amount, setAmount] = useState<number | "">("");
   const [paymentStatus, setPaymentStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(() => {
-    const fetchNominees = async () => {
-      try {
-        // We still fetch from the Voting table so M-Pesa votes work perfectly
-        const res = await fetch('/api/dashboard', { cache: 'no-store' });
-        const data = await res.json();
-        if (data.success) {
-          // BULLETPROOF FILTER: Only keeps nominees whose category contains "mavoko", "township", etc.
-          const regionNominees = data.nominees.filter((n: any) => 
-            n.category && n.category.toLowerCase().includes(regionKeyword)
-          );
-          setNominees(regionNominees);
-        }
-      } catch (error) {
-        console.error("Error fetching nominees:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchNominees();
-  }, [regionKeyword]);
 
   const filteredNominees = nominees.filter(n => n.title === activeTitle);
   const votesToAward = Number(amount) > 0 ? Math.floor(Number(amount) / 10) : 0; 
@@ -63,8 +66,8 @@ export default function VotingPage() {
         body: JSON.stringify({
           phone,
           amount: Number(amount),
-          nomineeId: selectedNominee.code, 
-          nomineeName: selectedNominee.fullName,
+          nomineeId: selectedNominee.id, 
+          nomineeName: selectedNominee.name,
           votes: votesToAward,
         }),
       });
@@ -115,37 +118,29 @@ export default function VotingPage() {
         </div>
 
         {/* Nominee Grid */}
-        {isLoading ? (
-          <div className="flex justify-center py-20"><Loader2 className="w-10 h-10 text-amber-500 animate-spin" /></div>
-        ) : filteredNominees.length === 0 ? (
+        {filteredNominees.length === 0 ? (
           <div className="text-center py-20 text-slate-400 bg-white rounded-3xl border border-slate-200">
             No nominees found for {activeTitle} {displayCategory} yet.
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredNominees.map((nominee) => (
-              <div key={nominee.code} className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+              <div key={nominee.id} className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="aspect-[4/5] bg-slate-100 rounded-2xl mb-4 overflow-hidden relative">
-                  {nominee.photoUrl ? (
-                    <img src={nominee.photoUrl} alt={nominee.fullName} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center font-bold text-slate-300 text-4xl">
-                      {nominee.fullName.charAt(0)}
-                    </div>
-                  )}
+                  <img src={nominee.image} alt={nominee.name} className="w-full h-full object-cover" />
                   <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur text-slate-900 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
-                    Code: {nominee.code}
+                    Code: {nominee.id}
                   </div>
                 </div>
                 
-                <h3 className="font-bold text-xl text-slate-900 mb-1">{nominee.fullName}</h3>
+                <h3 className="font-bold text-xl text-slate-900 mb-1">{nominee.name}</h3>
                 <p className="text-amber-600 font-black text-sm mb-4">{nominee.votes.toLocaleString()} Votes</p>
                 
                 <button 
                   onClick={() => setSelectedNominee(nominee)}
                   className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition-colors"
                 >
-                  Vote for {nominee.fullName.split(" ")[0]}
+                  Vote for {nominee.name.split(" ")[0]}
                 </button>
               </div>
             ))}
@@ -183,7 +178,7 @@ export default function VotingPage() {
                   <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Crown className="w-8 h-8" />
                   </div>
-                  <h2 className="text-2xl font-black text-slate-900">Vote {selectedNominee.fullName}</h2>
+                  <h2 className="text-2xl font-black text-slate-900">Vote {selectedNominee.name}</h2>
                   <p className="text-slate-500 text-sm mt-1">1 Vote = 10 Ksh</p>
                 </div>
 
