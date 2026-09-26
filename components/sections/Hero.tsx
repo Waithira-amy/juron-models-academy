@@ -1,24 +1,21 @@
 "use client";
 import React from "react";
-import { ArrowRight, Crown } from "lucide-react";
+import { ArrowRight, Crown, Sparkles } from "lucide-react";
 import Link from "next/link";
 
 export default function Hero() {
   return (
     <section id="home" className="relative pt-32 pb-16 md:pt-40 md:pb-20 overflow-hidden flex items-center min-h-[85vh]">
       
-      {}
-      {/* Background Image Container - Changed to fixed so it stretches behind the Footer */}
+      {/* Background Image Container - Fixed so it stretches behind the Footer */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <img 
           src="/main-bg.jpg" 
           alt="Juron Models Academy Background" 
           className="fixed inset-0 w-full h-screen object-cover object-center"
         />
-        {/* The bottom fade was removed completely so the image hits the bottom of the screen */}
       </div>
 
-      {}
       {/* Main Centered Content Container */}
       <div className="max-w-3xl mx-auto px-6 relative z-10 w-full flex flex-col items-center text-center animate-in zoom-in-95 duration-1000">
         
@@ -38,10 +35,10 @@ export default function Hero() {
           East Africa's premier institution for discovering, nurturing, and empowering the next generation of professional models, pageant titleholders, and creative stars.
         </p>
         
-        {}
-        {/* Buttons */}
+        {/* Buttons Section - Updated to feature Voting prominently */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
-          {/* Hero CTA Button */}
+          
+          {/* Apply Button */}
           <Link 
             href="/register" 
             className="group w-full sm:w-auto bg-gradient-to-r from-rose-600 to-rose-700 text-white px-8 py-4 rounded-full font-bold tracking-[0.1em] uppercase text-[11px] shadow-[0_8px_20px_rgba(225,29,72,0.3)] hover:shadow-[0_8px_30px_rgba(225,29,72,0.5)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
@@ -49,12 +46,14 @@ export default function Hero() {
             Apply for Mr & Miss Machakos <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
           
+          {/* New Voting Button */}
           <Link 
-            href="/gallery" 
-            className="w-full sm:w-auto bg-white/90 backdrop-blur-md text-slate-900 px-8 py-4 rounded-full font-bold tracking-[0.1em] uppercase text-[11px] border border-slate-200 hover:border-amber-500 hover:text-amber-600 transition-all flex items-center justify-center gap-2 shadow-sm hover:-translate-y-0.5"
+            href="/voting" 
+            className="group w-full sm:w-auto bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 px-8 py-4 rounded-full font-black tracking-[0.1em] uppercase text-[11px] shadow-[0_8px_20px_rgba(245,158,11,0.3)] hover:shadow-[0_8px_30px_rgba(245,158,11,0.5)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
           >
-            Signature Events <Crown className="w-4 h-4" />
+            Vote For Nominees <Sparkles className="w-4 h-4 text-slate-900 group-hover:rotate-12 transition-transform" />
           </Link>
+          
         </div>
         
       </div>
