@@ -1,8 +1,10 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { Crown, Globe, Ticket, Users, Star, X, Smartphone, Loader2, CheckCircle2 } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { Crown, Globe, Ticket, Users, Star, X, Smartphone, Loader2, CheckCircle2, Download } from "lucide-react";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
+import * as htmlToImage from 'html-to-image';
+import download from 'downloadjs';
 
 export default function EventTickets() {
   const [selectedTicket, setSelectedTicket] = useState<{ id: string, name: string, price: number } | null>(null);
@@ -10,9 +12,10 @@ export default function EventTickets() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentTicketCode, setCurrentTicketCode] = useState<string | null>(null);
   const [ticketStatus, setTicketStatus] = useState<"PENDING" | "PAID">("PENDING");
+  
+  const ticketRef = useRef<HTMLDivElement>(null);
 
   const openTicketModal = (prefix: string, name: string, price: number) => {
-    // Generate a unique 4-digit code: e.g., TKT-CRN-8492
     const uniqueId = `${prefix}-${Math.floor(1000 + Math.random() * 9000)}`;
     setSelectedTicket({ id: uniqueId, name, price });
     setCurrentTicketCode(uniqueId);
@@ -25,7 +28,7 @@ export default function EventTickets() {
     setCurrentTicketCode(null);
   };
 
-  // Poll database to see if the webhook recorded the ticket as PAID
+  // Poll database for webhook success
   useEffect(() => {
     let interval: NodeJS.Timeout;
     
@@ -41,7 +44,7 @@ export default function EventTickets() {
         } catch (e) {
           console.error("Polling error");
         }
-      }, 3000); // Check every 3 seconds
+      }, 3000); 
     }
     
     return () => clearInterval(interval);
@@ -59,7 +62,7 @@ export default function EventTickets() {
         body: JSON.stringify({
           phone: phoneNumber,
           amount: selectedTicket.price,
-          nomineeId: selectedTicket.id, // Passes unique ticket code to webhook
+          nomineeId: selectedTicket.id, 
           nomineeName: selectedTicket.name,
           votes: 1
         })
@@ -73,6 +76,16 @@ export default function EventTickets() {
       alert("Network error.");
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  const downloadTicket = async () => {
+    if (!ticketRef.current || !currentTicketCode) return;
+    try {
+      const dataUrl = await htmlToImage.toJpeg(ticketRef.current, { quality: 1.0 });
+      download(dataUrl, `JMA-${currentTicketCode}.jpg`);
+    } catch (err) {
+      alert("Failed to download ticket. Please take a screenshot instead.");
     }
   };
 
@@ -105,6 +118,8 @@ export default function EventTickets() {
                 <div className="absolute top-0 left-0 w-full h-1 bg-amber-400" />
                 <h3 className="font-bold text-lg text-slate-900 mb-6">Crown Ticket <br/><span className="text-[10px] text-slate-500 uppercase">For Students</span></h3>
                 <div className="mb-6"><span className="text-3xl font-black">500</span><span className="text-sm font-bold text-slate-500 ml-1">KES</span></div>
+                
+                {/* Changed to 1 KES for your testing! Change back to 500 later */}
                 <button onClick={() => openTicketModal("TKT-CRN", "Crown Ticket", 1)} className="w-full py-3.5 bg-slate-900 text-white rounded-xl text-xs font-bold uppercase mt-auto">Buy Ticket</button>
               </div>
 
@@ -113,7 +128,9 @@ export default function EventTickets() {
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 to-amber-600" />
                 <h3 className="font-bold text-lg text-white mb-6">Royal Ticket <br/><span className="text-[10px] text-slate-400 uppercase">For Guests</span></h3>
                 <div className="mb-6"><span className="text-4xl font-black text-white">1,000</span><span className="text-sm font-bold text-slate-400 ml-1">KES</span></div>
-                <button onClick={() => openTicketModal("TKT-RYL", "Royal Ticket", 1000)} className="w-full py-3.5 bg-amber-500 text-slate-900 rounded-xl text-xs font-black uppercase mt-auto">Buy Ticket</button>
+                
+                {/* Changed to 1 KES for your testing! Change back to 1000 later */}
+                <button onClick={() => openTicketModal("TKT-RYL", "Royal Ticket", 1)} className="w-full py-3.5 bg-amber-500 text-slate-900 rounded-xl text-xs font-black uppercase mt-auto">Buy Ticket</button>
               </div>
 
               {/* Omni Ticket */}
@@ -135,19 +152,49 @@ export default function EventTickets() {
               <div className="bg-slate-50 p-6 md:p-8 flex flex-col items-center justify-center text-center">
                 
                 {ticketStatus === "PAID" ? (
-                  <div className="flex flex-col items-center">
-                    <CheckCircle2 className="w-12 h-12 text-emerald-500 mb-4" />
-                    <h3 className="text-2xl font-bold text-slate-900 mb-2">Payment Successful!</h3>
-                    <p className="text-xs text-slate-500 mb-6">Screenshot this ticket to show at the gate.</p>
+                  <div className="flex flex-col items-center w-full">
+                    <CheckCircle2 className="w-10 h-10 text-emerald-500 mb-2" />
+                    <h3 className="text-xl font-bold text-slate-900 mb-1">Ticket Generated!</h3>
+                    <p className="text-[11px] text-slate-500 mb-5 font-bold uppercase tracking-widest text-rose-500">
+                      Download and show at the gate
+                    </p>
                     
-                    {/* The Free Generated QR Code */}
-                    <div className="p-4 bg-white border-2 border-slate-200 rounded-2xl shadow-sm mb-4">
-                      <img src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${currentTicketCode}`} alt="Ticket QR" className="w-40 h-40" />
+                    {/* The Downloadable Ticket Card */}
+                    <div 
+                      ref={ticketRef}
+                      className="w-full bg-slate-950 rounded-2xl overflow-hidden relative shadow-lg mb-6 border border-slate-800"
+                    >
+                      {/* Ticket Header */}
+                      <div className="bg-gradient-to-r from-amber-500 to-amber-600 p-4 flex items-center justify-between">
+                        <span className="font-black text-slate-950 uppercase tracking-widest text-xs">JMA '26</span>
+                        <Crown className="w-4 h-4 text-slate-900" />
+                      </div>
+                      
+                      {/* Ticket Body */}
+                      <div className="p-6 bg-slate-900 flex flex-col items-center border-b-2 border-dashed border-slate-700">
+                        <span className="text-[10px] text-amber-400 font-bold uppercase tracking-widest mb-1">Official Entry Pass</span>
+                        <h2 className="text-2xl font-serif font-black text-white mb-4">{selectedTicket.name}</h2>
+                        
+                        <div className="bg-white p-3 rounded-xl">
+                           <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${currentTicketCode}`} alt="Ticket QR" className="w-32 h-32" />
+                        </div>
+                      </div>
+
+                      {/* Ticket Footer */}
+                      <div className="bg-slate-950 p-4 flex flex-col items-center justify-center">
+                        <span className="text-[9px] text-slate-500 uppercase tracking-widest mb-1">Ticket ID</span>
+                        <span className="font-mono text-xl font-black tracking-widest text-slate-200">
+                          {currentTicketCode}
+                        </span>
+                      </div>
                     </div>
                     
-                    <p className="font-mono text-lg font-black tracking-widest text-slate-900 bg-slate-200 px-4 py-2 rounded-lg">
-                      {currentTicketCode}
-                    </p>
+                    <button 
+                      onClick={downloadTicket}
+                      className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-[0_5px_15px_rgba(16,185,129,0.3)] transition-all"
+                    >
+                      <Download className="w-4 h-4" /> Download Ticket
+                    </button>
                   </div>
                 ) : (
                   <form onSubmit={handlePurchaseSubmit} className="w-full text-left space-y-6">
