@@ -43,7 +43,7 @@ export default function Hero() {
             href="/register" 
             className="group w-full sm:w-auto bg-gradient-to-r from-rose-600 to-rose-700 text-white px-8 py-4 rounded-full font-bold tracking-[0.1em] uppercase text-[11px] shadow-[0_8px_20px_rgba(225,29,72,0.3)] hover:shadow-[0_8px_30px_rgba(225,29,72,0.5)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
           >
-            Apply for Pageant <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            Register Here<ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
           
           {/* Voting Button */}
