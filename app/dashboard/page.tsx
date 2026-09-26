@@ -8,52 +8,52 @@ const REGION_DATA: Record<string, any> = {
   mavoko: {
     title: "Mr & Miss Machakos - Mavoko",
     nominees: [
-      { id: "mvk-1", name: "King Masconde", code: "MVK01", gender: "mr", votes: 42, photoUrl: "/nominees/king-masconde.jpg" },
-      { id: "mvk-2", name: "Emmanuel Dennis", code: "MVK02", gender: "mr", votes: 35, photoUrl: "/nominees/emmanuel-dennis.jpg" },
-      { id: "mvk-3", name: "Abigael Mbula Kioko", code: "MVK03", gender: "miss", votes: 89, photoUrl: "/nominees/abigael-mbula-kioko.jpg" },
-      { id: "mvk-4", name: "Jemimah Mutuku Musenya", code: "MVK04", gender: "miss", votes: 114, photoUrl: "/nominees/jemimah-mutuku-musenya.jpg" },
-      { id: "mvk-5", name: "Everlyne Musyoki", code: "MVK05", gender: "miss", votes: 76, photoUrl: "/nominees/everlyne-musyoki.jpg" }
+      { id: "mvk-1", name: "King Masconde", code: "MVK01", gender: "mr", votes: 0, photoUrl: "/nominees/king-masconde.jpg" },
+      { id: "mvk-2", name: "Emmanuel Dennis", code: "MVK02", gender: "mr", votes: 0, photoUrl: "/nominees/emmanuel-dennis.jpg" },
+      { id: "mvk-3", name: "Abigael Mbula Kioko", code: "MVK03", gender: "miss", votes: 0, photoUrl: "/nominees/abigael-mbula-kioko.jpg" },
+      { id: "mvk-4", name: "Jemimah Mutuku Musenya", code: "MVK04", gender: "miss", votes: 0, photoUrl: "/nominees/jemimah-mutuku-musenya.jpg" },
+      { id: "mvk-5", name: "Everlyne Musyoki", code: "MVK05", gender: "miss", votes: 0, photoUrl: "/nominees/everlyne-musyoki.jpg" }
     ]
   },
   township: {
     title: "Mr & Miss Machakos - Township",
     nominees: [
-      { id: "twn-1", name: "Kennedy Muasa", code: "TWN01", gender: "mr", votes: 58, photoUrl: "/nominees/kennedy-muasa.jpg" },
-      { id: "twn-2", name: "Bruno Brook", code: "TWN02", gender: "mr", votes: 64, photoUrl: "/nominees/bruno-brook.jpg" },
-      { id: "twn-3", name: "Fidel Mutuku", code: "TWN03", gender: "mr", votes: 92, photoUrl: "/nominees/fidel-mutuku.jpg" },
-      { id: "twn-4", name: "Benjamin Kimanthi", code: "TWN04", gender: "mr", votes: 47, photoUrl: "/nominees/benjamin-kimanthi.jpg" },
-      { id: "twn-5", name: "Shalom Mwendwa", code: "TWN05", gender: "miss", votes: 142, photoUrl: "/nominees/shalom-mwendwa.jpg" },
-      { id: "twn-6", name: "Marrion Atieno Juma", code: "TWN06", gender: "miss", votes: 125, photoUrl: "/nominees/marrion-atieno-juma.jpg" },
-      { id: "twn-7", name: "Whitney Kwamboka", code: "TWN07", gender: "miss", votes: 88, photoUrl: "/nominees/whitney-kwamboka-township.jpg" },
-      { id: "twn-8", name: "Reena Akinyi Odhiambo", code: "TWN08", gender: "miss", votes: 73, photoUrl: "/nominees/reena-akinyi-odhiambo.jpg" },
-      { id: "twn-9", name: "Dorcas Kimeu Muuo", code: "TWN09", gender: "miss", votes: 65, photoUrl: "/nominees/dorcas-kimeu-muuo.jpg" },
-      { id: "twn-10", name: "Claire Lucy Wanjiku", code: "TWN10", gender: "miss", votes: 91, photoUrl: "/nominees/claire-lucy-wanjiku.jpg" },
-      { id: "twn-11", name: "Faith Jeptum", code: "TWN11", gender: "miss", votes: 84, photoUrl: "/nominees/faith-jeptum.jpg" },
-      { id: "twn-12", name: "Rachael Kamutu Matheka", code: "TWN12", gender: "miss", votes: 79, photoUrl: "/nominees/rachael-kamutu-matheka.jpg" },
-      { id: "twn-13", name: "Mutanu Mbuvi", code: "TWN13", gender: "miss", votes: 53, photoUrl: "/nominees/mutanu-mbuvi.jpg" },
-      { id: "twn-14", name: "Mutuku Irene Mutindi", code: "TWN14", gender: "miss", votes: 61, photoUrl: "/nominees/mutuku-irene-mutindi.jpg" },
-      { id: "twn-15", name: "Milan Njeri Murimi", code: "TWN15", gender: "miss", votes: 48, photoUrl: "/nominees/milan-njeri-murimi.jpg" },
-      { id: "twn-16", name: "Mevine Truphosa", code: "TWN16", gender: "miss", votes: 70, photoUrl: "/nominees/mevine-truphosa.jpg" },
-      { id: "twn-17", name: "Damaris Amina", code: "TWN17", gender: "miss", votes: 59, photoUrl: "/nominees/damaris-amina.jpg" }
+      { id: "twn-1", name: "Kennedy Muasa", code: "TWN01", gender: "mr", votes: 0, photoUrl: "/nominees/kennedy-muasa.jpg" },
+      { id: "twn-2", name: "Bruno Brook", code: "TWN02", gender: "mr", votes: 0, photoUrl: "/nominees/bruno-brook.jpg" },
+      { id: "twn-3", name: "Fidel Mutuku", code: "TWN03", gender: "mr", votes: 0, photoUrl: "/nominees/fidel-mutuku.jpg" },
+      { id: "twn-4", name: "Benjamin Kimanthi", code: "TWN04", gender: "mr", votes: 0, photoUrl: "/nominees/benjamin-kimanthi.jpg" },
+      { id: "twn-5", name: "Shalom Mwendwa", code: "TWN05", gender: "miss", votes: 0, photoUrl: "/nominees/shalom-mwendwa.jpg" },
+      { id: "twn-6", name: "Marrion Atieno Juma", code: "TWN06", gender: "miss", votes: 0, photoUrl: "/nominees/marrion-atieno-juma.jpg" },
+      { id: "twn-7", name: "Whitney Kwamboka", code: "TWN07", gender: "miss", votes: 0, photoUrl: "/nominees/whitney-kwamboka-township.jpg" },
+      { id: "twn-8", name: "Reena Akinyi Odhiambo", code: "TWN08", gender: "miss", votes: 0, photoUrl: "/nominees/reena-akinyi-odhiambo.jpg" },
+      { id: "twn-9", name: "Dorcas Kimeu Muuo", code: "TWN09", gender: "miss", votes: 0, photoUrl: "/nominees/dorcas-kimeu-muuo.jpg" },
+      { id: "twn-10", name: "Claire Lucy Wanjiku", code: "TWN10", gender: "miss", votes: 0, photoUrl: "/nominees/claire-lucy-wanjiku.jpg" },
+      { id: "twn-11", name: "Faith Jeptum", code: "TWN11", gender: "miss", votes: 0, photoUrl: "/nominees/faith-jeptum.jpg" },
+      { id: "twn-12", name: "Rachael Kamutu Matheka", code: "TWN12", gender: "miss", votes: 0, photoUrl: "/nominees/rachael-kamutu-matheka.jpg" },
+      { id: "twn-13", name: "Mutanu Mbuvi", code: "TWN13", gender: "miss", votes: 0, photoUrl: "/nominees/mutanu-mbuvi.jpg" },
+      { id: "twn-14", name: "Mutuku Irene Mutindi", code: "TWN14", gender: "miss", votes: 0, photoUrl: "/nominees/mutuku-irene-mutindi.jpg" },
+      { id: "twn-15", name: "Milan Njeri Murimi", code: "TWN15", gender: "miss", votes: 0, photoUrl: "/nominees/milan-njeri-murimi.jpg" },
+      { id: "twn-16", name: "Mevine Truphosa", code: "TWN16", gender: "miss", votes: 0, photoUrl: "/nominees/mevine-truphosa.jpg" },
+      { id: "twn-17", name: "Damaris Amina", code: "TWN17", gender: "miss", votes: 0, photoUrl: "/nominees/damaris-amina.jpg" }
     ]
   },
   diaspora: {
     title: "Mr & Miss Machakos - Diaspora",
     nominees: [
-      { id: "dsp-1", name: "Yussuf Abubakar", code: "DSP01", gender: "mr", votes: 38, photoUrl: "/nominees/yussuf-abubakar.jpg" },
-      { id: "dsp-2", name: "Andrew Muema Muthyokavi", code: "DSP02", gender: "mr", votes: 54, photoUrl: "/nominees/andrew-muema-muthyokavi.jpg" },
-      { id: "dsp-3", name: "Obi Ifaenyi", code: "DSP03", gender: "mr", votes: 41, photoUrl: "/nominees/obi-ifaenyi.jpg" },
-      { id: "dsp-4", name: "Whitney Kwamboka", code: "DSP04", gender: "miss", votes: 63, photoUrl: "/nominees/whitney-kwamboka-diaspora.jpg" },
-      { id: "dsp-5", name: "Esther Odikara", code: "DSP05", gender: "miss", votes: 77, photoUrl: "/nominees/esther-odikara.jpg" },
-      { id: "dsp-6", name: "Adah Nabocho", code: "DSP06", gender: "miss", votes: 45, photoUrl: "/nominees/adah-nabocho.jpg" },
-      { id: "dsp-7", name: "Jennifer Simon", code: "DSP07", gender: "miss", votes: 82, photoUrl: "/nominees/jennifer-simon.jpg" },
-      { id: "dsp-8", name: "Beatrice Ingoka", code: "DSP08", gender: "miss", votes: 51, photoUrl: "/nominees/beatrice-ingoka.jpg" },
-      { id: "dsp-9", name: "Amy Ngunjiri", code: "DSP09", gender: "miss", votes: 94, photoUrl: "/nominees/amy-ngunjiri.jpg" },
-      { id: "dsp-10", name: "Teresia Nduku", code: "DSP10", gender: "miss", votes: 59, photoUrl: "/nominees/teresia-nduku.jpg" },
-      { id: "dsp-11", name: "Sharon Ingasian", code: "DSP11", gender: "miss", votes: 36, photoUrl: "/nominees/sharon-ingasian.jpg" },
-      { id: "dsp-12", name: "Stephanie Saiteyia", code: "DSP12", gender: "miss", votes: 71, photoUrl: "/nominees/stephanie-saiteyia.jpg" },
-      { id: "dsp-13", name: "Peggycate", code: "DSP13", gender: "miss", votes: 68, photoUrl: "/nominees/peggycate.jpg" },
-      { id: "dsp-14", name: "Miriam Monique", code: "DSP14", gender: "miss", votes: 80, photoUrl: "/nominees/miriam-monique.jpg" }
+      { id: "dsp-1", name: "Yussuf Abubakar", code: "DSP01", gender: "mr", votes: 0, photoUrl: "/nominees/yussuf-abubakar.jpg" },
+      { id: "dsp-2", name: "Andrew Muema Muthyokavi", code: "DSP02", gender: "mr", votes: 0, photoUrl: "/nominees/andrew-muema-muthyokavi.jpg" },
+      { id: "dsp-3", name: "Obi Ifaenyi", code: "DSP03", gender: "mr", votes: 0, photoUrl: "/nominees/obi-ifaenyi.jpg" },
+      { id: "dsp-4", name: "Whitney Kwamboka", code: "DSP04", gender: "miss", votes: 0, photoUrl: "/nominees/whitney-kwamboka-diaspora.jpg" },
+      { id: "dsp-5", name: "Esther Odikara", code: "DSP05", gender: "miss", votes: 0, photoUrl: "/nominees/esther-odikara.jpg" },
+      { id: "dsp-6", name: "Adah Nabocho", code: "DSP06", gender: "miss", votes: 0, photoUrl: "/nominees/adah-nabocho.jpg" },
+      { id: "dsp-7", name: "Jennifer Simon", code: "DSP07", gender: "miss", votes: 0, photoUrl: "/nominees/jennifer-simon.jpg" },
+      { id: "dsp-8", name: "Beatrice Ingoka", code: "DSP08", gender: "miss", votes: 0, photoUrl: "/nominees/beatrice-ingoka.jpg" },
+      { id: "dsp-9", name: "Amy Ngunjiri", code: "DSP09", gender: "miss", votes: 0, photoUrl: "/nominees/amy-ngunjiri.jpg" },
+      { id: "dsp-10", name: "Teresia Nduku", code: "DSP10", gender: "miss", votes: 0, photoUrl: "/nominees/teresia-nduku.jpg" },
+      { id: "dsp-11", name: "Sharon Ingasian", code: "DSP11", gender: "miss", votes: 0, photoUrl: "/nominees/sharon-ingasian.jpg" },
+      { id: "dsp-12", name: "Stephanie Saiteyia", code: "DSP12", gender: "miss", votes: 0, photoUrl: "/nominees/stephanie-saiteyia.jpg" },
+      { id: "dsp-13", name: "Peggycate", code: "DSP13", gender: "miss", votes: 0, photoUrl: "/nominees/peggycate.jpg" },
+      { id: "dsp-14", name: "Miriam Monique", code: "DSP14", gender: "miss", votes: 0, photoUrl: "/nominees/miriam-monique.jpg" }
     ]
   }
 };
