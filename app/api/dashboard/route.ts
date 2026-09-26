@@ -19,6 +19,7 @@ export async function GET() {
         category: true,
         title: true,
         votes: true,
+        photoUrl: true, // <-- Added this line to fetch photos!
       }
     });
 

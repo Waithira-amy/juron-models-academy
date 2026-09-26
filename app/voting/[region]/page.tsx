@@ -271,7 +271,7 @@ export default function RegionVotingPage() {
             <ArrowLeft className="w-4 h-4" /> All Categories
           </Link>
 
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-slate-200">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-8 border-b border-slate-200">
             <div>
               <span className="inline-block text-amber-500 text-xs font-bold uppercase tracking-widest mb-2 drop-shadow-sm">
                 Official Juron Pageant Portal
@@ -284,15 +284,27 @@ export default function RegionVotingPage() {
               </p>
             </div>
 
-            <div className="relative min-w-[260px]">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <input 
-                type="text" 
-                placeholder="Search nominee..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white border border-slate-200 focus:border-amber-400 focus:ring-2 focus:ring-amber-100 rounded-full py-3 pl-11 pr-4 text-xs text-slate-900 placeholder-slate-400 shadow-sm focus:outline-none transition-all"
-              />
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
+              
+              {/* --- NEW PORTAL LINK BUTTON --- */}
+              <Link 
+                href="/voting/portal" 
+                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-slate-900 text-white px-5 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-slate-800 transition-colors shadow-md whitespace-nowrap"
+              >
+                <User className="w-4 h-4" /> Nominee Login
+              </Link>
+
+              {/* SEARCH BAR */}
+              <div className="relative w-full sm:min-w-[260px]">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input 
+                  type="text" 
+                  placeholder="Search nominee..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-white border border-slate-200 focus:border-amber-400 focus:ring-2 focus:ring-amber-100 rounded-full py-3 pl-11 pr-4 text-xs text-slate-900 placeholder-slate-400 shadow-sm focus:outline-none transition-all"
+                />
+              </div>
             </div>
           </div>
 
