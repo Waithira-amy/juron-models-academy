@@ -26,16 +26,9 @@ const REGION_DATA: Record<string, { title: string; subtitle: string; theme: any;
     title: "Mr & Miss Machakos - Mavoko",
     subtitle: "Representing Syokimau, Mlolongo, Athi River, and Mavoko Sub-County",
     theme: {
-      avatarBg: "bg-rose-100 border-rose-200",
-      avatarText: "text-rose-500",
-      hoverBorder: "hover:border-rose-400",
-      hoverShadow: "hover:shadow-[0_8px_30px_rgba(225,29,72,0.12)]",
-      nameHover: "group-hover:text-rose-600",
-      pillBg: "bg-slate-100 text-slate-500 group-hover:bg-rose-50 group-hover:text-rose-600 group-hover:border-rose-200",
-      arrowHover: "group-hover:text-rose-500"
+      avatarBg: "bg-rose-100 border-rose-200", avatarText: "text-rose-500", hoverBorder: "hover:border-rose-400", hoverShadow: "hover:shadow-[0_8px_30px_rgba(225,29,72,0.12)]", nameHover: "group-hover:text-rose-600", pillBg: "bg-slate-100 text-slate-500 group-hover:bg-rose-50 group-hover:text-rose-600 group-hover:border-rose-200", arrowHover: "group-hover:text-rose-500"
     },
     nominees: [
-      { id: "mvk-1", name: "King Masconde", code: "MVK01", location: "Mavoko", gender: "mr", votes: 0, photoUrl: "/nominees/king-masconde.jpg" },
       { id: "mvk-2", name: "Emmanuel Dennis", code: "MVK02", location: "Syokimau", gender: "mr", votes: 0, photoUrl: "/nominees/emmanuel-dennis.jpg" },
       { id: "mvk-3", name: "Brian Lokiridi", code: "MVK03", location: "Athi River", gender: "mr", votes: 0, photoUrl: "/nominees/brian-lokiridi.jpg" },
       { id: "mvk-4", name: "Abigael Mbula Kioko", code: "MVK04", location: "Mavoko", gender: "miss", votes: 0, photoUrl: "/nominees/abigael-mbula-kioko.jpg" },
@@ -44,20 +37,17 @@ const REGION_DATA: Record<string, { title: string; subtitle: string; theme: any;
       { id: "mvk-7", name: "Peggycate", code: "MVK07", location: "Kitengela / Mavoko", gender: "miss", votes: 0, photoUrl: "/nominees/peggycate.jpg" },
       { id: "mvk-8", name: "Stephanie Saiteyia", code: "MVK08", location: "Kitengela / Mavoko", gender: "miss", votes: 0, photoUrl: "/nominees/stephanie-saiteyia.jpg" },
       { id: "mvk-9", name: "Grace Wangui", code: "MVK09", location: "Mavoko", gender: "miss", votes: 0, photoUrl: "/nominees/grace-wangui.jpg" },
-      { id: "mvk-10", name: "Bridget Wambui Mugo", code: "MVK10", location: "Mavoko", gender: "miss", votes: 0, photoUrl: "/nominees/bridget-wambui-mugo.jpg" }
+      { id: "mvk-10", name: "Bridget Wambui Mugo", code: "MVK10", location: "Mavoko", gender: "miss", votes: 0, photoUrl: "/nominees/bridget-wambui-mugo.jpg" },
+      { id: "mvk-11", name: "Roseline Atieno Otieno", code: "MVK11", location: "Kitengela / Mavoko", gender: "miss", votes: 0, photoUrl: "/nominees/roseline-atieno-otieno.jpg" },
+      { id: "mvk-12", name: "Chelsea Tanya", code: "MVK12", location: "Mavoko", gender: "miss", votes: 0, photoUrl: "/nominees/chelsea-tanya.jpg" },
+      { id: "mvk-13", name: "Tonny Musembi", code: "MVK13", location: "Syokimau", gender: "mr", votes: 0, photoUrl: "/nominees/tonny-musembi.jpg" }
     ]
   },
   township: {
     title: "Mr & Miss Machakos - Township",
     subtitle: "Representing Machakos Town, Machakos University, and Central Environs",
     theme: {
-      avatarBg: "bg-amber-100 border-amber-200",
-      avatarText: "text-amber-500",
-      hoverBorder: "hover:border-amber-400",
-      hoverShadow: "hover:shadow-[0_8px_30px_rgba(245,158,11,0.12)]",
-      nameHover: "group-hover:text-amber-600",
-      pillBg: "bg-slate-100 text-slate-500 group-hover:bg-amber-50 group-hover:text-amber-600 group-hover:border-amber-200",
-      arrowHover: "group-hover:text-amber-500"
+      avatarBg: "bg-amber-100 border-amber-200", avatarText: "text-amber-500", hoverBorder: "hover:border-amber-400", hoverShadow: "hover:shadow-[0_8px_30px_rgba(245,158,11,0.12)]", nameHover: "group-hover:text-amber-600", pillBg: "bg-slate-100 text-slate-500 group-hover:bg-amber-50 group-hover:text-amber-600 group-hover:border-amber-200", arrowHover: "group-hover:text-amber-500"
     },
     nominees: [
       { id: "twn-1", name: "Kennedy Muasa", code: "TWN01", location: "Machakos", gender: "mr", votes: 0, photoUrl: "/nominees/kennedy-muasa.jpg" },
@@ -78,20 +68,18 @@ const REGION_DATA: Record<string, { title: string; subtitle: string; theme: any;
       { id: "twn-16", name: "Mevine Truphosa", code: "TWN16", location: "Machakos", gender: "miss", votes: 0, photoUrl: "/nominees/mevine-truphosa.jpg" },
       { id: "twn-17", name: "Damaris Amina", code: "TWN17", location: "Joska / Machakos", gender: "miss", votes: 0, photoUrl: "/nominees/damaris-amina.jpg" },
       { id: "twn-18", name: "Joy Bernita Kerubo", code: "TWN18", location: "Machakos Township", gender: "miss", votes: 0, photoUrl: "/nominees/joy-bernita-kerubo.jpg" },
-      { id: "twn-19", name: "Maureen Wambui Karanja", code: "TWN19", location: "Machakos Township", gender: "miss", votes: 0, photoUrl: "/nominees/maureen-wambui-karanja.jpg" }
+      { id: "twn-19", name: "Maureen Wambui Karanja", code: "TWN19", location: "Machakos Township", gender: "miss", votes: 0, photoUrl: "/nominees/maureen-wambui-karanja.jpg" },
+      { id: "twn-20", name: "Mitchell Omollo", code: "TWN20", location: "Machakos Town", gender: "miss", votes: 0, photoUrl: "/nominees/mitchell-omollo.jpg" },
+      { id: "twn-21", name: "Kylian Robert Wambua", code: "TWN21", location: "Machakos", gender: "mr", votes: 0, photoUrl: "/nominees/kylian-robert-wambua.jpg" },
+      { id: "twn-22", name: "Gloria Mumbua", code: "TWN22", location: "Machakos Township", gender: "miss", votes: 0, photoUrl: "/nominees/gloria-mumbua.jpg" },
+      { id: "twn-23", name: "Almer Awino", code: "TWN23", location: "Machakos Township", gender: "miss", votes: 0, photoUrl: "/nominees/almer-awino.jpg" }
     ]
   },
   diaspora: {
     title: "Mr & Miss Machakos - Diaspora",
     subtitle: "Representing Global & Countrywide Ambassadors Outside Machakos County",
     theme: {
-      avatarBg: "bg-sky-100 border-sky-200",
-      avatarText: "text-sky-500",
-      hoverBorder: "hover:border-sky-400",
-      hoverShadow: "hover:shadow-[0_8px_30px_rgba(14,165,233,0.12)]",
-      nameHover: "group-hover:text-sky-600",
-      pillBg: "bg-slate-100 text-slate-500 group-hover:bg-sky-50 group-hover:text-sky-600 group-hover:border-sky-200",
-      arrowHover: "group-hover:text-sky-500"
+      avatarBg: "bg-sky-100 border-sky-200", avatarText: "text-sky-500", hoverBorder: "hover:border-sky-400", hoverShadow: "hover:shadow-[0_8px_30px_rgba(14,165,233,0.12)]", nameHover: "group-hover:text-sky-600", pillBg: "bg-slate-100 text-slate-500 group-hover:bg-sky-50 group-hover:text-sky-600 group-hover:border-sky-200", arrowHover: "group-hover:text-sky-500"
     },
     nominees: [
       { id: "dsp-1", name: "Yussuf Abubakar", code: "DSP01", location: "Nakuru", gender: "mr", votes: 0, photoUrl: "/nominees/yussuf-abubakar.jpg" },
@@ -101,11 +89,9 @@ const REGION_DATA: Record<string, { title: string; subtitle: string; theme: any;
       { id: "dsp-5", name: "Adah Nabocho", code: "DSP05", location: "Nairobi", gender: "miss", votes: 0, photoUrl: "/nominees/adah-nabocho.jpg" },
       { id: "dsp-6", name: "Jennifer Simon", code: "DSP06", location: "Nairobi", gender: "miss", votes: 0, photoUrl: "/nominees/jennifer-simon.jpg" },
       { id: "dsp-7", name: "Beatrice Ingoka", code: "DSP07", location: "Nairobi", gender: "miss", votes: 0, photoUrl: "/nominees/beatrice-ingoka.jpg" },
-      { id: "dsp-8", name: "Amy Ngunjiri", code: "DSP08", location: "Nairobi", gender: "miss", votes: 0, photoUrl: "/nominees/amy-ngunjiri.jpg" },
       { id: "dsp-9", name: "Teresia Nduku", code: "DSP09", location: "Embakasi Central", gender: "miss", votes: 0, photoUrl: "/nominees/teresia-nduku.jpg" },
       { id: "dsp-10", name: "Sharon Ingasian", code: "DSP10", location: "Kahawa West", gender: "miss", votes: 0, photoUrl: "/nominees/sharon-ingasian.jpg" },
-      { id: "dsp-11", name: "Miriam Monique", code: "DSP11", location: "Malindi", gender: "miss", votes: 0, photoUrl: "/nominees/miriam-monique.jpg" },
-      { id: "dsp-12", name: "Roseline Atieno Otieno", code: "DSP12", location: "Kitengela", gender: "miss", votes: 0, photoUrl: "/nominees/roseline-atieno-otieno.jpg" }
+      { id: "dsp-11", name: "Miriam Monique", code: "DSP11", location: "Malindi", gender: "miss", votes: 0, photoUrl: "/nominees/miriam-monique.jpg" }
     ]
   }
 };
@@ -286,7 +272,6 @@ export default function RegionVotingPage() {
 
             <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
               
-              {/* --- NEW PORTAL LINK BUTTON --- */}
               <Link 
                 href="/voting/portal" 
                 className="w-full sm:w-auto flex items-center justify-center gap-2 bg-slate-900 text-white px-5 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-slate-800 transition-colors shadow-md whitespace-nowrap"
@@ -294,7 +279,6 @@ export default function RegionVotingPage() {
                 <User className="w-4 h-4" /> Nominee Login
               </Link>
 
-              {/* SEARCH BAR */}
               <div className="relative w-full sm:min-w-[260px]">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input 

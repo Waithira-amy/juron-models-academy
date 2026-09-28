@@ -6,7 +6,6 @@ const REGION_DATA: Record<string, any> = {
   mavoko: {
     title: "Mr & Miss Machakos - Mavoko",
     nominees: [
-      { id: "mvk-1", name: "King Masconde", code: "MVK01", gender: "mr", votes: 0, photoUrl: "/nominees/king-masconde.jpg" },
       { id: "mvk-2", name: "Emmanuel Dennis", code: "MVK02", gender: "mr", votes: 0, photoUrl: "/nominees/emmanuel-dennis.jpg" },
       { id: "mvk-3", name: "Brian Lokiridi", code: "MVK03", gender: "mr", votes: 0, photoUrl: "/nominees/brian-lokiridi.jpg" },
       { id: "mvk-4", name: "Abigael Mbula Kioko", code: "MVK04", gender: "miss", votes: 0, photoUrl: "/nominees/abigael-mbula-kioko.jpg" },
@@ -15,7 +14,10 @@ const REGION_DATA: Record<string, any> = {
       { id: "mvk-7", name: "Peggycate", code: "MVK07", gender: "miss", votes: 0, photoUrl: "/nominees/peggycate.jpg" },
       { id: "mvk-8", name: "Stephanie Saiteyia", code: "MVK08", gender: "miss", votes: 0, photoUrl: "/nominees/stephanie-saiteyia.jpg" },
       { id: "mvk-9", name: "Grace Wangui", code: "MVK09", gender: "miss", votes: 0, photoUrl: "/nominees/grace-wangui.jpg" },
-      { id: "mvk-10", name: "Bridget Wambui Mugo", code: "MVK10", gender: "miss", votes: 0, photoUrl: "/nominees/bridget-wambui-mugo.jpg" }
+      { id: "mvk-10", name: "Bridget Wambui Mugo", code: "MVK10", gender: "miss", votes: 0, photoUrl: "/nominees/bridget-wambui-mugo.jpg" },
+      { id: "mvk-11", name: "Roseline Atieno Otieno", code: "MVK11", gender: "miss", votes: 0, photoUrl: "/nominees/roseline-atieno-otieno.jpg" },
+      { id: "mvk-12", name: "Chelsea Tanya", code: "MVK12", gender: "miss", votes: 0, photoUrl: "/nominees/chelsea-tanya.jpg" },
+      { id: "mvk-13", name: "Tonny Musembi", code: "MVK13", gender: "mr", votes: 0, photoUrl: "/nominees/tonny-musembi.jpg" }
     ]
   },
   township: {
@@ -39,7 +41,11 @@ const REGION_DATA: Record<string, any> = {
       { id: "twn-16", name: "Mevine Truphosa", code: "TWN16", gender: "miss", votes: 0, photoUrl: "/nominees/mevine-truphosa.jpg" },
       { id: "twn-17", name: "Damaris Amina", code: "TWN17", gender: "miss", votes: 0, photoUrl: "/nominees/damaris-amina.jpg" },
       { id: "twn-18", name: "Joy Bernita Kerubo", code: "TWN18", gender: "miss", votes: 0, photoUrl: "/nominees/joy-bernita-kerubo.jpg" },
-      { id: "twn-19", name: "Maureen Wambui Karanja", code: "TWN19", gender: "miss", votes: 0, photoUrl: "/nominees/maureen-wambui-karanja.jpg" }
+      { id: "twn-19", name: "Maureen Wambui Karanja", code: "TWN19", gender: "miss", votes: 0, photoUrl: "/nominees/maureen-wambui-karanja.jpg" },
+      { id: "twn-20", name: "Mitchell Omollo", code: "TWN20", gender: "miss", votes: 0, photoUrl: "/nominees/mitchell-omollo.jpg" },
+      { id: "twn-21", name: "Kylian Robert Wambua", code: "TWN21", gender: "mr", votes: 0, photoUrl: "/nominees/kylian-robert-wambua.jpg" },
+      { id: "twn-22", name: "Gloria Mumbua", code: "TWN22", gender: "miss", votes: 0, photoUrl: "/nominees/gloria-mumbua.jpg" },
+      { id: "twn-23", name: "Almer Awino", code: "TWN23", gender: "miss", votes: 0, photoUrl: "/nominees/almer-awino.jpg" }
     ]
   },
   diaspora: {
@@ -52,11 +58,9 @@ const REGION_DATA: Record<string, any> = {
       { id: "dsp-5", name: "Adah Nabocho", code: "DSP05", gender: "miss", votes: 0, photoUrl: "/nominees/adah-nabocho.jpg" },
       { id: "dsp-6", name: "Jennifer Simon", code: "DSP06", gender: "miss", votes: 0, photoUrl: "/nominees/jennifer-simon.jpg" },
       { id: "dsp-7", name: "Beatrice Ingoka", code: "DSP07", gender: "miss", votes: 0, photoUrl: "/nominees/beatrice-ingoka.jpg" },
-      { id: "dsp-8", name: "Amy Ngunjiri", code: "DSP08", gender: "miss", votes: 0, photoUrl: "/nominees/amy-ngunjiri.jpg" },
       { id: "dsp-9", name: "Teresia Nduku", code: "DSP09", gender: "miss", votes: 0, photoUrl: "/nominees/teresia-nduku.jpg" },
       { id: "dsp-10", name: "Sharon Ingasian", code: "DSP10", gender: "miss", votes: 0, photoUrl: "/nominees/sharon-ingasian.jpg" },
-      { id: "dsp-11", name: "Miriam Monique", code: "DSP11", gender: "miss", votes: 0, photoUrl: "/nominees/miriam-monique.jpg" },
-      { id: "dsp-12", name: "Roseline Atieno Otieno", code: "DSP12", gender: "miss", votes: 0, photoUrl: "/nominees/roseline-atieno-otieno.jpg" }
+      { id: "dsp-11", name: "Miriam Monique", code: "DSP11", gender: "miss", votes: 0, photoUrl: "/nominees/miriam-monique.jpg" }
     ]
   }
 };
@@ -118,7 +122,6 @@ export default function AdminDashboard() {
   // --- DEDUCTION MATH ---
   const rawVotes = globalTotalVotes;
   const grossRevenue = rawVotes * 10;
-  // REMOVED Math.max limit: 20% off the total gross revenue, then subtract 7000 flat fee. Will show negative!
   const amountAfterDeductions = (grossRevenue * 0.8) - 7000; 
 
   return (
@@ -140,7 +143,6 @@ export default function AdminDashboard() {
           {/* New 3-Card Financial Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             
-            {/* 1. Total Raw Votes */}
             <div className="bg-slate-900 px-6 py-5 rounded-2xl border border-slate-800 flex items-center gap-4">
               <div className="p-3 bg-blue-500/10 rounded-xl text-blue-500 flex-shrink-0">
                 <Users className="w-6 h-6" />
@@ -151,7 +153,6 @@ export default function AdminDashboard() {
               </div>
             </div>
             
-            {/* 2. Gross Revenue */}
             <div className="bg-slate-900 px-6 py-5 rounded-2xl border border-slate-800 flex items-center gap-4">
               <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-500 flex-shrink-0">
                 <TrendingUp className="w-6 h-6" />
@@ -162,7 +163,6 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* 3. Amount After Deductions */}
             <div className="bg-slate-900 px-6 py-5 rounded-2xl border border-slate-800 flex items-center gap-4 shadow-lg shadow-purple-900/20">
               <div className="p-3 bg-purple-500/10 rounded-xl text-purple-500 flex-shrink-0">
                 <Wallet className="w-6 h-6" />

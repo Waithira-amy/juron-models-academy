@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { Crown, Globe, Ticket, Users, Star, X, Smartphone, Loader2, CheckCircle2, Download } from "lucide-react";
+import { Crown, Globe, Ticket, Users, Star, X, Smartphone, Loader2, CheckCircle2, Download, Heart } from "lucide-react";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 import * as htmlToImage from 'html-to-image';
@@ -8,6 +8,7 @@ import download from 'downloadjs';
 
 export default function EventTickets() {
   const [selectedTicket, setSelectedTicket] = useState<{ id: string, name: string, price: number } | null>(null);
+  const [customAmount, setCustomAmount] = useState<number>(500); // Default support amount
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentTicketCode, setCurrentTicketCode] = useState<string | null>(null);
@@ -20,6 +21,7 @@ export default function EventTickets() {
     setSelectedTicket({ id: uniqueId, name, price });
     setCurrentTicketCode(uniqueId);
     setPhoneNumber("");
+    setCustomAmount(500); // Reset custom amount just in case
     setTicketStatus("PENDING");
   };
 
@@ -28,10 +30,8 @@ export default function EventTickets() {
     setCurrentTicketCode(null);
   };
 
-  // Poll database for webhook success
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    
     if (selectedTicket && ticketStatus === "PENDING" && currentTicketCode) {
       interval = setInterval(async () => {
         try {
@@ -41,18 +41,20 @@ export default function EventTickets() {
             setTicketStatus("PAID");
             clearInterval(interval);
           }
-        } catch (e) {
-          console.error("Polling error");
-        }
+        } catch (e) { console.error("Polling error"); }
       }, 3000); 
     }
-    
     return () => clearInterval(interval);
   }, [selectedTicket, ticketStatus, currentTicketCode]);
 
   const handlePurchaseSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!phoneNumber || !selectedTicket) return;
+    
+    // Determine the final amount (if price is 0, it means it's the Support Ticket)
+    const finalAmount = selectedTicket.price === 0 ? customAmount : selectedTicket.price;
+    if (finalAmount < 10) return alert("Minimum contribution is 10 KES");
+
     setIsProcessing(true);
 
     try {
@@ -61,7 +63,7 @@ export default function EventTickets() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           phone: phoneNumber,
-          amount: selectedTicket.price,
+          amount: finalAmount,
           nomineeId: selectedTicket.id, 
           nomineeName: selectedTicket.name,
           votes: 1
@@ -110,15 +112,14 @@ export default function EventTickets() {
             </div>
           </div>
 
-          <div className="max-w-5xl mx-auto mb-24">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="max-w-6xl mx-auto mb-24">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               
               {/* Crown Ticket */}
               <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-lg relative flex flex-col">
                 <div className="absolute top-0 left-0 w-full h-1 bg-amber-400" />
                 <h3 className="font-bold text-lg text-slate-900 mb-6">Crown Ticket <br/><span className="text-[10px] text-slate-500 uppercase">For Students</span></h3>
                 <div className="mb-6"><span className="text-3xl font-black">500</span><span className="text-sm font-bold text-slate-500 ml-1">KES</span></div>
-                
                 <button onClick={() => openTicketModal("TKT-CRN", "Crown Ticket", 500)} className="w-full py-3.5 bg-slate-900 text-white rounded-xl text-xs font-bold uppercase mt-auto">Buy Ticket</button>
               </div>
 
@@ -127,8 +128,18 @@ export default function EventTickets() {
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 to-amber-600" />
                 <h3 className="font-bold text-lg text-white mb-6">Royal Ticket <br/><span className="text-[10px] text-slate-400 uppercase">For Guests</span></h3>
                 <div className="mb-6"><span className="text-4xl font-black text-white">1,000</span><span className="text-sm font-bold text-slate-400 ml-1">KES</span></div>
-                
-                <button onClick={() => openTicketModal("TKT-RYL", "Royal Ticket", 1000)} className="w-full py-3.5 bg-amber-500 text-slate-900 rounded-xl text-xs font-black uppercase mt-auto">Buy Ticket</button>
+                <button onClick={() => openTicketModal("TKT-RYL", "Royal Ticket", 1000)} className="w-full py-3.5 bg-amber-500 text-slate-900 rounded-xl text-xs font-black uppercase mt-auto shadow-[0_5px_15px_rgba(245,158,11,0.3)]">Buy Ticket</button>
+              </div>
+              
+              {/* Support / Contribution Ticket */}
+              <div className="bg-rose-50 rounded-3xl p-8 border border-rose-200 shadow-md relative flex flex-col overflow-hidden group">
+                <div className="absolute top-0 right-0 p-4 opacity-10">
+                  <Heart className="w-24 h-24 text-rose-500 group-hover:scale-110 transition-transform" />
+                </div>
+                <div className="absolute top-0 left-0 w-full h-1 bg-rose-500" />
+                <h3 className="font-bold text-lg text-rose-950 mb-6 relative z-10">Support Fund <br/><span className="text-[10px] text-rose-500 uppercase font-black">Friends & Family</span></h3>
+                <div className="mb-6 relative z-10"><span className="text-2xl font-black text-rose-700 uppercase tracking-widest">Any Amount</span></div>
+                <button onClick={() => openTicketModal("TKT-SUP", "Support Contribution", 0)} className="w-full py-3.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-black uppercase mt-auto shadow-md transition-colors relative z-10">Contribute</button>
               </div>
 
               {/* Omni Ticket */}
@@ -152,65 +163,83 @@ export default function EventTickets() {
                 {ticketStatus === "PAID" ? (
                   <div className="flex flex-col items-center w-full">
                     <CheckCircle2 className="w-10 h-10 text-emerald-500 mb-2" />
-                    <h3 className="text-xl font-bold text-slate-900 mb-1">Ticket Generated!</h3>
-                    <p className="text-[11px] text-slate-500 mb-5 font-bold uppercase tracking-widest text-rose-500">
-                      Download and show at the gate
+                    <h3 className="text-xl font-bold text-slate-900 mb-1">Success!</h3>
+                    <p className="text-[11px] text-slate-500 mb-5 font-bold uppercase tracking-widest text-emerald-600">
+                      Thank you for your support
                     </p>
                     
                     {/* The Downloadable Ticket Card */}
-                    <div 
-                      ref={ticketRef}
-                      className="w-full bg-slate-950 rounded-2xl overflow-hidden relative shadow-lg mb-6 border border-slate-800"
-                    >
-                      {/* Ticket Header */}
-                      <div className="bg-gradient-to-r from-amber-500 to-amber-600 p-4 flex items-center justify-between">
+                    <div ref={ticketRef} className="w-full bg-slate-950 rounded-2xl overflow-hidden relative shadow-lg mb-6 border border-slate-800">
+                      <div className={`p-4 flex items-center justify-between ${selectedTicket.price === 0 ? 'bg-gradient-to-r from-rose-500 to-rose-600' : 'bg-gradient-to-r from-amber-500 to-amber-600'}`}>
                         <span className="font-black text-slate-950 uppercase tracking-widest text-xs">JMA '26</span>
-                        <Crown className="w-4 h-4 text-slate-900" />
+                        {selectedTicket.price === 0 ? <Heart className="w-4 h-4 text-slate-900" /> : <Crown className="w-4 h-4 text-slate-900" />}
                       </div>
-                      
-                      {/* Ticket Body */}
                       <div className="p-6 bg-slate-900 flex flex-col items-center border-b-2 border-dashed border-slate-700">
-                        <span className="text-[10px] text-amber-400 font-bold uppercase tracking-widest mb-1">Official Entry Pass</span>
+                        <span className={`text-[10px] font-bold uppercase tracking-widest mb-1 ${selectedTicket.price === 0 ? 'text-rose-400' : 'text-amber-400'}`}>
+                          {selectedTicket.price === 0 ? 'Official Supporter Pass' : 'Official Entry Pass'}
+                        </span>
                         <h2 className="text-2xl font-serif font-black text-white mb-4">{selectedTicket.name}</h2>
-                        
                         <div className="bg-white p-3 rounded-xl">
                            <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${currentTicketCode}`} alt="Ticket QR" className="w-32 h-32" />
                         </div>
                       </div>
-
-                      {/* Ticket Footer */}
                       <div className="bg-slate-950 p-4 flex flex-col items-center justify-center">
                         <span className="text-[9px] text-slate-500 uppercase tracking-widest mb-1">Ticket ID</span>
-                        <span className="font-mono text-xl font-black tracking-widest text-slate-200">
-                          {currentTicketCode}
-                        </span>
+                        <span className="font-mono text-xl font-black tracking-widest text-slate-200">{currentTicketCode}</span>
                       </div>
                     </div>
                     
-                    <button 
-                      onClick={downloadTicket}
-                      className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-[0_5px_15px_rgba(16,185,129,0.3)] transition-all"
-                    >
-                      <Download className="w-4 h-4" /> Download Ticket
+                    <button onClick={downloadTicket} className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all">
+                      <Download className="w-4 h-4" /> Save Ticket
                     </button>
                   </div>
                 ) : (
                   <form onSubmit={handlePurchaseSubmit} className="w-full text-left space-y-6">
                     <div>
                       <h3 className="text-2xl font-serif font-bold text-slate-900">Buy {selectedTicket.name}</h3>
-                      <p className="text-xs text-slate-500">Pay KES {selectedTicket.price} securely via M-Pesa.</p>
+                      <p className="text-xs text-slate-500">Secure M-Pesa Transaction.</p>
                     </div>
+
+                    {/* CUSTOM AMOUNT SELECTOR (Only shows if price is 0) */}
+                    {selectedTicket.price === 0 && (
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase text-slate-500 mb-3">Select Contribution (KES):</label>
+                        <div className="grid grid-cols-4 gap-2 mb-3">
+                          {[100, 500, 1000, 5000].map(amt => (
+                            <button
+                              key={amt}
+                              type="button"
+                              onClick={() => setCustomAmount(amt)}
+                              className={`py-2 rounded-lg text-xs font-bold border transition-all ${customAmount === amt ? 'bg-rose-500 text-white border-rose-500 shadow-md' : 'bg-white text-slate-600 border-slate-200'}`}
+                            >
+                              {amt}
+                            </button>
+                          ))}
+                        </div>
+                        <div className="relative">
+                           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">KES</span>
+                           <input 
+                             type="number" 
+                             min="10"
+                             value={customAmount}
+                             onChange={(e) => setCustomAmount(Number(e.target.value))}
+                             className="w-full bg-white border border-slate-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 rounded-xl py-3 pl-12 pr-4 text-lg font-black text-slate-900 shadow-sm"
+                           />
+                        </div>
+                      </div>
+                    )}
+
                     <div>
                       <label className="block text-[11px] font-bold uppercase text-slate-500 mb-3">M-Pesa Number:</label>
                       <div className="relative">
                         <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                        <input type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="0712345678" className="w-full border border-slate-200 rounded-xl py-3.5 pl-11 pr-4 text-sm" required />
+                        <input type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="0712345678" className={`w-full border border-slate-200 rounded-xl py-3.5 pl-11 pr-4 text-sm focus:outline-none focus:ring-2 ${selectedTicket.price === 0 ? 'focus:border-rose-400 focus:ring-rose-100' : 'focus:border-amber-400 focus:ring-amber-100'}`} required />
                       </div>
                     </div>
-                    <button type="submit" disabled={isProcessing} className="w-full py-4 bg-emerald-500 text-white rounded-xl text-sm font-bold uppercase">
-                      {isProcessing ? "Waiting for PIN..." : `Pay KES ${selectedTicket.price}`}
+                    
+                    <button type="submit" disabled={isProcessing} className="w-full py-4 bg-emerald-500 text-white rounded-xl text-sm font-bold uppercase flex justify-center items-center gap-2 shadow-[0_5px_15px_rgba(16,185,129,0.3)]">
+                      {isProcessing ? <><Loader2 className="w-4 h-4 animate-spin"/> Processing...</> : `Pay KES ${selectedTicket.price === 0 ? customAmount : selectedTicket.price}`}
                     </button>
-                    {isProcessing && <p className="text-xs text-amber-600 font-bold text-center animate-pulse">Check your phone and enter your PIN...</p>}
                   </form>
                 )}
               </div>

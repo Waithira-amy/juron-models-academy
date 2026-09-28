@@ -1,4 +1,3 @@
-// 1. Force the script to read your .env file
 import { loadEnvConfig } from '@next/env';
 loadEnvConfig(process.cwd());
 
@@ -6,7 +5,6 @@ import { PrismaClient } from '@prisma/client';
 import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 
-// Now this will successfully grab your Neon URL!
 const connectionString = process.env.DATABASE_URL as string;
 
 if (!connectionString) {
@@ -19,8 +17,7 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 const ALL_NOMINEES = [
-  // Mavoko
-  { name: "King Masconde", code: "MVK01", category: "mavoko", title: "Mr", photoUrl: "/nominees/king-masconde.jpg" },
+  // Mavoko (MVK01 King Masconde removed)
   { name: "Emmanuel Dennis", code: "MVK02", category: "mavoko", title: "Mr", photoUrl: "/nominees/emmanuel-dennis.jpg" },
   { name: "Brian Lokiridi", code: "MVK03", category: "mavoko", title: "Mr", photoUrl: "/nominees/brian-lokiridi.jpg" },
   { name: "Abigael Mbula Kioko", code: "MVK04", category: "mavoko", title: "Miss", photoUrl: "/nominees/abigael-mbula-kioko.jpg" },
@@ -30,6 +27,9 @@ const ALL_NOMINEES = [
   { name: "Stephanie Saiteyia", code: "MVK08", category: "mavoko", title: "Miss", photoUrl: "/nominees/stephanie-saiteyia.jpg" },
   { name: "Grace Wangui", code: "MVK09", category: "mavoko", title: "Miss", photoUrl: "/nominees/grace-wangui.jpg" },
   { name: "Bridget Wambui Mugo", code: "MVK10", category: "mavoko", title: "Miss", photoUrl: "/nominees/bridget-wambui-mugo.jpg" },
+  { name: "Roseline Atieno Otieno", code: "MVK11", category: "mavoko", title: "Miss", photoUrl: "/nominees/roseline-atieno-otieno.jpg" },
+  { name: "Chelsea Tanya", code: "MVK12", category: "mavoko", title: "Miss", photoUrl: "/nominees/chelsea-tanya.jpg" },
+  { name: "Tonny Musembi", code: "MVK13", category: "mavoko", title: "Mr", photoUrl: "/nominees/tonny-musembi.jpg" },
 
   // Township
   { name: "Kennedy Muasa", code: "TWN01", category: "township", title: "Mr", photoUrl: "/nominees/kennedy-muasa.jpg" },
@@ -51,8 +51,12 @@ const ALL_NOMINEES = [
   { name: "Damaris Amina", code: "TWN17", category: "township", title: "Miss", photoUrl: "/nominees/damaris-amina.jpg" },
   { name: "Joy Bernita Kerubo", code: "TWN18", category: "township", title: "Miss", photoUrl: "/nominees/joy-bernita-kerubo.jpg" },
   { name: "Maureen Wambui Karanja", code: "TWN19", category: "township", title: "Miss", photoUrl: "/nominees/maureen-wambui-karanja.jpg" },
+  { name: "Mitchell Omollo", code: "TWN20", category: "township", title: "Miss", photoUrl: "/nominees/mitchell-omollo.jpg" },
+  { name: "Kylian Robert Wambua", code: "TWN21", category: "township", title: "Mr", photoUrl: "/nominees/kylian-robert-wambua.jpg" },
+  { name: "Gloria Mumbua", code: "TWN22", category: "township", title: "Miss", photoUrl: "/nominees/gloria-mumbua.jpg" },
+  { name: "Almer Awino", code: "TWN23", category: "township", title: "Miss", photoUrl: "/nominees/almer-awino.jpg" },
 
-  // Diaspora
+  // Diaspora (DSP08 Amy Ngunjiri removed)
   { name: "Yussuf Abubakar", code: "DSP01", category: "diaspora", title: "Mr", photoUrl: "/nominees/yussuf-abubakar.jpg" },
   { name: "Andrew Muema Muthyokavi", code: "DSP02", category: "diaspora", title: "Mr", photoUrl: "/nominees/andrew-muema-muthyokavi.jpg" },
   { name: "Obi Ifaenyi", code: "DSP03", category: "diaspora", title: "Mr", photoUrl: "/nominees/obi-ifaenyi.jpg" },
@@ -60,36 +64,21 @@ const ALL_NOMINEES = [
   { name: "Adah Nabocho", code: "DSP05", category: "diaspora", title: "Miss", photoUrl: "/nominees/adah-nabocho.jpg" },
   { name: "Jennifer Simon", code: "DSP06", category: "diaspora", title: "Miss", photoUrl: "/nominees/jennifer-simon.jpg" },
   { name: "Beatrice Ingoka", code: "DSP07", category: "diaspora", title: "Miss", photoUrl: "/nominees/beatrice-ingoka.jpg" },
-  { name: "Amy Ngunjiri", code: "DSP08", category: "diaspora", title: "Miss", photoUrl: "/nominees/amy-ngunjiri.jpg" },
   { name: "Teresia Nduku", code: "DSP09", category: "diaspora", title: "Miss", photoUrl: "/nominees/teresia-nduku.jpg" },
   { name: "Sharon Ingasian", code: "DSP10", category: "diaspora", title: "Miss", photoUrl: "/nominees/sharon-ingasian.jpg" },
-  { name: "Miriam Monique", code: "DSP11", category: "diaspora", title: "Miss", photoUrl: "/nominees/miriam-monique.jpg" },
-  { name: "Roseline Atieno Otieno", code: "DSP12", category: "diaspora", title: "Miss", photoUrl: "/nominees/roseline-atieno-otieno.jpg" }
+  { name: "Miriam Monique", code: "DSP11", category: "diaspora", title: "Miss", photoUrl: "/nominees/miriam-monique.jpg" }
 ];
 
 async function main() {
-  console.log("Seeding nominees to database:", connectionString.split('@')[1] || "Hidden URL");
-  
+  console.log("Seeding nominees to database...");
   for (const n of ALL_NOMINEES) {
     try {
       await (prisma as any).voting.upsert({
         where: { code: n.code },
-        update: {
-          fullName: n.name,
-          category: n.category,
-          title: n.title,
-          photoUrl: n.photoUrl,
-        },
-        create: {
-          code: n.code,
-          fullName: n.name,
-          category: n.category,
-          title: n.title,
-          photoUrl: n.photoUrl,
-          votes: 0 // Only sets to 0 on creation, doesn't wipe existing votes during an update!
-        }
+        update: { fullName: n.name, category: n.category, title: n.title, photoUrl: n.photoUrl },
+        create: { code: n.code, fullName: n.name, category: n.category, title: n.title, photoUrl: n.photoUrl, votes: 0 }
       });
-      console.log(`✅ Synced ${n.code} - ${n.name}`);
+      console.log(`✅ Synced ${n.code}`);
     } catch (err: any) {
       console.error(`❌ Failed to sync ${n.code}:`, err.message);
     }
@@ -97,12 +86,4 @@ async function main() {
   console.log("🎉 Done seeding.");
 }
 
-main()
-  .catch((e) => {
-    console.error("CRITICAL ERROR:", e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-    await pool.end();
-  });
+main().finally(async () => { await prisma.$disconnect(); await pool.end(); });
