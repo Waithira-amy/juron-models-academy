@@ -20,7 +20,7 @@ const CATEGORY_DATA = [
     desc: "Machakos Town, University, and Central Environs.",
     link: "/voting/township",
     startDate: null, 
-    endDate: "2026-10-26T23:59:59+03:00", 
+    endDate: "2026-10-19T23:59:59+03:00", // Updated to match Mavoko
     Icon: Camera,
     theme: { bg: "bg-amber-50", border: "border-amber-100", text: "text-amber-500" }
   },
@@ -30,7 +30,7 @@ const CATEGORY_DATA = [
     desc: "Global & Countrywide Ambassadors outside the County.",
     link: "/voting/diaspora",
     startDate: null, 
-    endDate: "2026-11-02T23:59:59+03:00", 
+    endDate: "2026-10-19T23:59:59+03:00", // Updated to match Mavoko
     Icon: Globe,
     theme: { bg: "bg-sky-50", border: "border-sky-100", text: "text-sky-500" }
   },
