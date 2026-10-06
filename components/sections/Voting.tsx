@@ -3,13 +3,13 @@ import React, { useState, useEffect } from "react";
 import { Clock, ArrowRight, Camera, Globe, Crown, Map, Sparkles } from "lucide-react";
 import Link from "next/link";
 
-// 1. CATEGORY DATA CONFIGURATION (All 5 Categories)
 const CATEGORY_DATA = [
   {
     id: "mavoko",
     name: "Mavoko",
     desc: "Syokimau, Mlolongo, Athi River, and Mavoko Sub-County.",
     link: "/voting/mavoko",
+    startDate: null, 
     endDate: "2026-10-19T23:59:59+03:00", 
     Icon: Crown,
     theme: { bg: "bg-rose-50", border: "border-rose-100", text: "text-rose-500" }
@@ -19,6 +19,7 @@ const CATEGORY_DATA = [
     name: "Township",
     desc: "Machakos Town, University, and Central Environs.",
     link: "/voting/township",
+    startDate: null, 
     endDate: "2026-10-26T23:59:59+03:00", 
     Icon: Camera,
     theme: { bg: "bg-amber-50", border: "border-amber-100", text: "text-amber-500" }
@@ -28,6 +29,7 @@ const CATEGORY_DATA = [
     name: "Diaspora",
     desc: "Global & Countrywide Ambassadors outside the County.",
     link: "/voting/diaspora",
+    startDate: null, 
     endDate: "2026-11-02T23:59:59+03:00", 
     Icon: Globe,
     theme: { bg: "bg-sky-50", border: "border-sky-100", text: "text-sky-500" }
@@ -37,7 +39,8 @@ const CATEGORY_DATA = [
     name: "Machakos-Mwala",
     desc: "Mwala Sub-County and surrounding environs.",
     link: "/voting/mwala",
-    endDate: "2026-10-31T00:00:00+03:00", // Ends exactly at midnight
+    startDate: "2026-10-07T00:00:00+03:00", // Midnight tonight
+    endDate: "2026-10-31T23:59:59+03:00", 
     Icon: Map,
     theme: { bg: "bg-emerald-50", border: "border-emerald-100", text: "text-emerald-500" }
   },
@@ -46,7 +49,8 @@ const CATEGORY_DATA = [
     name: "Machakos-Kangundo",
     desc: "Kangundo Sub-County and surrounding environs.",
     link: "/voting/kangundo",
-    endDate: "2026-10-31T00:00:00+03:00", // Ends exactly at midnight
+    startDate: "2026-10-07T00:00:00+03:00", // Midnight tonight
+    endDate: "2026-10-31T23:59:59+03:00", 
     Icon: Sparkles,
     theme: { bg: "bg-purple-50", border: "border-purple-100", text: "text-purple-500" }
   }
@@ -63,20 +67,31 @@ export default function Voting() {
     return () => clearInterval(timer);
   }, []);
 
-  const getTimeLeft = (targetDateString: string) => {
-    if (!now) return { days: 0, hours: 0, minutes: 0, seconds: 0, isClosed: false };
+  const getTimeLeft = (startDateString: string | null, endDateString: string) => {
+    if (!now) return { days: 0, hours: 0, minutes: 0, seconds: 0, status: 'active' };
     
-    const target = new Date(targetDateString).getTime();
+    const start = startDateString ? new Date(startDateString).getTime() : 0;
+    const end = new Date(endDateString).getTime();
+    
+    let target, status;
+
+    if (start > now) {
+      target = start;
+      status = 'pending'; 
+    } else if (end > now) {
+      target = end;
+      status = 'active'; 
+    } else {
+      return { days: 0, hours: 0, minutes: 0, seconds: 0, status: 'closed' }; 
+    }
+    
     const diff = target - now;
-    
-    if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0, isClosed: true };
-    
     return {
       days: Math.floor(diff / (1000 * 60 * 60 * 24)),
       hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
       minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
       seconds: Math.floor((diff % (1000 * 60)) / 1000),
-      isClosed: false
+      status
     };
   };
 
@@ -88,7 +103,6 @@ export default function Voting() {
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         
-        {/* Header - No global timer here */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-6xl font-serif font-black text-slate-900 mb-4 tracking-tight drop-shadow-sm">
             Voting <span className="text-amber-500">Categories</span>
@@ -98,10 +112,9 @@ export default function Voting() {
           </p>
         </div>
 
-        {/* Dynamic Grid: Renders all 5 items with embedded timers */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {CATEGORY_DATA.map((cat) => {
-            const time = getTimeLeft(cat.endDate);
+            const time = getTimeLeft(cat.startDate, cat.endDate);
             
             return (
               <Link key={cat.id} href={cat.link} className="group bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden flex flex-col">
@@ -113,16 +126,15 @@ export default function Voting() {
                 <h3 className="text-2xl font-serif font-bold text-slate-900 mb-2">{cat.name}</h3>
                 <p className="text-sm text-slate-500 mb-6 flex-grow">{cat.desc}</p>
                 
-                {/* INDIVIDUAL TIMERS BUILT INTO THE CARDS */}
                 <div className="mb-6 bg-slate-50 border border-slate-100 rounded-2xl p-4 w-full">
-                  <div className={`flex items-center gap-1.5 mb-3 ${time.isClosed ? 'text-rose-500' : 'text-slate-700'}`}>
-                    <Clock className={`w-4 h-4 ${!time.isClosed && "text-amber-500 animate-pulse"}`} />
+                  <div className={`flex items-center gap-1.5 mb-3 ${time.status === 'closed' ? 'text-rose-500' : time.status === 'pending' ? 'text-blue-500' : 'text-slate-700'}`}>
+                    <Clock className={`w-4 h-4 ${time.status !== 'closed' && "animate-pulse"} ${time.status === 'pending' ? 'text-blue-500' : 'text-amber-500'}`} />
                     <span className="text-[10px] font-bold uppercase tracking-widest">
-                      {time.isClosed ? "Voting Closed" : "Voting Closes In"}
+                      {time.status === 'closed' ? "Voting Closed" : time.status === 'pending' ? "Voting Starts In" : "Voting Closes In"}
                     </span>
                   </div>
                   
-                  {!time.isClosed ? (
+                  {time.status !== 'closed' ? (
                     <div className="flex justify-between items-center text-center px-1">
                       <div className="flex flex-col"><span className="text-xl md:text-2xl font-black font-mono text-slate-900">{time.days.toString().padStart(2, '0')}</span><span className="text-[8px] uppercase font-bold text-slate-400 tracking-wider">Days</span></div>
                       <span className="text-slate-300 font-black pb-3">:</span>
@@ -130,7 +142,7 @@ export default function Voting() {
                       <span className="text-slate-300 font-black pb-3">:</span>
                       <div className="flex flex-col"><span className="text-xl md:text-2xl font-black font-mono text-slate-900">{time.minutes.toString().padStart(2, '0')}</span><span className="text-[8px] uppercase font-bold text-slate-400 tracking-wider">Mins</span></div>
                       <span className="text-slate-300 font-black pb-3">:</span>
-                      <div className="flex flex-col"><span className="text-xl md:text-2xl font-black font-mono text-rose-500">{time.seconds.toString().padStart(2, '0')}</span><span className="text-[8px] uppercase font-bold text-slate-400 tracking-wider">Secs</span></div>
+                      <div className="flex flex-col"><span className={`text-xl md:text-2xl font-black font-mono ${time.status === 'pending' ? 'text-blue-500' : 'text-rose-500'}`}>{time.seconds.toString().padStart(2, '0')}</span><span className="text-[8px] uppercase font-bold text-slate-400 tracking-wider">Secs</span></div>
                     </div>
                   ) : (
                     <div className="w-full text-center py-2 bg-rose-50 rounded-lg">
