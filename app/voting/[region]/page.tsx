@@ -121,7 +121,7 @@ const REGION_DATA: Record<string, { title: string; subtitle: string; theme: any;
       { id: "kan-2", name: "Joshua Kennedy", code: "KAN02", location: "Kangundo", gender: "mr", votes: 0, photoUrl: "/nominees/joshua-kennedy.jpg" },
       { id: "kan-3", name: "Winnie Mutheu", code: "KAN03", location: "Kangundo", gender: "miss", votes: 0, photoUrl: "/nominees/winnie-mutheu.jpg" },
       { id: "kan-4", name: "Margaret Wanja Mwangi", code: "KAN04", location: "Kangundo", gender: "miss", votes: 0, photoUrl: "/nominees/margaret-wanja-mwangi.jpg" },
-      { id: "kan-5", name: "Kuki Japhet", code: "KAN05", location: "Kangundo", gender: "mr", votes: 0, photoUrl: "/nominees/kuki-japhet.jpg" },
+      { id: "kan-5", name: "Kuki Japhet", code: "KAN05", location: "Kangundo", gender: "miss", votes: 0, photoUrl: "/nominees/kuki-japhet.jpg" },
       { id: "kan-6", name: "Gladys Ngatha", code: "KAN06", location: "Kangundo", gender: "miss", votes: 0, photoUrl: "/nominees/gladys-ngatha.jpg" }
     ]
   }
@@ -134,7 +134,6 @@ export default function RegionVotingPage() {
   
   const rawRegion = typeof params?.region === "string" ? params.region.toLowerCase() : "mavoko";
   
-  // UPDATED ROUTING LOGIC to include all 5 regions
   const currentRegion = rawRegion.includes("township") ? "township" 
                       : rawRegion.includes("diaspora") ? "diaspora" 
                       : rawRegion.includes("mwala") ? "mwala"

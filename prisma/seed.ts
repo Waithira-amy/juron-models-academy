@@ -1,3 +1,4 @@
+//npx tsx prisma/seed.ts
 import { loadEnvConfig } from '@next/env';
 loadEnvConfig(process.cwd());
 
@@ -82,7 +83,7 @@ const ALL_NOMINEES = [
   { name: "Joshua Kennedy", code: "KAN02", category: "kangundo", title: "Mr", photoUrl: "/nominees/joshua-kennedy.jpg" },
   { name: "Winnie Mutheu", code: "KAN03", category: "kangundo", title: "Miss", photoUrl: "/nominees/winnie-mutheu.jpg" },
   { name: "Margaret Wanja Mwangi", code: "KAN04", category: "kangundo", title: "Miss", photoUrl: "/nominees/margaret-wanja-mwangi.jpg" },
-  { name: "Kuki Japhet", code: "KAN05", category: "kangundo", title: "Mr", photoUrl: "/nominees/kuki-japhet.jpg" },
+  { name: "Kuki Japhet", code: "KAN05", category: "kangundo", title: "Miss", photoUrl: "/nominees/kuki-japhet.jpg" },
   { name: "Gladys Ngatha", code: "KAN06", category: "kangundo", title: "Miss", photoUrl: "/nominees/gladys-ngatha.jpg" }
 ];
 
