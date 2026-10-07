@@ -66,7 +66,24 @@ const ALL_NOMINEES = [
   { name: "Beatrice Ingoka", code: "DSP07", category: "diaspora", title: "Miss", photoUrl: "/nominees/beatrice-ingoka.jpg" },
   { name: "Teresia Nduku", code: "DSP09", category: "diaspora", title: "Miss", photoUrl: "/nominees/teresia-nduku.jpg" },
   { name: "Sharon Ingasian", code: "DSP10", category: "diaspora", title: "Miss", photoUrl: "/nominees/sharon-ingasian.jpg" },
-  { name: "Miriam Monique", code: "DSP11", category: "diaspora", title: "Miss", photoUrl: "/nominees/miriam-monique.jpg" }
+  { name: "Miriam Monique", code: "DSP11", category: "diaspora", title: "Miss", photoUrl: "/nominees/miriam-monique.jpg" },
+
+  // Mwala
+  { name: "Cecilliah Nzilani", code: "MWL01", category: "mwala", title: "Miss", photoUrl: "/nominees/cecilliah-nzilani.jpg" },
+  { name: "Rabbeca Nduku Maingi", code: "MWL02", category: "mwala", title: "Miss", photoUrl: "/nominees/rabbeca-nduku-maingi.jpg" },
+  { name: "Darius Kaindi", code: "MWL03", category: "mwala", title: "Mr", photoUrl: "/nominees/darius-kaindi.jpg" },
+  { name: "Catherine Mutuku", code: "MWL04", category: "mwala", title: "Miss", photoUrl: "/nominees/catherine-mutuku.jpg" },
+  { name: "Diana Ndeda", code: "MWL05", category: "mwala", title: "Miss", photoUrl: "/nominees/diana-ndeda.jpg" },
+  { name: "Keziah Monicah Mutaiti", code: "MWL06", category: "mwala", title: "Miss", photoUrl: "/nominees/keziah-monicah-mutaiti.jpg" },
+  { name: "Trevis Kamau", code: "MWL07", category: "mwala", title: "Mr", photoUrl: "/nominees/trevis-kamau.jpg" },
+
+  // Kangundo
+  { name: "Praise Deborah Kithunga", code: "KAN01", category: "kangundo", title: "Miss", photoUrl: "/nominees/praise-deborah-kithunga.jpg" },
+  { name: "Joshua Kennedy", code: "KAN02", category: "kangundo", title: "Mr", photoUrl: "/nominees/joshua-kennedy.jpg" },
+  { name: "Winnie Mutheu", code: "KAN03", category: "kangundo", title: "Miss", photoUrl: "/nominees/winnie-mutheu.jpg" },
+  { name: "Margaret Wanja Mwangi", code: "KAN04", category: "kangundo", title: "Miss", photoUrl: "/nominees/margaret-wanja-mwangi.jpg" },
+  { name: "Kuki Japhet", code: "KAN05", category: "kangundo", title: "Mr", photoUrl: "/nominees/kuki-japhet.jpg" },
+  { name: "Gladys Ngatha", code: "KAN06", category: "kangundo", title: "Miss", photoUrl: "/nominees/gladys-ngatha.jpg" }
 ];
 
 async function main() {
