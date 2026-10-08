@@ -40,7 +40,9 @@ const REGION_DATA: Record<string, { title: string; subtitle: string; theme: any;
       { id: "mvk-10", name: "Bridget Wambui Mugo", code: "MVK10", location: "Mavoko", gender: "miss", votes: 0, photoUrl: "/nominees/bridget-wambui-mugo.jpg" },
       { id: "mvk-11", name: "Roseline Atieno Otieno", code: "MVK11", location: "Kitengela / Mavoko", gender: "miss", votes: 0, photoUrl: "/nominees/roseline-atieno-otieno.jpg" },
       { id: "mvk-12", name: "Chelsea Tanya", code: "MVK12", location: "Mavoko", gender: "miss", votes: 0, photoUrl: "/nominees/chelsea-tanya.jpg" },
-      { id: "mvk-13", name: "Tonny Musembi", code: "MVK13", location: "Syokimau", gender: "mr", votes: 0, photoUrl: "/nominees/tonny-musembi.jpg" }
+      { id: "mvk-13", name: "Tonny Musembi", code: "MVK13", location: "Syokimau", gender: "mr", votes: 0, photoUrl: "/nominees/tonny-musembi.jpg" },
+      { id: "mvk-14", name: "Emmanuel Noel", code: "MVK14", location: "Kitengela", gender: "mr", votes: 0, photoUrl: "/nominees/emmanuel-noel.jpg" },
+      { id: "mvk-15", name: "Pashile Arsene", code: "MVK15", location: "Kitengela", gender: "mr", votes: 0, photoUrl: "/nominees/pashile-arsene.jpg" }
     ]
   },
   township: {
@@ -72,7 +74,12 @@ const REGION_DATA: Record<string, { title: string; subtitle: string; theme: any;
       { id: "twn-20", name: "Mitchell Omollo", code: "TWN20", location: "Machakos Town", gender: "miss", votes: 0, photoUrl: "/nominees/mitchell-omollo.jpg" },
       { id: "twn-21", name: "Kylian Robert Wambua", code: "TWN21", location: "Machakos", gender: "mr", votes: 0, photoUrl: "/nominees/kylian-robert-wambua.jpg" },
       { id: "twn-22", name: "Gloria Mumbua", code: "TWN22", location: "Machakos Township", gender: "miss", votes: 0, photoUrl: "/nominees/gloria-mumbua.jpg" },
-      { id: "twn-23", name: "Almer Awino", code: "TWN23", location: "Machakos Township", gender: "miss", votes: 0, photoUrl: "/nominees/almer-awino.jpg" }
+      { id: "twn-23", name: "Almer Awino", code: "TWN23", location: "Machakos Township", gender: "miss", votes: 0, photoUrl: "/nominees/almer-awino.jpg" },
+      { id: "twn-24", name: "Mercy Kavuu", code: "TWN24", location: "Machakos", gender: "miss", votes: 0, photoUrl: "/nominees/mercy-kavuu.jpg" },
+      { id: "twn-25", name: "Vanessa Awour", code: "TWN25", location: "Machakos", gender: "miss", votes: 0, photoUrl: "/nominees/vanessa-awour.jpg" },
+      { id: "twn-26", name: "Alloys Chacha", code: "TWN26", location: "Machakos", gender: "mr", votes: 0, photoUrl: "/nominees/alloys-chacha.jpg" },
+      { id: "twn-27", name: "Angela Anselma Nzisa", code: "TWN27", location: "Machakos town", gender: "miss", votes: 0, photoUrl: "/nominees/angela-anselma-nzisa.jpg" },
+      { id: "twn-28", name: "Zora kinuthia", code: "TWN28", location: "Machakos", gender: "miss", votes: 0, photoUrl: "/nominees/zora-kinuthia.jpg" }
     ]
   },
   diaspora: {
@@ -91,7 +98,15 @@ const REGION_DATA: Record<string, { title: string; subtitle: string; theme: any;
       { id: "dsp-7", name: "Beatrice Ingoka", code: "DSP07", location: "Nairobi", gender: "miss", votes: 0, photoUrl: "/nominees/beatrice-ingoka.jpg" },
       { id: "dsp-9", name: "Teresia Nduku", code: "DSP09", location: "Embakasi Central", gender: "miss", votes: 0, photoUrl: "/nominees/teresia-nduku.jpg" },
       { id: "dsp-10", name: "Sharon Ingasian", code: "DSP10", location: "Kahawa West", gender: "miss", votes: 0, photoUrl: "/nominees/sharon-ingasian.jpg" },
-      { id: "dsp-11", name: "Miriam Monique", code: "DSP11", location: "Malindi", gender: "miss", votes: 0, photoUrl: "/nominees/miriam-monique.jpg" }
+      { id: "dsp-11", name: "Miriam Monique", code: "DSP11", location: "Malindi", gender: "miss", votes: 0, photoUrl: "/nominees/miriam-monique.jpg" },
+      { id: "dsp-12", name: "Ian Juma", code: "DSP12", location: "Kirinyaga", gender: "mr", votes: 0, photoUrl: "/nominees/ian-juma.jpg" },
+      { id: "dsp-13", name: "BRILLIANT ATYANG", code: "DSP13", location: "Juja", gender: "miss", votes: 0, photoUrl: "/nominees/brilliant-atyang.jpg" },
+      { id: "dsp-14", name: "Cosmus maithya", code: "DSP14", location: "Nairobi", gender: "mr", votes: 0, photoUrl: "/nominees/cosmus-maithya.jpg" },
+      { id: "dsp-15", name: "Monique Miriam", code: "DSP15", location: "Lamu", gender: "miss", votes: 0, photoUrl: "/nominees/monique-miriam.jpg" },
+      { id: "dsp-17", name: "Mereline khayati", code: "DSP17", location: "Nairobi", gender: "miss", votes: 0, photoUrl: "/nominees/mereline-khayati.jpg" },
+      { id: "dsp-18", name: "Cecilia Wairimu", code: "DSP18", location: "KIAMBU", gender: "miss", votes: 0, photoUrl: "/nominees/cecilia-wairimu.jpg" },
+      { id: "dsp-20", name: "Annet wanyagah", code: "DSP20", location: "Nairobi", gender: "miss", votes: 0, photoUrl: "/nominees/annet-wanyagah.jpg" },
+      { id: "dsp-21", name: "Kelvin Ooltetia", code: "DSP21", location: "Narok", gender: "mr", votes: 0, photoUrl: "/nominees/kelvin-ooltetia.jpg" }
     ]
   },
   mwala: {
@@ -107,7 +122,9 @@ const REGION_DATA: Record<string, { title: string; subtitle: string; theme: any;
       { id: "mwl-4", name: "Catherine Mutuku", code: "MWL04", location: "Mwala", gender: "miss", votes: 0, photoUrl: "/nominees/catherine-mutuku.jpg" },
       { id: "mwl-5", name: "Diana Ndeda", code: "MWL05", location: "Mwala", gender: "miss", votes: 0, photoUrl: "/nominees/diana-ndeda.jpg" },
       { id: "mwl-6", name: "Keziah Monicah Mutaiti", code: "MWL06", location: "Mwala", gender: "miss", votes: 0, photoUrl: "/nominees/keziah-monicah-mutaiti.jpg" },
-      { id: "mwl-7", name: "Trevis Kamau", code: "MWL07", location: "Mwala", gender: "mr", votes: 0, photoUrl: "/nominees/trevis-kamau.jpg" }
+      { id: "mwl-7", name: "Trevis Kamau", code: "MWL07", location: "Mwala", gender: "mr", votes: 0, photoUrl: "/nominees/trevis-kamau.jpg" },
+      { id: "mwl-8", name: "Bradley Geoffrey", code: "MWL08", location: "Mwala", gender: "mr", votes: 0, photoUrl: "/nominees/bradley-geoffrey.jpg" },
+      { id: "mwl-9", name: "Zora Kinuthia", code: "MWL09", location: "Mwala", gender: "miss", votes: 0, photoUrl: "/nominees/zora-kinuthia.jpg" }
     ]
   },
   kangundo: {
@@ -122,7 +139,10 @@ const REGION_DATA: Record<string, { title: string; subtitle: string; theme: any;
       { id: "kan-3", name: "Winnie Mutheu", code: "KAN03", location: "Kangundo", gender: "miss", votes: 0, photoUrl: "/nominees/winnie-mutheu.jpg" },
       { id: "kan-4", name: "Margaret Wanja Mwangi", code: "KAN04", location: "Kangundo", gender: "miss", votes: 0, photoUrl: "/nominees/margaret-wanja-mwangi.jpg" },
       { id: "kan-5", name: "Kuki Japhet", code: "KAN05", location: "Kangundo", gender: "miss", votes: 0, photoUrl: "/nominees/kuki-japhet.jpg" },
-      { id: "kan-6", name: "Gladys Ngatha", code: "KAN06", location: "Kangundo", gender: "miss", votes: 0, photoUrl: "/nominees/gladys-ngatha.jpg" }
+      { id: "kan-6", name: "Gladys Ngatha", code: "KAN06", location: "Kangundo", gender: "miss", votes: 0, photoUrl: "/nominees/gladys-ngatha.jpg" },
+      { id: "kan-7", name: "Joy Wanjeri", code: "KAN07", location: "Kangundo", gender: "miss", votes: 0, photoUrl: "/nominees/joy-wanjeri.jpg" },
+      { id: "kan-8", name: "Tracy Sitatian", code: "KAN08", location: "Kangundo", gender: "miss", votes: 0, photoUrl: "/nominees/tracy-sitatian.jpg" },
+      { id: "kan-9", name: "Rama Hassan", code: "KAN09", location: "Kangundo", gender: "mr", votes: 0, photoUrl: "/nominees/rama-hassan.jpg" }
     ]
   }
 };

@@ -18,7 +18,7 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 const ALL_NOMINEES = [
-  // Mavoko (MVK01 King Masconde removed)
+  // Mavoko
   { name: "Emmanuel Dennis", code: "MVK02", category: "mavoko", title: "Mr", photoUrl: "/nominees/emmanuel-dennis.jpg" },
   { name: "Brian Lokiridi", code: "MVK03", category: "mavoko", title: "Mr", photoUrl: "/nominees/brian-lokiridi.jpg" },
   { name: "Abigael Mbula Kioko", code: "MVK04", category: "mavoko", title: "Miss", photoUrl: "/nominees/abigael-mbula-kioko.jpg" },
@@ -31,6 +31,8 @@ const ALL_NOMINEES = [
   { name: "Roseline Atieno Otieno", code: "MVK11", category: "mavoko", title: "Miss", photoUrl: "/nominees/roseline-atieno-otieno.jpg" },
   { name: "Chelsea Tanya", code: "MVK12", category: "mavoko", title: "Miss", photoUrl: "/nominees/chelsea-tanya.jpg" },
   { name: "Tonny Musembi", code: "MVK13", category: "mavoko", title: "Mr", photoUrl: "/nominees/tonny-musembi.jpg" },
+  { name: "Emmanuel Noel", code: "MVK14", category: "mavoko", title: "Mr", photoUrl: "/nominees/emmanuel-noel.jpg" },
+  { name: "Pashile Arsene", code: "MVK15", category: "mavoko", title: "Mr", photoUrl: "/nominees/pashile-arsene.jpg" },
 
   // Township
   { name: "Kennedy Muasa", code: "TWN01", category: "township", title: "Mr", photoUrl: "/nominees/kennedy-muasa.jpg" },
@@ -56,8 +58,13 @@ const ALL_NOMINEES = [
   { name: "Kylian Robert Wambua", code: "TWN21", category: "township", title: "Mr", photoUrl: "/nominees/kylian-robert-wambua.jpg" },
   { name: "Gloria Mumbua", code: "TWN22", category: "township", title: "Miss", photoUrl: "/nominees/gloria-mumbua.jpg" },
   { name: "Almer Awino", code: "TWN23", category: "township", title: "Miss", photoUrl: "/nominees/almer-awino.jpg" },
+  { name: "Mercy Kavuu", code: "TWN24", category: "township", title: "Miss", photoUrl: "/nominees/mercy-kavuu.jpg" },
+  { name: "Vanessa Awour", code: "TWN25", category: "township", title: "Miss", photoUrl: "/nominees/vanessa-awour.jpg" },
+  { name: "Alloys Chacha", code: "TWN26", category: "township", title: "Mr", photoUrl: "/nominees/alloys-chacha.jpg" },
+  { name: "Angela Anselma Nzisa", code: "TWN27", category: "township", title: "Miss", photoUrl: "/nominees/angela-anselma-nzisa.jpg" },
+  { name: "Zora kinuthia", code: "TWN28", category: "township", title: "Miss", photoUrl: "/nominees/zora-kinuthia.jpg" },
 
-  // Diaspora (DSP08 Amy Ngunjiri removed)
+  // Diaspora
   { name: "Yussuf Abubakar", code: "DSP01", category: "diaspora", title: "Mr", photoUrl: "/nominees/yussuf-abubakar.jpg" },
   { name: "Andrew Muema Muthyokavi", code: "DSP02", category: "diaspora", title: "Mr", photoUrl: "/nominees/andrew-muema-muthyokavi.jpg" },
   { name: "Obi Ifaenyi", code: "DSP03", category: "diaspora", title: "Mr", photoUrl: "/nominees/obi-ifaenyi.jpg" },
@@ -68,6 +75,14 @@ const ALL_NOMINEES = [
   { name: "Teresia Nduku", code: "DSP09", category: "diaspora", title: "Miss", photoUrl: "/nominees/teresia-nduku.jpg" },
   { name: "Sharon Ingasian", code: "DSP10", category: "diaspora", title: "Miss", photoUrl: "/nominees/sharon-ingasian.jpg" },
   { name: "Miriam Monique", code: "DSP11", category: "diaspora", title: "Miss", photoUrl: "/nominees/miriam-monique.jpg" },
+  { name: "Ian Juma", code: "DSP12", category: "diaspora", title: "Mr", photoUrl: "/nominees/ian-juma.jpg" },
+  { name: "BRILLIANT ATYANG", code: "DSP13", category: "diaspora", title: "Miss", photoUrl: "/nominees/brilliant-atyang.jpg" },
+  { name: "Cosmus maithya", code: "DSP14", category: "diaspora", title: "Mr", photoUrl: "/nominees/cosmus-maithya.jpg" },
+  { name: "Monique Miriam", code: "DSP15", category: "diaspora", title: "Miss", photoUrl: "/nominees/monique-miriam.jpg" },
+  { name: "Mereline khayati", code: "DSP17", category: "diaspora", title: "Miss", photoUrl: "/nominees/mereline-khayati.jpg" },
+  { name: "Cecilia Wairimu", code: "DSP18", category: "diaspora", title: "Miss", photoUrl: "/nominees/cecilia-wairimu.jpg" },
+  { name: "Annet wanyagah", code: "DSP20", category: "diaspora", title: "Miss", photoUrl: "/nominees/annet-wanyagah.jpg" },
+  { name: "Kelvin Ooltetia", code: "DSP21", category: "diaspora", title: "Mr", photoUrl: "/nominees/kelvin-ooltetia.jpg" },
 
   // Mwala
   { name: "Cecilliah Nzilani", code: "MWL01", category: "mwala", title: "Miss", photoUrl: "/nominees/cecilliah-nzilani.jpg" },
@@ -77,6 +92,8 @@ const ALL_NOMINEES = [
   { name: "Diana Ndeda", code: "MWL05", category: "mwala", title: "Miss", photoUrl: "/nominees/diana-ndeda.jpg" },
   { name: "Keziah Monicah Mutaiti", code: "MWL06", category: "mwala", title: "Miss", photoUrl: "/nominees/keziah-monicah-mutaiti.jpg" },
   { name: "Trevis Kamau", code: "MWL07", category: "mwala", title: "Mr", photoUrl: "/nominees/trevis-kamau.jpg" },
+  { name: "Bradley Geoffrey", code: "MWL08", category: "mwala", title: "Mr", photoUrl: "/nominees/bradley-geoffrey.jpg" },
+  { name: "Zora Kinuthia", code: "MWL09", category: "mwala", title: "Miss", photoUrl: "/nominees/zora-kinuthia.jpg" },
 
   // Kangundo
   { name: "Praise Deborah Kithunga", code: "KAN01", category: "kangundo", title: "Miss", photoUrl: "/nominees/praise-deborah-kithunga.jpg" },
@@ -84,7 +101,10 @@ const ALL_NOMINEES = [
   { name: "Winnie Mutheu", code: "KAN03", category: "kangundo", title: "Miss", photoUrl: "/nominees/winnie-mutheu.jpg" },
   { name: "Margaret Wanja Mwangi", code: "KAN04", category: "kangundo", title: "Miss", photoUrl: "/nominees/margaret-wanja-mwangi.jpg" },
   { name: "Kuki Japhet", code: "KAN05", category: "kangundo", title: "Miss", photoUrl: "/nominees/kuki-japhet.jpg" },
-  { name: "Gladys Ngatha", code: "KAN06", category: "kangundo", title: "Miss", photoUrl: "/nominees/gladys-ngatha.jpg" }
+  { name: "Gladys Ngatha", code: "KAN06", category: "kangundo", title: "Miss", photoUrl: "/nominees/gladys-ngatha.jpg" },
+  { name: "Joy Wanjeri", code: "KAN07", category: "kangundo", title: "Miss", photoUrl: "/nominees/joy-wanjeri.jpg" },
+  { name: "Tracy Sitatian", code: "KAN08", category: "kangundo", title: "Miss", photoUrl: "/nominees/tracy-sitatian.jpg" },
+  { name: "Rama Hassan", code: "KAN09", category: "kangundo", title: "Mr", photoUrl: "/nominees/rama-hassan.jpg" }
 ];
 
 async function main() {
