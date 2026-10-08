@@ -62,6 +62,29 @@ const REGION_DATA: Record<string, any> = {
       { id: "dsp-10", name: "Sharon Ingasian", code: "DSP10", gender: "miss", votes: 0, photoUrl: "/nominees/sharon-ingasian.jpg" },
       { id: "dsp-11", name: "Miriam Monique", code: "DSP11", gender: "miss", votes: 0, photoUrl: "/nominees/miriam-monique.jpg" }
     ]
+  },
+  mwala: {
+    title: "Mr & Miss Machakos - Mwala",
+    nominees: [
+      { id: "mwl-1", name: "Cecilliah Nzilani", code: "MWL01", gender: "miss", votes: 0, photoUrl: "/nominees/cecilliah-nzilani.jpg" },
+      { id: "mwl-2", name: "Rabbeca Nduku Maingi", code: "MWL02", gender: "miss", votes: 0, photoUrl: "/nominees/rabbeca-nduku-maingi.jpg" },
+      { id: "mwl-3", name: "Darius Kaindi", code: "MWL03", gender: "mr", votes: 0, photoUrl: "/nominees/darius-kaindi.jpg" },
+      { id: "mwl-4", name: "Catherine Mutuku", code: "MWL04", gender: "miss", votes: 0, photoUrl: "/nominees/catherine-mutuku.jpg" },
+      { id: "mwl-5", name: "Diana Ndeda", code: "MWL05", gender: "miss", votes: 0, photoUrl: "/nominees/diana-ndeda.jpg" },
+      { id: "mwl-6", name: "Keziah Monicah Mutaiti", code: "MWL06", gender: "miss", votes: 0, photoUrl: "/nominees/keziah-monicah-mutaiti.jpg" },
+      { id: "mwl-7", name: "Trevis Kamau", code: "MWL07", gender: "mr", votes: 0, photoUrl: "/nominees/trevis-kamau.jpg" }
+    ]
+  },
+  kangundo: {
+    title: "Mr & Miss Machakos - Kangundo",
+    nominees: [
+      { id: "kan-1", name: "Praise Deborah Kithunga", code: "KAN01", gender: "miss", votes: 0, photoUrl: "/nominees/praise-deborah-kithunga.jpg" },
+      { id: "kan-2", name: "Joshua Kennedy", code: "KAN02", gender: "mr", votes: 0, photoUrl: "/nominees/joshua-kennedy.jpg" },
+      { id: "kan-3", name: "Winnie Mutheu", code: "KAN03", gender: "miss", votes: 0, photoUrl: "/nominees/winnie-mutheu.jpg" },
+      { id: "kan-4", name: "Margaret Wanja Mwangi", code: "KAN04", gender: "miss", votes: 0, photoUrl: "/nominees/margaret-wanja-mwangi.jpg" },
+      { id: "kan-5", name: "Kuki Japhet", code: "KAN05", gender: "miss", votes: 0, photoUrl: "/nominees/kuki-japhet.jpg" },
+      { id: "kan-6", name: "Gladys Ngatha", code: "KAN06", gender: "miss", votes: 0, photoUrl: "/nominees/gladys-ngatha.jpg" }
+    ]
   }
 };
 
@@ -140,7 +163,6 @@ export default function AdminDashboard() {
             JMA '26 <span className="text-amber-500">Live Leaderboard</span>
           </h1>
           
-          {/* New 3-Card Financial Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             
             <div className="bg-slate-900 px-6 py-5 rounded-2xl border border-slate-800 flex items-center gap-4">
