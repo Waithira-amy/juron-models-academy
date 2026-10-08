@@ -35,9 +35,12 @@ export default function NomineePortal() {
             if (updatedMe) {
               setMyProfile(updatedMe);
               
-              // Filter peers: Must be in the same location category AND same gender title (Mr/Miss)
+              // Filter peers: Must be in the same location category AND same gender title (Mr/Miss) - Case Insensitive
               const peers = dbResult.nominees
-                .filter((n: any) => n.category === updatedMe.category && n.title === updatedMe.title)
+                .filter((n: any) => 
+                  n.category?.toLowerCase() === updatedMe.category?.toLowerCase() && 
+                  n.title?.toLowerCase() === updatedMe.title?.toLowerCase()
+                )
                 .sort((a: any, b: any) => b.votes - a.votes); // Sort highest votes to lowest
               
               setMyCategoryPeers(peers);
@@ -73,9 +76,14 @@ export default function NomineePortal() {
         
         if (found) {
           setMyProfile(found);
+          // Case-insensitive peer filtering
           const peers = dbResult.nominees
-            .filter((n: any) => n.category === found.category && n.title === found.title)
+            .filter((n: any) => 
+              n.category?.toLowerCase() === found.category?.toLowerCase() && 
+              n.title?.toLowerCase() === found.title?.toLowerCase()
+            )
             .sort((a: any, b: any) => b.votes - a.votes);
+            
           setMyCategoryPeers(peers);
           setIsAuthenticated(true);
         } else {
