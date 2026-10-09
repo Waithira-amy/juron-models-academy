@@ -19,7 +19,8 @@ const REGION_DATA: Record<string, any> = {
       { id: "mvk-12", name: "Chelsea Tanya", code: "MVK12", gender: "miss", votes: 0, photoUrl: "/nominees/chelsea-tanya.jpg" },
       { id: "mvk-13", name: "Tonny Musembi", code: "MVK13", gender: "mr", votes: 0, photoUrl: "/nominees/tonny-musembi.jpg" },
       { id: "mvk-14", name: "Emmanuel Noel", code: "MVK14", gender: "mr", votes: 0, photoUrl: "/nominees/emmanuel-noel.jpg" },
-      { id: "mvk-15", name: "Pashile Arsene", code: "MVK15", gender: "mr", votes: 0, photoUrl: "/nominees/pashile-arsene.jpg" }
+      { id: "mvk-15", name: "Pashile Arsene", code: "MVK15", gender: "mr", votes: 0, photoUrl: "/nominees/pashile-arsene.jpg" },
+      { id: "mvk-16", name: "Josiah Lamo", code: "MVK16", gender: "mr", votes: 0, photoUrl: "/nominees/josiah-lamo.jpg" }
     ]
   },
   township: {

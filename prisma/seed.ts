@@ -33,6 +33,7 @@ const ALL_NOMINEES = [
   { name: "Tonny Musembi", code: "MVK13", category: "mavoko", title: "Mr", photoUrl: "/nominees/tonny-musembi.jpg" },
   { name: "Emmanuel Noel", code: "MVK14", category: "mavoko", title: "Mr", photoUrl: "/nominees/emmanuel-noel.jpg" },
   { name: "Pashile Arsene", code: "MVK15", category: "mavoko", title: "Mr", photoUrl: "/nominees/pashile-arsene.jpg" },
+  { name: "Josiah Lamo", code: "MVK16", category: "mavoko", title: "Mr", photoUrl: "/nominees/josiah-lamo.jpg" },
 
   // Township
   { name: "Kennedy Muasa", code: "TWN01", category: "township", title: "Mr", photoUrl: "/nominees/kennedy-muasa.jpg" },
