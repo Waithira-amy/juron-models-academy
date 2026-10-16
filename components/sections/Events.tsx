@@ -1,14 +1,19 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+
+import React, { useState, useEffect, useRef, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { Crown, Globe, Ticket, Users, Star, X, Smartphone, Loader2, CheckCircle2, Download, Heart } from "lucide-react";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 import * as htmlToImage from 'html-to-image';
 import download from 'downloadjs';
 
-export default function EventTickets() {
+function EventTicketsContent() {
+  const searchParams = useSearchParams();
+  const affiliateCode = searchParams?.get('ref'); // Captures the ?ref=MASCO code
+
   const [selectedTicket, setSelectedTicket] = useState<{ id: string, name: string, price: number } | null>(null);
-  const [customAmount, setCustomAmount] = useState<number>(500); // Default support amount
+  const [customAmount, setCustomAmount] = useState<number>(500);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentTicketCode, setCurrentTicketCode] = useState<string | null>(null);
@@ -21,7 +26,7 @@ export default function EventTickets() {
     setSelectedTicket({ id: uniqueId, name, price });
     setCurrentTicketCode(uniqueId);
     setPhoneNumber("");
-    setCustomAmount(500); // Reset custom amount just in case
+    setCustomAmount(500); 
     setTicketStatus("PENDING");
   };
 
@@ -51,28 +56,28 @@ export default function EventTickets() {
     e.preventDefault();
     if (!phoneNumber || !selectedTicket) return;
     
-    // Determine the final amount (if price is 0, it means it's the Support Ticket)
     const finalAmount = selectedTicket.price === 0 ? customAmount : selectedTicket.price;
     if (finalAmount < 10) return alert("Minimum contribution is 10 KES");
 
     setIsProcessing(true);
 
     try {
-      const response = await fetch('/api/stkpush', {
+      // Points to our new ticket-specific STK push endpoint
+      const response = await fetch('/api/stkpush/ticket', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           phone: phoneNumber,
           amount: finalAmount,
-          nomineeId: selectedTicket.id, 
-          nomineeName: selectedTicket.name,
-          votes: 1
+          ticketType: selectedTicket.name,
+          quantity: 1, // Buys 1 ticket per checkout
+          affiliateCode: affiliateCode // Passes "MASCO" (or null) to the backend
         })
       });
 
       const resData = await response.json();
       if (!resData.success) {
-        alert("Payment initialization failed.");
+        alert("Payment initialization failed: " + (resData.error || "Unknown error"));
       }
     } catch (error) {
       alert("Network error.");
@@ -249,5 +254,18 @@ export default function EventTickets() {
       </section>
       <Footer />
     </main>
+  );
+}
+
+// Next.js requires useSearchParams to be wrapped in a Suspense boundary 
+export default function EventTickets() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
+      </div>
+    }>
+      <EventTicketsContent />
+    </Suspense>
   );
 }
