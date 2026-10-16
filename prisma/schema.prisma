@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
   
 }
 
@@ -27,8 +27,9 @@ model Voting {
   photoUrl  String?
   votes     Int      @default(0)
   
-  // Connects the nominee to their M-Pesa payments
-  transactions VoteTransaction[]
+  // Relations linking the nominee to their payments
+  transactions     VoteTransaction[] // Your manual/ledger transactions
+  stkTransactions  Transaction[]     // Your automated M-Pesa STK transactions
 }
 
 // The financial ledger for tracking exact M-Pesa receipts
@@ -43,6 +44,8 @@ model VoteTransaction {
   voting        Voting   @relation(fields: [nomineeCode], references: [code])
   createdAt     DateTime @default(now())
 }
+
+// Your existing model for individual issued tickets
 model EventTicket {
   id         String   @id @default(cuid())
   ticketCode String   @unique
@@ -51,4 +54,56 @@ model EventTicket {
   receipt    String   // M-Pesa Receipt
   status     String   @default("PAID") // Will change to "SCANNED" at the door
   createdAt  DateTime @default(now())
+}
+
+// The model for your Commission Affiliates (Travis, Jane, Collins, Masco)
+model Affiliate {
+  id            String   @id @default(uuid())
+  name          String
+  code          String   @unique // e.g., "TRAVIS", "JANE"
+  commissionKES Float    @default(0) // Tracks their total 20% earnings
+  createdAt     DateTime @default(now())
+
+  // An affiliate can refer both Votes and Ticket Orders
+  transactions  Transaction[]
+  ticketOrders  TicketOrder[]
+}
+
+// The model for tracking STK Push Vote Checkouts
+model Transaction {
+  id                String   @id @default(uuid())
+  transactionCode   String?  @unique // Safaricom receipt (Null until successful callback)
+  checkoutRequestId String   @unique // Safaricom CheckoutRequestID to track pending prompts
+  phoneNumber       String
+  amount            Int
+  votesPurchased    Int
+  status            String   @default("PENDING")
+  timestamp         DateTime @default(now())
+  
+  nomineeCode       String
+  nominee           Voting   @relation(fields: [nomineeCode], references: [code])
+
+  // Optional link to Affiliate for voting commissions (if you expand it later)
+  affiliateCode     String?
+  affiliate         Affiliate? @relation(fields: [affiliateCode], references: [code])
+}
+
+// NEW: The model for tracking Ticket Checkouts and capturing Affiliate referrals
+model TicketOrder {
+  id                String   @id @default(uuid())
+  transactionCode   String?  @unique // Safaricom receipt (Null until successful callback)
+  checkoutRequestId String   @unique // Safaricom CheckoutRequestID to track pending prompts
+  phoneNumber       String
+  
+  ticketType        String   // e.g., "Crown Ticket", "Royal Ticket"
+  quantity          Int
+  amount            Int      // Total amount paid
+  
+  status            String   @default("PENDING")
+  source            String   @default("WEBSITE") // "WEBSITE" or "REFERRAL"
+  createdAt         DateTime @default(now())
+
+  // Link to the Affiliate if source == "REFERRAL"
+  affiliateCode     String?
+  affiliate         Affiliate? @relation(fields: [affiliateCode], references: [code])
 }

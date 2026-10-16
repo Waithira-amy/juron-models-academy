@@ -119,8 +119,8 @@ export default function EventTickets() {
               <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-lg relative flex flex-col">
                 <div className="absolute top-0 left-0 w-full h-1 bg-amber-400" />
                 <h3 className="font-bold text-lg text-slate-900 mb-6">Crown Ticket <br/><span className="text-[10px] text-slate-500 uppercase">For Students</span></h3>
-                <div className="mb-6"><span className="text-3xl font-black">500</span><span className="text-sm font-bold text-slate-500 ml-1">KES</span></div>
-                <button onClick={() => openTicketModal("TKT-CRN", "Crown Ticket", 500)} className="w-full py-3.5 bg-slate-900 text-white rounded-xl text-xs font-bold uppercase mt-auto">Buy Ticket</button>
+                <div className="mb-6"><span className="text-3xl font-black">1</span><span className="text-sm font-bold text-slate-500 ml-1">KES</span></div>
+                <button onClick={() => openTicketModal("TKT-CRN", "Crown Ticket", 1)} className="w-full py-3.5 bg-slate-900 text-white rounded-xl text-xs font-bold uppercase mt-auto">Buy Ticket</button>
               </div>
 
               {/* Royal Ticket */}

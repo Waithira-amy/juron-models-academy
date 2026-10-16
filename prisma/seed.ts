@@ -17,6 +17,14 @@ const pool = new Pool({ connectionString });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
+// --- NEW: Commission Affiliates ---
+const AFFILIATES = [
+  { name: "Travis Kilatya", code: "TRAVIS" },
+  { name: "Jane Njeri", code: "JANE" },
+  { name: "Collins", code: "COLLINS" },
+  { name: "Masco", code: "MASCO" },
+];
+
 const ALL_NOMINEES = [
   // Mavoko
   { name: "Emmanuel Dennis", code: "MVK02", category: "mavoko", title: "Mr", photoUrl: "/nominees/emmanuel-dennis.jpg" },
@@ -122,6 +130,21 @@ async function main() {
       console.error(`❌ Failed to sync ${n.code}:`, err.message);
     }
   }
+
+  console.log("\nSeeding affiliates to database...");
+  for (const a of AFFILIATES) {
+    try {
+      await (prisma as any).affiliate.upsert({
+        where: { code: a.code },
+        update: { name: a.name },
+        create: { name: a.name, code: a.code, commissionKES: 0 }
+      });
+      console.log(`✅ Synced Affiliate ${a.code}`);
+    } catch (err: any) {
+      console.error(`❌ Failed to sync Affiliate ${a.code}:`, err.message);
+    }
+  }
+
   console.log("🎉 Done seeding.");
 }
 
