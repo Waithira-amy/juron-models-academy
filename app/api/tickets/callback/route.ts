@@ -2,10 +2,23 @@ export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { Pool } from "pg";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-const prisma = new PrismaClient();
+// Safely initialize Prisma with the Neon PG adapter
+const getPrisma = () => {
+  const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
+  if (!globalForPrisma.prisma) {
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    const adapter = new PrismaPg(pool);
+    globalForPrisma.prisma = new PrismaClient({ adapter });
+  }
+  return globalForPrisma.prisma;
+};
 
 export async function POST(req: Request) {
+  const prisma = getPrisma();
+
   try {
     const data = await req.json();
     const stkCallback = data?.Body?.stkCallback;
@@ -17,7 +30,6 @@ export async function POST(req: Request) {
     const checkoutRequestId = stkCallback.CheckoutRequestID;
     const resultCode = stkCallback.ResultCode;
 
-    // Handle canceled or failed M-Pesa prompts
     if (resultCode !== 0) {
       await prisma.ticketOrder.updateMany({
         where: { checkoutRequestId },
@@ -26,20 +38,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Transaction failed or canceled" });
     }
 
-    // Extract M-Pesa Receipt Number for successful transactions
     const callbackItems = stkCallback.CallbackMetadata?.Item || [];
     const mpesaReceiptObj = callbackItems.find((item: any) => item.Name === "MpesaReceiptNumber");
     const mpesaReceiptNumber = mpesaReceiptObj?.Value as string;
 
-    // 1. Find the pending ticket order
     const pendingOrder = await prisma.ticketOrder.findUnique({
       where: { checkoutRequestId },
     });
 
     if (pendingOrder) {
-      // 2. Wrap database updates in a transaction
       await prisma.$transaction(async (tx) => {
-        // A. Mark ticket order as SUCCESS
         await tx.ticketOrder.update({
           where: { checkoutRequestId },
           data: {
@@ -48,7 +56,6 @@ export async function POST(req: Request) {
           },
         });
 
-        // B. If an affiliate referred this sale, give them 20%
         if (pendingOrder.affiliateCode) {
           const commission = pendingOrder.amount * 0.20;
           await tx.affiliate.update({

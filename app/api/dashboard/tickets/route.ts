@@ -2,24 +2,34 @@ export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { Pool } from "pg";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-const prisma = new PrismaClient();
+// Safely initialize Prisma with the Neon PG adapter
+const getPrisma = () => {
+  const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
+  if (!globalForPrisma.prisma) {
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    const adapter = new PrismaPg(pool);
+    globalForPrisma.prisma = new PrismaClient({ adapter });
+  }
+  return globalForPrisma.prisma;
+};
 
 export async function GET() {
+  const prisma = getPrisma();
+
   try {
-    // 1. Fetch all successful ticket orders with affiliate data
     const orders = await prisma.ticketOrder.findMany({
       where: { status: "SUCCESS" },
-      include: { affiliate: true }, 
+      include: { affiliate: true },
       orderBy: { createdAt: "desc" },
     });
 
-    // 2. Fetch all affiliates and their total commissions
     const affiliates = await prisma.affiliate.findMany({
       orderBy: { commissionKES: "desc" },
     });
 
-    // 3. Calculate quick summary stats for the dashboard cards
     const totalTicketsSold = orders.reduce((sum: number, order: any) => sum + order.quantity, 0);
     const totalRevenue = orders.reduce((sum: number, order: any) => sum + order.amount, 0);
     const totalCommissionsOwed = affiliates.reduce((sum: number, aff: any) => sum + aff.commissionKES, 0);
