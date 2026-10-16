@@ -1,24 +1,9 @@
 export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-import { Pool } from "pg";
-import { PrismaPg } from "@prisma/adapter-pg";
-
-// Safe Prisma initialization for Vercel
-const getPrisma = () => {
-  const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
-  if (!globalForPrisma.prisma) {
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-    const adapter = new PrismaPg(pool);
-    globalForPrisma.prisma = new PrismaClient({ adapter });
-  }
-  return globalForPrisma.prisma;
-};
+import prisma from "@/lib/prisma"; // Using the central Prisma client we created!
 
 export async function POST(req: Request) {
-  const prisma = getPrisma();
-
   try {
     const { phone, amount, ticketType, quantity, affiliateCode } = await req.json();
 
@@ -32,10 +17,19 @@ export async function POST(req: Request) {
 
     // 2. Get Daraja Access Token
     const authString = Buffer.from(`${process.env.MPESA_CONSUMER_KEY}:${process.env.MPESA_CONSUMER_SECRET}`).toString('base64');
+    
+    // NOTE: Change "sandbox" to "api" in this URL if using Live Vercel credentials
     const tokenRes = await fetch("https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials", {
       headers: { Authorization: `Basic ${authString}` },
     });
     const tokenData = await tokenRes.json();
+    
+    // Safety check: If Daraja rejects the keys, stop here and report it
+    if (!tokenData.access_token) {
+      console.error("Daraja Auth Error. Check Vercel Env Variables:", tokenData);
+      return NextResponse.json({ success: false, error: "Daraja Auth Failed. Check Vercel Env Variables." }, { status: 500 });
+    }
+    
     const accessToken = tokenData.access_token;
 
     // 3. Prepare STK Push Password
@@ -45,6 +39,7 @@ export async function POST(req: Request) {
     const password = Buffer.from(`${shortCode}${passkey}${timestamp}`).toString("base64");
 
     // 4. Initiate STK Push
+    // NOTE: Change "sandbox" to "api" in this URL if using Live Vercel credentials
     const stkRes = await fetch("https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest", {
       method: "POST",
       headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
@@ -57,7 +52,7 @@ export async function POST(req: Request) {
         PartyA: formattedPhone,
         PartyB: shortCode,
         PhoneNumber: formattedPhone,
-        CallBackURL: `${process.env.NEXT_PUBLIC_APP_URL}/api/tickets/callback`, // Hits our new webhook!
+        CallBackURL: `${process.env.NEXT_PUBLIC_APP_URL}/api/tickets/callback`,
         AccountReference: ticketType,
         TransactionDesc: `Payment for ${quantity} ${ticketType} ticket(s)`,
       }),
