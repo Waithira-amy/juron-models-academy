@@ -57,7 +57,7 @@ function EventTicketsContent() {
     if (!phoneNumber || !selectedTicket) return;
     
     const finalAmount = selectedTicket.price === 0 ? customAmount : selectedTicket.price;
-    if (finalAmount < 10) return alert("Minimum contribution is 10 KES");
+    if (finalAmount < 1) return alert("Minimum contribution is 1 KES");
 
     setIsProcessing(true);
 
