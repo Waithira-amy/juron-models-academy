@@ -102,6 +102,10 @@ export async function POST(req: Request) {
     }
   } catch (error: any) {
     console.error("Ticket STK Push Error:", error);
-    return NextResponse.json({ success: false, error: `Crash Details: ${error.message || String(error)}` }, { status: 500 });
+    const networkCause = error.cause ? (error.cause.message || String(error.cause)) : "Unknown Network Drop";
+    return NextResponse.json({ 
+      success: false, 
+      error: `Crash Details: ${error.message}. Cause: ${networkCause}` 
+    }, { status: 500 });
   }
 }
