@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 
@@ -8,7 +10,7 @@ export async function GET() {
     // 1. Fetch all successful ticket orders with affiliate data
     const orders = await prisma.ticketOrder.findMany({
       where: { status: "SUCCESS" },
-      include: { affiliate: true }, // Joins the affiliate table to get their names
+      include: { affiliate: true }, 
       orderBy: { createdAt: "desc" },
     });
 
