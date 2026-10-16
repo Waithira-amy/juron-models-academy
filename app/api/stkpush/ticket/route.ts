@@ -22,9 +22,9 @@ export async function POST(req: Request) {
       throw new Error("Missing MPESA_CONSUMER_KEY or MPESA_CONSUMER_SECRET in Vercel settings.");
     }
 
-    // 3. Daraja Auth
+    // 3. Daraja Auth (Using LIVE URL)
     const authString = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
-    const tokenRes = await fetch("https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials", {
+    const tokenRes = await fetch("https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials", {
       headers: { Authorization: `Basic ${authString}` },
     });
     
@@ -50,11 +50,10 @@ export async function POST(req: Request) {
     const timestamp = new Date().toISOString().replace(/[^0-9]/g, "").slice(0, 14);
     const password = Buffer.from(`${shortCode}${passkey}${timestamp}`).toString("base64");
 
-    // Fallback to your live domain if NEXT_PUBLIC_APP_URL is missing in Vercel
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://juronmodels.co.ke";
 
-    // 5. Initiate STK Push
-    const stkRes = await fetch("https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest", {
+    // 5. Initiate STK Push (Using LIVE URL)
+    const stkRes = await fetch("https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest", {
       method: "POST",
       headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
       body: JSON.stringify({
