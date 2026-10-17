@@ -108,4 +108,3 @@ export async function POST(req: Request) {
       error: `Crash Details: ${error.message}. Cause: ${networkCause}` 
     }, { status: 500 });
   }
-}
