@@ -5,7 +5,6 @@ import prisma from "@/lib/prisma";
 
 export async function POST(req: Request) {
   try {
-    // 1. Safely check the frontend request
     const rawBody = await req.text();
     if (!rawBody) throw new Error("The frontend sent an empty request.");
     const { phone, amount, ticketType, quantity, affiliateCode } = JSON.parse(rawBody);
@@ -14,7 +13,6 @@ export async function POST(req: Request) {
     if (formattedPhone.startsWith("0")) formattedPhone = "254" + formattedPhone.slice(1);
     else if (formattedPhone.startsWith("+")) formattedPhone = formattedPhone.slice(1);
 
-    // 2. Check Vercel Environment Variables BEFORE hitting Daraja
     const consumerKey = process.env.MPESA_CONSUMER_KEY;
     const consumerSecret = process.env.MPESA_CONSUMER_SECRET;
     
@@ -22,13 +20,11 @@ export async function POST(req: Request) {
       throw new Error("Missing MPESA_CONSUMER_KEY or MPESA_CONSUMER_SECRET in Vercel settings.");
     }
 
-    // 3. Daraja Auth (Using LIVE URL)
     const authString = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
     const tokenRes = await fetch("https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials", {
       headers: { Authorization: `Basic ${authString}` },
     });
     
-    // Safely read the text before assuming it's JSON
     const tokenText = await tokenRes.text();
     if (!tokenText) throw new Error(`Daraja Auth returned a blank response. Status: ${tokenRes.status}`);
     
@@ -43,7 +39,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: `Daraja Auth Failed: ${tokenText}` }, { status: 500 });
     }
     
-    // 4. Prepare STK Push
     const accessToken = tokenData.access_token;
     const shortCode = process.env.MPESA_PASSKEY ? process.env.MPESA_SHORTCODE : "174379"; 
     const passkey = process.env.MPESA_PASSKEY || "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
@@ -52,7 +47,6 @@ export async function POST(req: Request) {
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://juronmodels.co.ke";
 
-    // 5. Initiate STK Push (Using LIVE URL)
     const stkRes = await fetch("https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest", {
       method: "POST",
       headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
@@ -81,7 +75,6 @@ export async function POST(req: Request) {
       throw new Error(`Safaricom STK returned invalid data: ${stkText.substring(0, 50)}...`);
     }
 
-    // 6. Process Database Entry
     if (mpesaResponse.ResponseCode === "0") {
       await prisma.ticketOrder.create({
         data: {
