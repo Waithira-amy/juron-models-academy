@@ -38,10 +38,8 @@ export async function POST(req: Request) {
     const tillNumber = process.env.MPESA_TILL_NUMBER || process.env.MPESA_SHORTCODE!;
     const password = Buffer.from(`${storeNumber}${passkey}${timestamp}`).toString("base64");
 
-    // Extracts base domain from env and dynamically adds callback params
-    const rawEnvUrl = process.env.MPESA_CALLBACK_URL || "https://juronmodels.co.ke";
-    const baseDomain = new URL(rawEnvUrl).origin;
-    const callbackUrl = `${baseDomain}/api/callback?nomineeId=${encodeURIComponent(nomineeId)}&votes=${votes}`;
+    // FIXED: Forcing the exact live Netlify callback URL
+    const callbackUrl = `https://juronmodels.co.ke/api/callback?nomineeId=${encodeURIComponent(nomineeId)}&votes=${votes}`;
 
     const stkPayload = {
       BusinessShortCode: storeNumber,
