@@ -10,7 +10,8 @@ const CATEGORY_DATA = [
     desc: "Syokimau, Mlolongo, Athi River, and Mavoko Sub-County.",
     link: "/voting/mavoko",
     startDate: null, 
-    endDate: "2026-10-19T23:59:59+03:00", 
+    // Extended by 3 days
+    endDate: "2026-10-23T23:59:59+03:00", 
     Icon: Crown,
     theme: { bg: "bg-rose-50", border: "border-rose-100", text: "text-rose-500" }
   },
@@ -20,7 +21,8 @@ const CATEGORY_DATA = [
     desc: "Machakos Town, University, and Central Environs.",
     link: "/voting/township",
     startDate: null, 
-    endDate: "2026-10-19T23:59:59+03:00",
+    // Extended by 3 days
+    endDate: "2026-10-23T23:59:59+03:00",
     Icon: Camera,
     theme: { bg: "bg-amber-50", border: "border-amber-100", text: "text-amber-500" }
   },
@@ -30,7 +32,8 @@ const CATEGORY_DATA = [
     desc: "Global & Countrywide Ambassadors outside the County.",
     link: "/voting/diaspora",
     startDate: null, 
-    endDate: "2026-10-19T23:59:59+03:00",
+    // Extended by 3 days
+    endDate: "2026-10-23T23:59:59+03:00",
     Icon: Globe,
     theme: { bg: "bg-sky-50", border: "border-sky-100", text: "text-sky-500" }
   },
