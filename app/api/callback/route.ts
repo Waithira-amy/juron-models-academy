@@ -1,19 +1,13 @@
-import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-import { Pool } from 'pg';
-import { PrismaPg } from '@prisma/adapter-pg';
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/prisma"; 
 
 export const dynamic = "force-dynamic";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL as string });
-    const adapter = new PrismaPg(pool);
-    const prisma = new PrismaClient({ adapter });
-    
-    const url = new URL(req.url);
-    const nomineeCode = url.searchParams.get("nomineeId"); 
-    const votes = Number(url.searchParams.get("votes")) || 1;
+    // FIX: Using req.nextUrl safely parses the URL on Netlify without crashing
+    const nomineeCode = req.nextUrl.searchParams.get("nomineeId"); 
+    const votes = Number(req.nextUrl.searchParams.get("votes")) || 1;
 
     const body = await req.json();
     const callbackData = body?.Body?.stkCallback;
@@ -30,9 +24,8 @@ export async function POST(req: Request) {
       const voterPhone = getMeta("PhoneNumber")?.toString() || "UNKNOWN";
       const paidAmount = Number(getMeta("Amount")) || 0;
 
-      // Check if it's a TICKET or a VOTE based on the ID prefix
       if (nomineeCode.toString().startsWith("TKT-")) {
-        // --- IT IS A TICKET PURCHASE ---
+        // --- TICKET PURCHASE ---
         await (prisma as any).eventTicket.create({
           data: {
             ticketCode: nomineeCode as string,
@@ -43,7 +36,6 @@ export async function POST(req: Request) {
           }
         });
         
-        // Log the revenue to the general ledger (votesAwarded is 0 because it's a ticket, not a vote)
         await (prisma as any).voteTransaction.create({
           data: { amount: paidAmount, votesAwarded: 0, phone: voterPhone, receiptNumber: receipt, nomineeCode: "EVENT_TICKET" }
         });
@@ -51,7 +43,7 @@ export async function POST(req: Request) {
         console.log(`🎟️ Ticket Generated: ${nomineeCode} for ${voterPhone}`);
         
       } else {
-        // --- IT IS A NORMAL VOTE ---
+        // --- VOTE PURCHASE ---
         await (prisma as any).voteTransaction.create({
           data: { amount: paidAmount, votesAwarded: votes, phone: voterPhone, receiptNumber: receipt, nomineeCode: nomineeCode as string }
         });
@@ -74,8 +66,9 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ ResultCode: 0, ResultDesc: "Accepted" });
 
-  } catch (error) {
-    console.error("Webhook Error:", error);
+  } catch (error: any) {
+    // This will print the exact reason if it ever fails again
+    console.error("Webhook Error:", error.message || error);
     return NextResponse.json({ ResultCode: 0, ResultDesc: "Accepted with internal errors" });
   }
 }
