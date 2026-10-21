@@ -176,7 +176,7 @@ export default function RegionVotingPage() {
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
 
-  const VOTE_COST_KES = 10;
+  const VOTE_COST_KES = 1;
 
   useEffect(() => {
     setLiveNominees(data.nominees);
