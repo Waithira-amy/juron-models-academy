@@ -15,7 +15,6 @@ export async function POST(req: Request) {
 
     const auth = Buffer.from(`${process.env.MPESA_CONSUMER_KEY}:${process.env.MPESA_CONSUMER_SECRET}`).toString("base64");
     
-    // Hardcoded URL guarantees Safaricom sees the grant_type perfectly
     const oauthUrl = "https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials";
     
     const tokenResponse = await fetch(oauthUrl, {
@@ -38,7 +37,7 @@ export async function POST(req: Request) {
     const tillNumber = process.env.MPESA_TILL_NUMBER || process.env.MPESA_SHORTCODE!;
     const password = Buffer.from(`${storeNumber}${passkey}${timestamp}`).toString("base64");
 
-    // FIXED: Forcing the exact live Netlify callback URL
+    // Hardcoded to point strictly to the Truehost domain
     const callbackUrl = `https://juronmodels.co.ke/api/callback?nomineeId=${encodeURIComponent(nomineeId)}&votes=${votes}`;
 
     const stkPayload = {
