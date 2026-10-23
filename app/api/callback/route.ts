@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
-    // FIX: Using req.nextUrl safely parses the URL on Netlify without crashing
+    // FIX: Using req.nextUrl safely parses the URL without crashing
     const nomineeCode = req.nextUrl.searchParams.get("nomineeId"); 
     const votes = Number(req.nextUrl.searchParams.get("votes")) || 1;
 
@@ -67,7 +67,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ResultCode: 0, ResultDesc: "Accepted" });
 
   } catch (error: any) {
-    // This will print the exact reason if it ever fails again
     console.error("Webhook Error:", error.message || error);
     return NextResponse.json({ ResultCode: 0, ResultDesc: "Accepted with internal errors" });
   }
