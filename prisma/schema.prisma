@@ -1,10 +1,10 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
   provider = "postgresql"
-  
   
 }
 
@@ -29,8 +29,8 @@ model Voting {
   votes     Int      @default(0)
   
   // Relations linking the nominee to their payments
-  transactions     VoteTransaction[] // Your manual/ledger transactions
-  stkTransactions  Transaction[]     // Your automated M-Pesa STK transactions
+  transactions    VoteTransaction[] // Your manual/ledger transactions
+  stkTransactions Transaction[]     // Your automated M-Pesa STK transactions
 }
 
 // The financial ledger for tracking exact M-Pesa receipts
