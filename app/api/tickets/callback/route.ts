@@ -1,24 +1,9 @@
 export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-import { Pool } from "pg";
-import { PrismaPg } from "@prisma/adapter-pg";
-
-// Safely initialize Prisma with the Neon PG adapter
-const getPrisma = () => {
-  const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
-  if (!globalForPrisma.prisma) {
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-    const adapter = new PrismaPg(pool);
-    globalForPrisma.prisma = new PrismaClient({ adapter });
-  }
-  return globalForPrisma.prisma;
-};
+import prisma from "@/lib/prisma";
 
 export async function POST(req: Request) {
-  const prisma = getPrisma();
-
   try {
     const data = await req.json();
     const stkCallback = data?.Body?.stkCallback;

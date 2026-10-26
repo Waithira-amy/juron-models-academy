@@ -1,9 +1,7 @@
-import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-import { Pool } from 'pg';
-import { PrismaPg } from '@prisma/adapter-pg';
-
 export const dynamic = "force-dynamic";
+
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
 
 // Your exact, polished nominee list with correct codes!
 const EXACT_NOMINEES = [
@@ -52,21 +50,17 @@ const EXACT_NOMINEES = [
 
 export async function GET() {
   try {
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL as string });
-    const adapter = new PrismaPg(pool);
-    const prisma = new PrismaClient({ adapter });
-
     let addedCount = 0;
 
     for (const nom of EXACT_NOMINEES) {
       // 1. Check if this exact code is already in the database
-      const existing = await (prisma as any).voting.findFirst({
+      const existing = await prisma.voting.findFirst({
         where: { code: nom.code }
       });
 
       // 2. If it's missing, add it safely with 0 real votes!
       if (!existing) {
-        await (prisma as any).voting.create({
+        await prisma.voting.create({
           data: {
             fullName: nom.name,
             code: nom.code,

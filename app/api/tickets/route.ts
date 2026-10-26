@@ -1,9 +1,7 @@
-import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-import { Pool } from 'pg';
-import { PrismaPg } from '@prisma/adapter-pg';
-
 export const dynamic = "force-dynamic";
+
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
 
 // 1. Check ticket status (Used by frontend to show the QR code after payment)
 export async function GET(req: Request) {
@@ -12,18 +10,11 @@ export async function GET(req: Request) {
   
   if (!code) return NextResponse.json({ error: "No code provided" }, { status: 400 });
 
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL as string });
-  const adapter = new PrismaPg(pool);
-  const prisma = new PrismaClient({ adapter });
-
   try {
-    const ticket = await (prisma as any).eventTicket.findUnique({ where: { ticketCode: code } });
+    const ticket = await prisma.eventTicket.findUnique({ where: { ticketCode: code } });
     return NextResponse.json({ success: true, ticket });
   } catch (error) {
     return NextResponse.json({ success: false });
-  } finally {
-    await prisma.$disconnect();
-    await pool.end();
   }
 }
 
@@ -32,12 +23,8 @@ export async function POST(req: Request) {
   const body = await req.json();
   const { ticketCode } = body;
 
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL as string });
-  const adapter = new PrismaPg(pool);
-  const prisma = new PrismaClient({ adapter });
-
   try {
-    const ticket = await (prisma as any).eventTicket.findUnique({ where: { ticketCode } });
+    const ticket = await prisma.eventTicket.findUnique({ where: { ticketCode } });
 
     if (!ticket) {
       return NextResponse.json({ success: false, message: "❌ Invalid Ticket: Not found in system" });
@@ -48,7 +35,7 @@ export async function POST(req: Request) {
     }
 
     // Mark as scanned
-    await (prisma as any).eventTicket.update({
+    await prisma.eventTicket.update({
       where: { ticketCode },
       data: { status: "SCANNED" }
     });
@@ -59,8 +46,5 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     return NextResponse.json({ success: false, message: "System error" });
-  } finally {
-    await prisma.$disconnect();
-    await pool.end();
   }
 }

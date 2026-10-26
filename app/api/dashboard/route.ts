@@ -1,18 +1,12 @@
-import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-import { Pool } from 'pg';
-import { PrismaPg } from '@prisma/adapter-pg';
-
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+
 export async function GET() {
   try {
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL as string });
-    const adapter = new PrismaPg(pool);
-    const prisma = new PrismaClient({ adapter });
-
-    const nominees = await (prisma as any).voting.findMany({
+    const nominees = await prisma.voting.findMany({
       select: {
         code: true,
         fullName: true,
