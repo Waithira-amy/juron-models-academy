@@ -2,7 +2,10 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "juron-models-academy",
   "compatibility_date": "2026-10-26",
-  "pages_build_output_dir": ".vercel/output/static",
+  "main": ".vercel/output/static/_worker.js",
+  "assets": {
+    "directory": ".vercel/output/static"
+  },
   "vars": {
     "MPESA_ENVIRONMENT": "production",
     "MPESA_SHORTCODE": "6641209",
@@ -12,9 +15,9 @@
     "MPESA_CALLBACK_URL": "https://juronmodels.co.ke/api/callback",
     "POSTGRES_DATABASE": "neondb",
     "POSTGRES_USER": "neondb_owner",
-    "BLOB_READ_WRITE_TOKEN" :"vercel_blob_rw_43Yyz9QgL8rPTp8p_jG7XrW2OdrFXH5FAqoxxUnJ55pdovO",
-    "DATABASE_URL" : "postgresql://neondb_owner:npg_2OjxhCzliX9b@ep-floral-bar-auvda71j-pooler.c-10.us-east-1.aws.neon.tech/neondb?channel_binding=require&sslmode=require",
-    "POSTGRES_PRISMA_URL" :"postgresql://neondb_owner:npg_2OjxhCzliX9b@ep-floral-bar-auvda71j-pooler.c-10.us-east-1.aws.neon.tech/neondb?channel_binding=require&connect_timeout=15&sslmode=require",
-    "POSTGRES_URL" :"postgresql://neondb_owner:npg_2OjxhCzliX9b@ep-floral-bar-auvda71j-pooler.c-10.us-east-1.aws.neon.tech/neondb?channel_binding=require&sslmode=require"
+    "BLOB_READ_WRITE_TOKEN": "vercel_blob_rw_43Yyz9QgL8rPTp8p_jG7XrW2OdrFXH5FAqoxxUnJ55pdovO",
+    "DATABASE_URL": "postgresql://neondb_owner:npg_2OjxhCzliX9b@ep-floral-bar-auvda71j.c-10.us-east-1.aws.neon.tech/neondb?sslmode=require",
+    "POSTGRES_PRISMA_URL": "postgresql://neondb_owner:npg_2OjxhCzliX9b@ep-floral-bar-auvda71j.c-10.us-east-1.aws.neon.tech/neondb?sslmode=require",
+    "POSTGRES_URL": "postgresql://neondb_owner:npg_2OjxhCzliX9b@ep-floral-bar-auvda71j.c-10.us-east-1.aws.neon.tech/neondb?sslmode=require"
   }
 }
