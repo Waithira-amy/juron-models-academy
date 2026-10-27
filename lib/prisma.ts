@@ -1,4 +1,3 @@
-// lib/prisma.ts
 import { PrismaClient } from "@prisma/client/edge";
 import { Pool } from "@neondatabase/serverless";
 import { PrismaNeon } from "@prisma/adapter-neon";
@@ -19,3 +18,12 @@ export const getPrisma = () => {
   }
   return prismaInstance;
 };
+
+// This Proxy intercepts calls from your existing API routes and lazily loads the connection
+const prisma = new Proxy({} as PrismaClient, {
+  get: (_, prop) => {
+    return getPrisma()[prop as keyof PrismaClient];
+  },
+});
+
+export default prisma;
