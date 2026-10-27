@@ -2,6 +2,8 @@ import { put } from '@vercel/blob';
 import { NextResponse } from 'next/server';
 import prisma from "@/lib/prisma";
 
+export const runtime = "edge";
+
 export async function POST(request: Request) {
   try {
     // 1. Receive the form data from the frontend

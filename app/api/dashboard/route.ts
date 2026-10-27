@@ -1,8 +1,9 @@
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+
+export const runtime = "edge";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export async function GET() {
   try {
@@ -13,7 +14,7 @@ export async function GET() {
         category: true,
         title: true,
         votes: true,
-        photoUrl: true, // <-- Added this line to fetch photos!
+        photoUrl: true, 
       }
     });
 

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
+export const runtime = "edge"; // REQUIRED FOR CLOUDFLARE
+
 export async function POST(req: Request) {
   try {
     const { pin } = await req.json();
