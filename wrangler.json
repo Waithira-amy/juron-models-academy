@@ -2,10 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "juron-models-academy",
   "compatibility_date": "2026-10-26",
-  "main": ".vercel/output/static/_worker.js",
-  "assets": {
-    "directory": ".vercel/output/static"
-  },
+  "pages_build_output_dir": ".vercel/output/static",
   "vars": {
     "MPESA_ENVIRONMENT": "production",
     "MPESA_SHORTCODE": "6641209",
