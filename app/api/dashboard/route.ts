@@ -1,3 +1,4 @@
+// app/api/dashboard/route.ts
 import { NextResponse } from "next/server";
 import { getPrisma } from "@/lib/prisma";
 
@@ -7,13 +8,16 @@ export const revalidate = 0;
 
 export async function GET() {
   try {
-    const prisma = getPrisma(); // Initialize Prisma AFTER variables are loaded
+    // Initialize Prisma INSIDE the request so Cloudflare variables are active
+    const prisma = getPrisma(); 
 
+    // Aggregate real-time votes from the transactions table
     const voteAggregations = await prisma.voteTransaction.groupBy({
       by: ["nomineeCode"],
       _sum: { votesAwarded: true },
     });
 
+    // Fetch nominee details
     const nominees = await prisma.voting.findMany({
       select: {
         code: true,
@@ -25,6 +29,7 @@ export async function GET() {
       },
     });
 
+    // Merge transaction totals with nominee details
     const mergedNominees = nominees.map((nom) => {
       const agg = voteAggregations.find((v) => v.nomineeCode === nom.code);
       return {
@@ -33,6 +38,7 @@ export async function GET() {
       };
     });
 
+    // Fallback display if the main Voting table is currently empty
     const finalData = mergedNominees.length > 0 
         ? mergedNominees 
         : voteAggregations.map((a) => ({ code: a.nomineeCode, votes: a._sum.votesAwarded || 0 }));
@@ -42,8 +48,8 @@ export async function GET() {
       {
         headers: {
           "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-          Pragma: "no-cache",
-          Expires: "0",
+          "Pragma": "no-cache",
+          "Expires": "0",
         },
       }
     );
