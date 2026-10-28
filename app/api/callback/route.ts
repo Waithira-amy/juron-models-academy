@@ -5,10 +5,7 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
-    // FIX: Using req.nextUrl safely parses the URL without crashing
     const nomineeCode = req.nextUrl.searchParams.get("nomineeId"); 
-    const votes = Number(req.nextUrl.searchParams.get("votes")) || 1;
-
     const body = await req.json();
     const callbackData = body?.Body?.stkCallback;
 
@@ -23,6 +20,10 @@ export async function POST(req: NextRequest) {
       const receipt = getMeta("MpesaReceiptNumber") || "UNKNOWN";
       const voterPhone = getMeta("PhoneNumber")?.toString() || "UNKNOWN";
       const paidAmount = Number(getMeta("Amount")) || 0;
+
+      // SECURE CALCULATION: 10 KES = 1 Vote based strictly on money received
+      const VOTE_PRICE = 10;
+      const actualVotes = Math.floor(paidAmount / VOTE_PRICE);
 
       if (nomineeCode.toString().startsWith("TKT-")) {
         // --- TICKET PURCHASE ---
@@ -44,23 +45,27 @@ export async function POST(req: NextRequest) {
         
       } else {
         // --- VOTE PURCHASE ---
-        await (prisma as any).voteTransaction.create({
-          data: { amount: paidAmount, votesAwarded: votes, phone: voterPhone, receiptNumber: receipt, nomineeCode: nomineeCode as string }
-        });
-        
-        await (prisma as any).voting.upsert({
-          where: { code: nomineeCode as string },
-          update: { votes: { increment: votes } },
-          create: {
-            code: nomineeCode as string,
-            fullName: nomineeCode as string,
-            category: "General",
-            title: "Nominee",
-            votes: votes
-          }
-        });
-        
-        console.log(`✅ Payment ${receipt}: ${votes} votes to ${nomineeCode} from ${voterPhone}`);
+        if (actualVotes > 0) {
+          await (prisma as any).voteTransaction.create({
+            data: { amount: paidAmount, votesAwarded: actualVotes, phone: voterPhone, receiptNumber: receipt, nomineeCode: nomineeCode as string }
+          });
+          
+          await (prisma as any).voting.upsert({
+            where: { code: nomineeCode as string },
+            update: { votes: { increment: actualVotes } },
+            create: {
+              code: nomineeCode as string,
+              fullName: nomineeCode as string,
+              category: "General",
+              title: "Nominee",
+              votes: actualVotes
+            }
+          });
+          
+          console.log(`✅ Payment ${receipt}: ${actualVotes} votes to ${nomineeCode} from ${voterPhone} (Paid: ${paidAmount} KES)`);
+        } else {
+          console.log(`⚠️ Payment ${receipt}: Amount ${paidAmount} KES was too low to award any votes.`);
+        }
       }
     }
 
