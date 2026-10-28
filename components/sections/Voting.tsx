@@ -52,8 +52,8 @@ const CATEGORY_DATA = [
     name: "Machakos-Kangundo",
     desc: "Kangundo Sub-County and surrounding environs.",
     link: "/voting/kangundo",
-    startDate: "2026-10-07T00:00:00+03:00", 
-    endDate: "2026-10-28T23:59:59+03:00", // Ends in 21 days
+    startDate: "2026-10-28T09:08:00+03:00", 
+    endDate: "2026-11-04T23:59:59+03:00", // Ends in 21 days
     Icon: Sparkles,
     theme: { bg: "bg-purple-50", border: "border-purple-100", text: "text-purple-500" }
   }
