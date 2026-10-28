@@ -11,8 +11,6 @@ import download from 'downloadjs';
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 
-export const runtime = "edge";
-
 interface Nominee {
   id: string;
   name: string;

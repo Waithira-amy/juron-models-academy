@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
-export const runtime = "edge";
 
 // 1. Check ticket status (Used by frontend to show the QR code after payment)
 export async function GET(req: Request) {
