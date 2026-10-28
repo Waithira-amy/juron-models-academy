@@ -1,9 +1,13 @@
 //npx tsx prisma/seed.ts
 import { PrismaClient } from "@prisma/client";
+import { Pool } from "pg";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-// Initialize the standard Prisma Client
-const prisma = new PrismaClient();
-
+// Initialize with the standard pg adapter for Node.js
+const connectionString = process.env.DATABASE_URL || "postgresql://neondb_owner:npg_2OjxhCzliX9b@ep-floral-bar-auvda71j.c-10.us-east-1.aws.neon.tech/neondb?sslmode=require";
+const pool = new Pool({ connectionString });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 // --- NEW: Commission Affiliates ---
 const AFFILIATES = [
   { name: "Travis Kilatya", code: "TRAVIS" },
