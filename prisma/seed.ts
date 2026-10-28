@@ -1,10 +1,8 @@
 //npx tsx prisma/seed.ts
-import { neon } from "@neondatabase/serverless";
-import crypto from "crypto";
+import { PrismaClient } from "@prisma/client";
 
-// 1. Direct connection to Neon, entirely bypassing Prisma's engine
-const connectionString = "postgresql://neondb_owner:npg_2OjxhCzliX9b@ep-floral-bar-auvda71j-pooler.c-10.us-east-1.aws.neon.tech/neondb?sslmode=require";
-const sql = neon(connectionString);
+// Initialize the standard Prisma Client
+const prisma = new PrismaClient();
 
 // --- NEW: Commission Affiliates ---
 const AFFILIATES = [
@@ -106,36 +104,45 @@ const ALL_NOMINEES = [
 ];
 
 async function main() {
-  console.log("Seeding nominees directly via Raw SQL...");
+  console.log("Seeding nominees via standard Prisma ORM...");
   for (const n of ALL_NOMINEES) {
     try {
-      await sql`
-        INSERT INTO "Voting" ("code", "fullName", "category", "title", "photoUrl", "votes")
-        VALUES (${n.code}, ${n.name}, ${n.category}, ${n.title}, ${n.photoUrl}, 0)
-        ON CONFLICT ("code") DO UPDATE 
-        SET "fullName" = EXCLUDED."fullName",
-            "category" = EXCLUDED."category",
-            "title" = EXCLUDED."title",
-            "photoUrl" = EXCLUDED."photoUrl"
-      `;
-      console.log(`✅ Synced ${n.code}`);
+      await prisma.voting.upsert({
+        where: { code: n.code },
+        update: {
+          fullName: n.name,
+          category: n.category,
+          title: n.title,
+          photoUrl: n.photoUrl,
+        },
+        create: {
+          code: n.code,
+          fullName: n.name,
+          category: n.category,
+          title: n.title,
+          photoUrl: n.photoUrl,
+          votes: 0,
+        },
+      });
+      console.log(`✅ Synced Nominee: ${n.code}`);
     } catch (err: any) {
       console.error(`❌ Failed to sync ${n.code}:`, err.message);
     }
   }
 
-  console.log("\nSeeding affiliates directly via Raw SQL...");
+  console.log("\nSeeding affiliates via standard Prisma ORM...");
   for (const a of AFFILIATES) {
     try {
-      // Prisma handles UUID generation in JS, so we insert our own via Node's native crypto module
-      const uniqueId = crypto.randomUUID();
-      await sql`
-        INSERT INTO "Affiliate" ("id", "code", "name", "commissionKES")
-        VALUES (${uniqueId}, ${a.code}, ${a.name}, 0)
-        ON CONFLICT ("code") DO UPDATE 
-        SET "name" = EXCLUDED."name"
-      `;
-      console.log(`✅ Synced Affiliate ${a.code}`);
+      await prisma.affiliate.upsert({
+        where: { code: a.code },
+        update: { name: a.name },
+        create: {
+          code: a.code,
+          name: a.name,
+          commissionKES: 0,
+        },
+      });
+      console.log(`✅ Synced Affiliate: ${a.code}`);
     } catch (err: any) {
       console.error(`❌ Failed to sync Affiliate ${a.code}:`, err.message);
     }
@@ -144,4 +151,11 @@ async function main() {
   console.log("🎉 Done seeding.");
 }
 
-main();
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

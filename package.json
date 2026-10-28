@@ -12,12 +12,14 @@
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",
     "@prisma/adapter-neon": "^7.10.1",
+    "@prisma/adapter-pg": "^7.10.1",
     "@prisma/client": "^7.9.1",
     "@vercel/blob": "^2.6.1",
     "downloadjs": "^1.4.7",
     "html-to-image": "^1.11.13",
     "lucide-react": "^1.28.0",
     "next": "16.2.12",
+    "pg": "^8.23.1",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
@@ -27,7 +29,7 @@
     "@tailwindcss/postcss": "^4",
     "@types/downloadjs": "^1.4.6",
     "@types/node": "^20",
-    "@types/pg": "^8.20.3",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
