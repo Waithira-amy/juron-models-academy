@@ -201,7 +201,7 @@ export default function RegionVotingPage() {
     };
 
     fetchLiveVotes();
-    const interval = setInterval(fetchLiveVotes, 3000);
+    const interval = setInterval(fetchLiveVotes, 15000);
     return () => clearInterval(interval);
   }, [data.nominees]);
 
