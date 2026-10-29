@@ -9,9 +9,8 @@ export default function RegisterPage() {
     age: "",
     location: "",
     contact: "",
-    photoUrl: "",
   });
-  const [fileName, setFileName] = useState<string>("");
+  const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
@@ -22,18 +21,7 @@ export default function RegisterPage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const selectedFile = e.target.files[0];
-      setFileName(selectedFile.name);
-
-      // Convert the image file directly into a Base64 Data URL string
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData((prev) => ({
-          ...prev,
-          photoUrl: reader.result as string,
-        }));
-      };
-      reader.readAsDataURL(selectedFile);
+      setFile(e.target.files[0]);
     }
   };
 
@@ -43,10 +31,19 @@ export default function RegisterPage() {
     setError("");
 
     try {
+      const submitData = new FormData();
+      submitData.append("name", formData.name);
+      submitData.append("age", formData.age);
+      submitData.append("location", formData.location);
+      submitData.append("contact", formData.contact);
+      
+      if (file) {
+        submitData.append("photo", file);
+      }
+
       const response = await fetch("/api/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: submitData, // Uses native FormData instead of JSON stringification
       });
 
       const result = await response.json();
@@ -174,7 +171,6 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {/* Converted Photo Input */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Upload Photo</label>
                 <div className="relative group">
@@ -184,14 +180,12 @@ export default function RegisterPage() {
                     onChange={handleFileChange}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
                   />
-                  <div className={`w-full border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center transition-colors ${fileName ? 'border-amber-400 bg-amber-50' : 'border-slate-300 bg-slate-50 group-hover:border-rose-400 group-hover:bg-rose-50'}`}>
-                    <UploadCloud className={`w-8 h-8 mb-2 ${fileName ? 'text-amber-500' : 'text-slate-400 group-hover:text-rose-500'} transition-colors`} />
+                  <div className={`w-full border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center transition-colors ${file ? 'border-amber-400 bg-amber-50' : 'border-slate-300 bg-slate-50 group-hover:border-rose-400 group-hover:bg-rose-50'}`}>
+                    <UploadCloud className={`w-8 h-8 mb-2 ${file ? 'text-amber-500' : 'text-slate-400 group-hover:text-rose-500'} transition-colors`} />
                     <span className="text-sm font-bold text-slate-700 mb-1 truncate w-full px-4">
-                      {fileName ? fileName : "Click to select photo"}
+                      {file ? file.name : "Click to upload image"}
                     </span>
-                    <span className="text-[10px] text-slate-500 uppercase tracking-widest">
-                      {fileName ? "Photo converted to URL string" : "Converts automatically on selection"}
-                    </span>
+                    <span className="text-[10px] text-slate-500 uppercase tracking-widest">Max 5MB</span>
                   </div>
                 </div>
               </div>

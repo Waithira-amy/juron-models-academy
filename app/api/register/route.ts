@@ -1,13 +1,25 @@
+import { put } from '@vercel/blob';
 import { NextResponse } from 'next/server';
 import prisma from "@/lib/prisma";
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { name, age, location, contact, photoUrl } = body;
+    const formData = await request.formData();
+    const file = formData.get('photo') as File | null;
+    const name = formData.get('name') as string;
+    const age = formData.get('age') as string;
+    const location = formData.get('location') as string;
+    const contact = formData.get('contact') as string;
 
-    if (!name || !contact) {
-      return NextResponse.json({ error: 'Name and phone number are required.' }, { status: 400 });
+    let photoUrl = "https://placehold.co/400x400?text=No+Photo";
+
+    // Only upload to Vercel Blob if a file was attached
+    if (file && file.size > 0) {
+      const filename = `${Date.now()}-${file.name.replace(/\s/g, '_')}`;
+      const blob = await put(filename, file, {
+        access: 'public',
+      });
+      photoUrl = blob.url;
     }
 
     const registration = await prisma.registration.create({
@@ -16,7 +28,7 @@ export async function POST(request: Request) {
         age: parseInt(age) || 18,
         phone: contact,
         location: location || "Unspecified",
-        photoUrl: photoUrl && photoUrl.trim() !== "" ? photoUrl : "https://placehold.co/400x400?text=No+Photo", 
+        photoUrl: photoUrl, 
       }
     });
 
