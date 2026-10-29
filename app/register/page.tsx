@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
-import { User, Calendar, MapPin, Phone, UploadCloud, ArrowLeft, CheckCircle2, Crown, Loader2, AlertTriangle } from "lucide-react";
+import { User, Calendar, MapPin, Phone, ArrowLeft, CheckCircle2, Crown, Loader2, AlertTriangle } from "lucide-react";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -10,7 +10,6 @@ export default function RegisterPage() {
     location: "",
     contact: "",
   });
-  const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
@@ -19,31 +18,16 @@ export default function RegisterPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
-      const submitData = new FormData();
-      submitData.append("name", formData.name);
-      submitData.append("age", formData.age);
-      submitData.append("location", formData.location);
-      submitData.append("contact", formData.contact);
-      
-      if (file) {
-        submitData.append("photo", file);
-      }
-
       const response = await fetch("/api/register", {
         method: "POST",
-        body: submitData, // Uses native FormData instead of JSON stringification
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
 
       const result = await response.json();
@@ -168,25 +152,6 @@ export default function RegisterPage() {
                     placeholder="City / Area"
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-rose-400 transition-colors shadow-sm"
                   />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Upload Photo</label>
-                <div className="relative group">
-                  <input 
-                    type="file" 
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
-                  />
-                  <div className={`w-full border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center transition-colors ${file ? 'border-amber-400 bg-amber-50' : 'border-slate-300 bg-slate-50 group-hover:border-rose-400 group-hover:bg-rose-50'}`}>
-                    <UploadCloud className={`w-8 h-8 mb-2 ${file ? 'text-amber-500' : 'text-slate-400 group-hover:text-rose-500'} transition-colors`} />
-                    <span className="text-sm font-bold text-slate-700 mb-1 truncate w-full px-4">
-                      {file ? file.name : "Click to upload image"}
-                    </span>
-                    <span className="text-[10px] text-slate-500 uppercase tracking-widest">Max 5MB</span>
-                  </div>
                 </div>
               </div>
 
