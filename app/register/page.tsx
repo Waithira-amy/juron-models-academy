@@ -9,8 +9,9 @@ export default function RegisterPage() {
     age: "",
     location: "",
     contact: "",
+    photoUrl: "",
   });
-  const [file, setFile] = useState<File | null>(null);
+  const [fileName, setFileName] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
@@ -21,7 +22,18 @@ export default function RegisterPage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
+      const selectedFile = e.target.files[0];
+      setFileName(selectedFile.name);
+
+      // Convert the image file directly into a Base64 Data URL string
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({
+          ...prev,
+          photoUrl: reader.result as string,
+        }));
+      };
+      reader.readAsDataURL(selectedFile);
     }
   };
 
@@ -30,23 +42,11 @@ export default function RegisterPage() {
     setLoading(true);
     setError("");
 
-    if (!file) {
-      setError("Please upload a photo.");
-      setLoading(false);
-      return;
-    }
-
     try {
-      const submitData = new FormData();
-      submitData.append("name", formData.name);
-      submitData.append("age", formData.age);
-      submitData.append("location", formData.location);
-      submitData.append("contact", formData.contact);
-      submitData.append("photo", file);
-
       const response = await fetch("/api/register", {
         method: "POST",
-        body: submitData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
 
       const result = await response.json();
@@ -65,17 +65,14 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 pt-32 pb-24 relative overflow-hidden font-sans text-slate-900">
-      {/* Light Background Glows */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-rose-200/40 rounded-full blur-[120px] pointer-events-none translate-x-1/3 -translate-y-1/4" />
       <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-amber-200/40 rounded-full blur-[120px] pointer-events-none -translate-x-1/3 translate-y-1/3" />
 
       <div className="max-w-lg mx-auto px-6 relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
-        
         <Link href="/" className="inline-flex items-center gap-2 text-slate-500 hover:text-rose-600 text-xs font-bold uppercase tracking-wider mb-8 transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back to Home
         </Link>
 
-        {/* Header */}
         <div className="text-center mb-10">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-3xl bg-white border border-slate-200 text-amber-500 mb-6 shadow-sm overflow-hidden p-2">
              <img src="/machakos-logo.png" alt="Logo" className="w-full h-full object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; const fallback = document.getElementById('machakos-fallback'); if (fallback) fallback.style.display = 'block'; }} />
@@ -88,7 +85,6 @@ export default function RegisterPage() {
         </div>
 
         <div className="bg-white/90 backdrop-blur-xl border border-slate-200 p-6 md:p-8 rounded-3xl shadow-xl relative overflow-hidden">
-          
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center gap-3 text-red-600 text-sm font-medium">
               <AlertTriangle className="w-5 h-5 shrink-0" /> {error}
@@ -110,8 +106,6 @@ export default function RegisterPage() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-5">
-              
-              {/* Full Name */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Full Name</label>
                 <div className="relative">
@@ -128,7 +122,6 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {/* Age & Contact Row */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Age</label>
@@ -165,7 +158,6 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {/* Location */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Location</label>
                 <div className="relative">
@@ -182,28 +174,28 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {/* Photo Upload */}
+              {/* Converted Photo Input */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Upload Photo</label>
                 <div className="relative group">
                   <input 
                     type="file" 
                     accept="image/*"
-                    required
                     onChange={handleFileChange}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
                   />
-                  <div className={`w-full border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center transition-colors ${file ? 'border-amber-400 bg-amber-50' : 'border-slate-300 bg-slate-50 group-hover:border-rose-400 group-hover:bg-rose-50'}`}>
-                    <UploadCloud className={`w-8 h-8 mb-2 ${file ? 'text-amber-500' : 'text-slate-400 group-hover:text-rose-500'} transition-colors`} />
+                  <div className={`w-full border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center transition-colors ${fileName ? 'border-amber-400 bg-amber-50' : 'border-slate-300 bg-slate-50 group-hover:border-rose-400 group-hover:bg-rose-50'}`}>
+                    <UploadCloud className={`w-8 h-8 mb-2 ${fileName ? 'text-amber-500' : 'text-slate-400 group-hover:text-rose-500'} transition-colors`} />
                     <span className="text-sm font-bold text-slate-700 mb-1 truncate w-full px-4">
-                      {file ? file.name : "Click to upload image"}
+                      {fileName ? fileName : "Click to select photo"}
                     </span>
-                    <span className="text-[10px] text-slate-500 uppercase tracking-widest">Max 5MB</span>
+                    <span className="text-[10px] text-slate-500 uppercase tracking-widest">
+                      {fileName ? "Photo converted to URL string" : "Converts automatically on selection"}
+                    </span>
                   </div>
                 </div>
               </div>
 
-              {/* Submit Button */}
               <div className="pt-2">
                 <button
                   type="submit"
@@ -213,10 +205,8 @@ export default function RegisterPage() {
                   {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Submit Application"}
                 </button>
               </div>
-
             </form>
           )}
-
         </div>
       </div>
     </div>

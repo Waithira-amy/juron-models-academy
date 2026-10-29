@@ -1,40 +1,27 @@
-import { put } from '@vercel/blob';
 import { NextResponse } from 'next/server';
 import prisma from "@/lib/prisma";
 
 export async function POST(request: Request) {
   try {
-    // 1. Receive the form data from the frontend
-    const formData = await request.formData();
-    const file = formData.get('photo') as File;
-    const name = formData.get('name') as string;
-    const age = formData.get('age') as string;
-    const location = formData.get('location') as string;
-    const contact = formData.get('contact') as string;
+    const body = await request.json();
+    const { name, age, location, contact, photoUrl } = body;
 
-    if (!file) {
-      return NextResponse.json({ error: 'Photo is required.' }, { status: 400 });
+    if (!name || !contact) {
+      return NextResponse.json({ error: 'Name and phone number are required.' }, { status: 400 });
     }
 
-    // 2. Upload the photo securely to Vercel Blob
-    const filename = `${Date.now()}-${file.name.replace(/\s/g, '_')}`;
-    const blob = await put(filename, file, {
-      access: 'public',
-    });
-
-    // 3. Save the applicant's text details + their new photo URL to Neon Database
     const registration = await prisma.registration.create({
       data: {
         fullName: name,
-        age: parseInt(age),
+        age: parseInt(age) || 18,
         phone: contact,
-        location: location,
-        photoUrl: blob.url, 
+        location: location || "Unspecified",
+        photoUrl: photoUrl && photoUrl.trim() !== "" ? photoUrl : "https://placehold.co/400x400?text=No+Photo", 
       }
     });
 
     return NextResponse.json({ success: true, registration });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Registration API Error:', error);
     return NextResponse.json({ error: 'Server error during registration.' }, { status: 500 });
   }
