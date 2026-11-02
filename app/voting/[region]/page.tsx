@@ -4,12 +4,13 @@ import Link from "next/link";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { 
   Crown, ArrowLeft, CheckCircle2, Search, Sparkles, X, 
-  Smartphone, Loader2, Download, Share2, ChevronRight, User, CreditCard, DollarSign 
+  Smartphone, Loader2, Download, Share2, ChevronRight, User, CreditCard 
 } from "lucide-react";
 import * as htmlToImage from 'html-to-image';
 import download from 'downloadjs';
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
+import { usePaystackPayment } from "react-paystack";
 
 interface Nominee {
   id: string;
@@ -173,14 +174,14 @@ export default function RegionVotingPage() {
   // Form State
   const [voteCount, setVoteCount] = useState<number | string>(10);
   const [cardAmount, setCardAmount] = useState<number | string>(10); // Default 10 USD
-  const [cardCurrency, setCardCurrency] = useState<"USD" | "KES">("USD"); // USD first & default
+  const [cardCurrency, setCardCurrency] = useState<"USD" | "KES">("USD"); 
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setEmail] = useState(""); 
   const [paymentMethod, setPaymentMethod] = useState<"mpesa" | "card">("mpesa");
-  const [selectedCard, setSelectedCard] = useState<"visa" | "mastercard" | "amex" | "discover" | "unionpay" | "jcb">("visa");
+  const [selectedCard, setSelectedCard] = useState<"visa" | "mastercard" | "amex">("visa");
   
   // Loading & Success State
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isStripeLoading, setIsStripeLoading] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
 
@@ -188,8 +189,28 @@ export default function RegionVotingPage() {
   
   const safeVoteCount = typeof voteCount === 'number' ? voteCount : (parseInt(voteCount) || 1);
   const mpesaTotalCost = safeVoteCount * VOTE_COST_KES;
-
   const safeCardAmount = typeof cardAmount === 'number' ? cardAmount : (parseInt(cardAmount) || 0);
+
+  // --- PAYSTACK HOOK CONFIGURATION (Fixed for KES restriction) ---
+  const exchangeRate = 130; 
+  const finalAmountKES = cardCurrency === "USD" ? safeCardAmount * exchangeRate : safeCardAmount;
+
+  const paystackConfig = {
+    reference: (new Date()).getTime().toString(),
+    email: email, 
+    amount: finalAmountKES * 100, // Paystack lowest denomination in KES cents
+    publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY as string,
+    currency: "KES", // Kenyan merchants strictly require KES
+    metadata: {
+      custom_fields: [
+        { display_name: "Nominee Name", variable_name: "nominee_name", value: selectedNominee?.name || "" },
+        { display_name: "Nominee Code", variable_name: "nominee_code", value: selectedNominee?.code || "" },
+      ]
+    }
+  };
+
+  const initializePaystackPayment = usePaystackPayment(paystackConfig);
+  // -------------------------------------------------------------
 
   useEffect(() => {
     setLiveNominees(data.nominees);
@@ -239,13 +260,52 @@ export default function RegionVotingPage() {
 
   const handleVoteSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (paymentMethod === "card") {
-      return handleStripePayment();
-    }
-
-    if (!phoneNumber) return alert("Please enter a valid M-Pesa phone number");
     if (!selectedNominee) return;
-    
+
+    // --- PAYSTACK CARD PAYMENT HANDLER ---
+    if (paymentMethod === "card") {
+      if (!email) return alert("Please enter your email address for the payment receipt.");
+      if (safeCardAmount <= 0) return alert("Please enter a valid amount.");
+      
+      initializePaystackPayment({
+        onSuccess: async (reference: any) => {
+          console.log("Paystack payment successful!", reference);
+          
+          try {
+            const verifyRes = await fetch('/api/verify-payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                reference: reference.reference,
+                nomineeCode: selectedNominee?.code,
+                votes: safeVoteCount
+              })
+            });
+
+            const verifyData = await verifyRes.json();
+            if (verifyData.success) {
+              setPaymentSuccess(true);
+              setTimeout(() => {
+                setPaymentSuccess(false);
+                closeModal();
+              }, 6000);
+            } else {
+              alert("Payment was successful, but vote logging failed: " + verifyData.error);
+            }
+          } catch (err) {
+            console.error("Error verifying payment on backend:", err);
+          }
+        },
+        onClose: () => {
+          console.log("User closed the Paystack modal.");
+        }
+      });
+      return;
+    }
+    // -------------------------------------
+
+    // --- M-PESA STK PUSH HANDLER ---
+    if (!phoneNumber) return alert("Please enter a valid M-Pesa phone number");
     setIsProcessing(true);
 
     try {
@@ -280,39 +340,6 @@ export default function RegionVotingPage() {
     }
   };
 
-  const handleStripePayment = async () => {
-    if (!selectedNominee) return;
-    if (safeCardAmount <= 0) return alert("Please enter a valid payment amount.");
-    
-    setIsStripeLoading(true);
-
-    try {
-      const response = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          contestantId: selectedNominee.code, 
-          amount: safeCardAmount,
-          currency: cardCurrency.toLowerCase(), // Passes 'usd' or 'kes'
-          preferredCard: selectedCard
-        }),
-      });
-      
-      const data = await response.json();
-      if (data.url) {
-        window.location.href = data.url; 
-      } else {
-        console.error("Failed to create checkout session:", data.error);
-        alert("Stripe payment failed to initialize. Please try again.");
-      }
-    } catch (error) {
-      console.error("Payment error:", error);
-      alert("Something went wrong connecting to Stripe. Please check your internet connection.");
-    } finally {
-      setIsStripeLoading(false);
-    }
-  };
-
   const handleShare = () => {
     if (!selectedNominee) return;
     const url = `${window.location.origin}${window.location.pathname}?nominee=${selectedNominee.code}`;
@@ -339,6 +366,7 @@ export default function RegionVotingPage() {
   const closeModal = () => {
     setSelectedNominee(null);
     setPhoneNumber("");
+    setEmail(""); 
     setVoteCount(10);
     setCardAmount(10);
     setCardCurrency("USD");
@@ -569,7 +597,7 @@ export default function RegionVotingPage() {
                     <p className="text-xs text-slate-500 font-medium">Securely support {selectedNominee.name}.</p>
                   </div>
 
-                  {/* PAYMENT METHOD SELECTOR FIRST */}
+                  {/* PAYMENT METHOD SELECTOR */}
                   <div>
                     <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-3">
                       Select Payment Method:
@@ -592,8 +620,8 @@ export default function RegionVotingPage() {
                         onClick={() => setPaymentMethod("card")}
                         className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 font-bold text-xs uppercase tracking-widest transition-all ${
                           paymentMethod === "card"
-                            ? "border-[#635BFF] bg-[#635BFF]/10 text-[#635BFF] shadow-sm"
-                            : "border-slate-200 bg-white text-slate-500 hover:border-[#635BFF]/30 hover:bg-[#635BFF]/5"
+                            ? "border-[#0BA4DB] bg-[#0BA4DB]/10 text-[#0BA4DB] shadow-sm"
+                            : "border-slate-200 bg-white text-slate-500 hover:border-[#0BA4DB]/30 hover:bg-[#0BA4DB]/5"
                         }`}
                       >
                         <CreditCard className="w-4 h-4" /> Card
@@ -680,18 +708,33 @@ export default function RegionVotingPage() {
                     </div>
                   ) : (
                     <div className="space-y-4 animate-in fade-in duration-300">
+                      
+                      {/* EMAIL FIELD FOR PAYSTACK */}
+                      <div className="mb-4">
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">
+                          Email Address (Required):
+                        </label>
+                        <input
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="Enter your email for receipt"
+                          className="w-full bg-white border border-slate-200 focus:border-[#0BA4DB] focus:ring-2 focus:ring-[#0BA4DB]/20 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 shadow-sm focus:outline-none transition-all"
+                          required={paymentMethod === "card"}
+                        />
+                      </div>
+
                       <div>
                         <div className="flex items-center justify-between mb-2">
                           <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500">
                             Enter Amount:
                           </label>
-                          {/* Currency Toggle Switch - USD First */}
                           <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
                             <button
                               type="button"
                               onClick={() => setCardCurrency("USD")}
                               className={`px-3 py-1 rounded-md text-[10px] font-bold transition-all ${
-                                cardCurrency === "USD" ? "bg-white text-[#635BFF] shadow-sm" : "text-slate-500 hover:text-slate-900"
+                                cardCurrency === "USD" ? "bg-white text-[#0BA4DB] shadow-sm" : "text-slate-500 hover:text-slate-900"
                               }`}
                             >
                               USD ($)
@@ -721,8 +764,8 @@ export default function RegionVotingPage() {
                               const val = e.target.value;
                               setCardAmount(val === "" ? "" : Math.max(0, parseInt(val) || 0));
                             }}
-                            className="w-full bg-white border border-slate-200 focus:border-[#635BFF] focus:ring-2 focus:ring-[#635BFF]/20 rounded-xl py-3.5 pl-16 pr-4 text-sm font-mono font-bold text-slate-900 shadow-sm focus:outline-none transition-all"
-                            required
+                            className="w-full bg-white border border-slate-200 focus:border-[#0BA4DB] focus:ring-2 focus:ring-[#0BA4DB]/20 rounded-xl py-3.5 pl-16 pr-4 text-sm font-mono font-bold text-slate-900 shadow-sm focus:outline-none transition-all"
+                            required={paymentMethod === "card"}
                           />
                         </div>
                       </div>
@@ -769,44 +812,11 @@ export default function RegionVotingPage() {
                               AMEX
                             </div>
                           </button>
-
-                          {/* Discover */}
-                          <button
-                            type="button"
-                            onClick={() => setSelectedCard("discover")}
-                            className={`py-2 px-3 rounded-xl border transition-all flex items-center justify-center bg-white ${
-                              selectedCard === "discover" ? "border-orange-600 bg-orange-50/50 shadow-sm ring-2 ring-orange-500/20" : "border-slate-200 hover:border-slate-300"
-                            }`}
-                          >
-                            <span className="font-black text-[10px] tracking-tighter text-[#FF6000]">DISCOVER</span>
-                          </button>
-
-                          {/* UnionPay */}
-                          <button
-                            type="button"
-                            onClick={() => setSelectedCard("unionpay")}
-                            className={`py-2 px-3 rounded-xl border transition-all flex items-center justify-center bg-white ${
-                              selectedCard === "unionpay" ? "border-red-600 bg-red-50/50 shadow-sm ring-2 ring-red-500/20" : "border-slate-200 hover:border-slate-300"
-                            }`}
-                          >
-                            <span className="font-black text-[10px] tracking-tighter text-red-600">UnionPay</span>
-                          </button>
-
-                          {/* JCB */}
-                          <button
-                            type="button"
-                            onClick={() => setSelectedCard("jcb")}
-                            className={`py-2 px-3 rounded-xl border transition-all flex items-center justify-center bg-white ${
-                              selectedCard === "jcb" ? "border-blue-500 bg-blue-50/50 shadow-sm ring-2 ring-blue-500/20" : "border-slate-200 hover:border-slate-300"
-                            }`}
-                          >
-                            <span className="font-black text-[10px] tracking-tighter text-blue-700">JCB</span>
-                          </button>
                         </div>
                       </div>
 
                       <p className="text-[10px] text-slate-400 text-center px-1">
-                        Secured by Stripe for global card processing.
+                        Secured by Paystack for global card processing.
                       </p>
                     </div>
                   )}
@@ -825,14 +835,14 @@ export default function RegionVotingPage() {
 
                     <button
                       type="submit"
-                      disabled={isProcessing || isStripeLoading}
+                      disabled={isProcessing}
                       className={`w-full py-4 rounded-xl text-white font-bold text-sm uppercase tracking-widest transition-all shadow-md active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 ${
                         paymentMethod === "mpesa" 
                           ? "bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 shadow-[0_5px_15px_rgba(16,185,129,0.3)]"
-                          : "bg-[#0F1611] hover:bg-[#635BFF]"
+                          : "bg-[#0F1611] hover:bg-[#0BA4DB]"
                       }`}
                     >
-                      {isProcessing || isStripeLoading ? (
+                      {isProcessing ? (
                         <>
                           <Loader2 className="w-5 h-5 animate-spin" /> Processing...
                         </>
