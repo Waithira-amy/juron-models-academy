@@ -159,8 +159,8 @@ export default function RegisterPage() {
               <div className="p-4 bg-rose-50/50 border border-rose-100 rounded-2xl">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="text-left">
-                    <p className="text-xs font-bold uppercase tracking-wider text-rose-900 mb-1">Upload Photo</p>
-                    <p className="text-xs text-slate-600">Required for application review.</p>
+                    <p className="text-xs font-bold uppercase tracking-wider text-rose-900 mb-1">Upload photo</p>
+                    <p className="text-xs text-slate-600">Please provide your name inside the form when uploading.</p>
                   </div>
                   <a
                     href="https://docs.google.com/forms/d/e/1FAIpQLSecF_NVtpEESDbrQLBiEFeWRP-RTINj16w_CVUSAmNAZM8Row/viewform?usp=header"
