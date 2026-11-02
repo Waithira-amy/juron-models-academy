@@ -159,7 +159,7 @@ export default function RegisterPage() {
               <div className="p-4 bg-rose-50/50 border border-rose-100 rounded-2xl">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="text-left">
-                    <p className="text-xs font-bold uppercase tracking-wider text-rose-900 mb-1">Portfolio & Audition Photos</p>
+                    <p className="text-xs font-bold uppercase tracking-wider text-rose-900 mb-1">Upload Photo</p>
                     <p className="text-xs text-slate-600">Required for application review.</p>
                   </div>
                   <a
