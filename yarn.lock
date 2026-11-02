@@ -875,6 +875,11 @@
   resolved "https://registry.yarnpkg.com/@standard-schema/spec/-/spec-1.1.0.tgz#a79b55dbaf8604812f52d140b2c9ab41bc150bb8"
   integrity sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==
 
+"@stripe/stripe-js@^10.2.0":
+  version "10.2.0"
+  resolved "https://registry.yarnpkg.com/@stripe/stripe-js/-/stripe-js-10.2.0.tgz#203868bcd6e8ab2b65c976b7c0c682d7ff025de1"
+  integrity sha512-C0F6LKxvsa9ONtxfJ4JG/vo8XjramVyy7tOZNZvoaZkw0M82OTm9LD3Ifcvw0QMDI7qPA14h+IP3qagkuC3b2Q==
+
 "@swc/helpers@0.5.15":
   version "0.5.15"
   resolved "https://registry.yarnpkg.com/@swc/helpers/-/helpers-0.5.15.tgz#79efab344c5819ecf83a43f3f9f811fc84b516d7"
@@ -4543,6 +4548,11 @@ strip-json-comments@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-3.1.1.tgz#31f1281b3832630434831c310c01cccda8cbe006"
   integrity sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==
+
+stripe@^23.1.0:
+  version "23.1.0"
+  resolved "https://registry.yarnpkg.com/stripe/-/stripe-23.1.0.tgz#c5707da5407f6ab85080fed6a5a5176fc6c5bb5e"
+  integrity sha512-fVUfMSfTPoukfoV//MUKAx2+YxyKmYaYtnAL9VkfnHfaPNQylFdWZMD+zgUFerI8rjbaiER8Vzj2XEUQ2AhAsQ==
 
 styled-jsx@5.1.6:
   version "5.1.6"

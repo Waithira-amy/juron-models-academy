@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { 
   Crown, ArrowLeft, CheckCircle2, Search, Sparkles, X, 
-  Smartphone, Loader2, Download, Share2, ChevronRight, User
+  Smartphone, Loader2, Download, Share2, ChevronRight, User, CreditCard, DollarSign 
 } from "lucide-react";
 import * as htmlToImage from 'html-to-image';
 import download from 'downloadjs';
@@ -170,13 +170,26 @@ export default function RegionVotingPage() {
   
   const posterRef = useRef<HTMLDivElement>(null);
 
-  const [voteCount, setVoteCount] = useState<number>(10);
+  // Form State
+  const [voteCount, setVoteCount] = useState<number | string>(10);
+  const [cardAmount, setCardAmount] = useState<number | string>(10); // Default 10 USD
+  const [cardCurrency, setCardCurrency] = useState<"USD" | "KES">("USD"); // USD first & default
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<"mpesa" | "card">("mpesa");
+  const [selectedCard, setSelectedCard] = useState<"visa" | "mastercard" | "amex" | "discover" | "unionpay" | "jcb">("visa");
+  
+  // Loading & Success State
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isStripeLoading, setIsStripeLoading] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
 
   const VOTE_COST_KES = 10;
+  
+  const safeVoteCount = typeof voteCount === 'number' ? voteCount : (parseInt(voteCount) || 1);
+  const mpesaTotalCost = safeVoteCount * VOTE_COST_KES;
+
+  const safeCardAmount = typeof cardAmount === 'number' ? cardAmount : (parseInt(cardAmount) || 0);
 
   useEffect(() => {
     setLiveNominees(data.nominees);
@@ -226,6 +239,10 @@ export default function RegionVotingPage() {
 
   const handleVoteSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (paymentMethod === "card") {
+      return handleStripePayment();
+    }
+
     if (!phoneNumber) return alert("Please enter a valid M-Pesa phone number");
     if (!selectedNominee) return;
     
@@ -237,10 +254,10 @@ export default function RegionVotingPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           phone: phoneNumber,
-          amount: voteCount * VOTE_COST_KES,
+          amount: mpesaTotalCost,
           nomineeId: selectedNominee.code,
           nomineeName: selectedNominee.name,
-          votes: voteCount
+          votes: safeVoteCount
         })
       });
 
@@ -260,6 +277,39 @@ export default function RegionVotingPage() {
       alert("Something went wrong connecting to M-Pesa. Please check your internet connection.");
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  const handleStripePayment = async () => {
+    if (!selectedNominee) return;
+    if (safeCardAmount <= 0) return alert("Please enter a valid payment amount.");
+    
+    setIsStripeLoading(true);
+
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          contestantId: selectedNominee.code, 
+          amount: safeCardAmount,
+          currency: cardCurrency.toLowerCase(), // Passes 'usd' or 'kes'
+          preferredCard: selectedCard
+        }),
+      });
+      
+      const data = await response.json();
+      if (data.url) {
+        window.location.href = data.url; 
+      } else {
+        console.error("Failed to create checkout session:", data.error);
+        alert("Stripe payment failed to initialize. Please try again.");
+      }
+    } catch (error) {
+      console.error("Payment error:", error);
+      alert("Something went wrong connecting to Stripe. Please check your internet connection.");
+    } finally {
+      setIsStripeLoading(false);
     }
   };
 
@@ -290,6 +340,9 @@ export default function RegionVotingPage() {
     setSelectedNominee(null);
     setPhoneNumber("");
     setVoteCount(10);
+    setCardAmount(10);
+    setCardCurrency("USD");
+    setPaymentMethod("mpesa");
     router.replace(`/voting/${currentRegion}`, { scroll: false });
   };
 
@@ -503,7 +556,7 @@ export default function RegionVotingPage() {
                   </div>
                   <h3 className="text-2xl font-bold font-serif text-slate-900 mb-2">Check Your Phone!</h3>
                   <p className="text-sm text-slate-500 font-medium leading-relaxed mb-6">
-                    An M-Pesa prompt has been sent to your phone. Enter your PIN to confirm {voteCount} votes for <span className="text-amber-600 font-bold">{selectedNominee.name}</span>.
+                    An M-Pesa prompt has been sent to your phone. Enter your PIN to confirm {safeVoteCount} votes for <span className="text-amber-600 font-bold">{selectedNominee.name}</span>.
                   </p>
                   <button onClick={closeModal} className="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-slate-700 underline underline-offset-4">
                     Return to Nominees
@@ -513,88 +566,284 @@ export default function RegionVotingPage() {
                 <form onSubmit={handleVoteSubmit} className="space-y-6">
                   <div>
                     <h3 className="text-2xl font-serif font-bold text-slate-900 mb-1">Cast Your Vote</h3>
-                    <p className="text-xs text-slate-500 font-medium">Securely support {selectedNominee.name} via M-Pesa.</p>
+                    <p className="text-xs text-slate-500 font-medium">Securely support {selectedNominee.name}.</p>
                   </div>
 
+                  {/* PAYMENT METHOD SELECTOR FIRST */}
                   <div>
                     <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-3">
-                      Select Vote Bundle:
+                      Select Payment Method:
                     </label>
-                    <div className="grid grid-cols-4 gap-2 mb-3">
-                      {[1, 5, 10, 50].map((qty) => (
-                        <button
-                          type="button"
-                          key={qty}
-                          onClick={() => setVoteCount(qty)}
-                          className={`py-2.5 rounded-xl text-xs font-bold transition-all border ${
-                            voteCount === qty 
-                              ? "bg-amber-400 text-slate-900 border-amber-400 shadow-md" 
-                              : "bg-white text-slate-600 border-slate-200 hover:border-amber-300 shadow-sm"
-                          }`}
-                        >
-                          +{qty}
-                        </button>
-                      ))}
+                    <div className="grid grid-cols-2 gap-3 mb-2">
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod("mpesa")}
+                        className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 font-bold text-xs uppercase tracking-widest transition-all ${
+                          paymentMethod === "mpesa"
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-700 shadow-sm"
+                            : "border-slate-200 bg-white text-slate-500 hover:border-emerald-200 hover:bg-emerald-50"
+                        }`}
+                      >
+                        <Smartphone className="w-4 h-4" /> M-Pesa
+                      </button>
+                      
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod("card")}
+                        className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 font-bold text-xs uppercase tracking-widest transition-all ${
+                          paymentMethod === "card"
+                            ? "border-[#635BFF] bg-[#635BFF]/10 text-[#635BFF] shadow-sm"
+                            : "border-slate-200 bg-white text-slate-500 hover:border-[#635BFF]/30 hover:bg-[#635BFF]/5"
+                        }`}
+                      >
+                        <CreditCard className="w-4 h-4" /> Card
+                      </button>
                     </div>
+                  </div>
 
-                    <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl p-3 shadow-sm">
-                      <span className="text-xs text-slate-600 font-bold ml-2">Custom Amount:</span>
-                      <div className="flex items-center gap-3">
-                        <button 
-                          type="button" 
-                          onClick={() => setVoteCount(prev => Math.max(1, prev - 1))}
-                          className="w-8 h-8 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-sm flex items-center justify-center transition-colors shadow-sm"
-                        >
-                          -
-                        </button>
-                        <span className="font-mono font-bold text-lg text-amber-600 min-w-[32px] text-center">{voteCount}</span>
-                        <button 
-                          type="button" 
-                          onClick={() => setVoteCount(prev => prev + 1)}
-                          className="w-8 h-8 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-sm flex items-center justify-center transition-colors shadow-sm"
-                        >
-                          +
-                        </button>
+                  {/* CONDITIONAL RENDER BASED ON PAYMENT METHOD */}
+                  {paymentMethod === "mpesa" ? (
+                    <div className="space-y-4 animate-in fade-in duration-300">
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-3">
+                          Select Vote Bundle:
+                        </label>
+                        <div className="grid grid-cols-4 gap-2 mb-3">
+                          {[1, 5, 10, 50].map((qty) => (
+                            <button
+                              type="button"
+                              key={qty}
+                              onClick={() => setVoteCount(qty)}
+                              className={`py-2.5 rounded-xl text-xs font-bold transition-all border ${
+                                safeVoteCount === qty 
+                                  ? "bg-amber-400 text-slate-900 border-amber-400 shadow-md" 
+                                  : "bg-white text-slate-600 border-slate-200 hover:border-amber-300 shadow-sm"
+                              }`}
+                            >
+                              +{qty}
+                            </button>
+                          ))}
+                        </div>
+
+                        <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl p-3 shadow-sm">
+                          <span className="text-xs text-slate-600 font-bold ml-2">Custom Amount:</span>
+                          <div className="flex items-center gap-2">
+                            <button 
+                              type="button" 
+                              onClick={() => setVoteCount(Math.max(1, safeVoteCount - 1))}
+                              className="w-8 h-8 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-sm flex items-center justify-center transition-colors shadow-sm"
+                            >
+                              -
+                            </button>
+                            
+                            <input
+                              type="number"
+                              min="1"
+                              value={voteCount}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setVoteCount(val === "" ? "" : Math.max(1, parseInt(val) || 1));
+                              }}
+                              onBlur={() => {
+                                if (!voteCount) setVoteCount(1);
+                              }}
+                              className="font-mono font-bold text-lg text-amber-600 w-16 text-center bg-transparent border-none focus:outline-none focus:ring-0 p-0"
+                            />
+
+                            <button 
+                              type="button" 
+                              onClick={() => setVoteCount(safeVoteCount + 1)}
+                              className="w-8 h-8 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-sm flex items-center justify-center transition-colors shadow-sm"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-3">
+                          M-Pesa Phone Number:
+                        </label>
+                        <div className="relative">
+                          <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                          <input 
+                            type="tel" 
+                            placeholder="0712345678"
+                            value={phoneNumber}
+                            onChange={(e) => setPhoneNumber(e.target.value)}
+                            className="w-full bg-white border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 rounded-xl py-3.5 pl-11 pr-4 text-sm text-slate-900 placeholder-slate-400 shadow-sm focus:outline-none transition-all"
+                            required={paymentMethod === "mpesa"}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="space-y-4 animate-in fade-in duration-300">
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                            Enter Amount:
+                          </label>
+                          {/* Currency Toggle Switch - USD First */}
+                          <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
+                            <button
+                              type="button"
+                              onClick={() => setCardCurrency("USD")}
+                              className={`px-3 py-1 rounded-md text-[10px] font-bold transition-all ${
+                                cardCurrency === "USD" ? "bg-white text-[#635BFF] shadow-sm" : "text-slate-500 hover:text-slate-900"
+                              }`}
+                            >
+                              USD ($)
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setCardCurrency("KES")}
+                              className={`px-3 py-1 rounded-md text-[10px] font-bold transition-all ${
+                                cardCurrency === "KES" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-900"
+                              }`}
+                            >
+                              KES
+                            </button>
+                          </div>
+                        </div>
 
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-3">
-                      M-Pesa Phone Number:
-                    </label>
-                    <div className="relative">
-                      <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                      <input 
-                        type="tel" 
-                        placeholder="0712345678"
-                        value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
-                        className="w-full bg-white border border-slate-200 focus:border-amber-400 focus:ring-2 focus:ring-amber-100 rounded-xl py-3.5 pl-11 pr-4 text-sm text-slate-900 placeholder-slate-400 shadow-sm focus:outline-none transition-all"
-                        required
-                      />
+                        <div className="relative">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
+                            {cardCurrency === "USD" ? "$" : "KES"}
+                          </span>
+                          <input 
+                            type="number" 
+                            min={cardCurrency === "USD" ? "1" : "10"}
+                            placeholder={cardCurrency === "USD" ? "10" : "100"}
+                            value={cardAmount}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setCardAmount(val === "" ? "" : Math.max(0, parseInt(val) || 0));
+                            }}
+                            className="w-full bg-white border border-slate-200 focus:border-[#635BFF] focus:ring-2 focus:ring-[#635BFF]/20 rounded-xl py-3.5 pl-16 pr-4 text-sm font-mono font-bold text-slate-900 shadow-sm focus:outline-none transition-all"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">
+                          Select Card Type:
+                        </label>
+                        <div className="grid grid-cols-3 gap-2">
+                          {/* Visa */}
+                          <button
+                            type="button"
+                            onClick={() => setSelectedCard("visa")}
+                            className={`py-2 px-3 rounded-xl border transition-all flex items-center justify-center bg-white ${
+                              selectedCard === "visa" ? "border-blue-600 bg-blue-50/50 shadow-sm ring-2 ring-blue-500/20" : "border-slate-200 hover:border-slate-300"
+                            }`}
+                          >
+                            <span className="font-sans font-black text-sm italic text-[#1434CB] tracking-tighter">VISA</span>
+                          </button>
+
+                          {/* Mastercard */}
+                          <button
+                            type="button"
+                            onClick={() => setSelectedCard("mastercard")}
+                            className={`py-2 px-3 rounded-xl border transition-all flex items-center justify-center bg-white ${
+                              selectedCard === "mastercard" ? "border-orange-500 bg-orange-50/50 shadow-sm ring-2 ring-orange-500/20" : "border-slate-200 hover:border-slate-300"
+                            }`}
+                          >
+                            <div className="flex relative w-8 h-4 items-center justify-center">
+                              <div className="absolute left-0 w-4 h-4 rounded-full bg-[#EA001B]" />
+                              <div className="absolute right-0 w-4 h-4 rounded-full bg-[#FFA200] opacity-80 mix-blend-multiply" />
+                            </div>
+                          </button>
+
+                          {/* Amex */}
+                          <button
+                            type="button"
+                            onClick={() => setSelectedCard("amex")}
+                            className={`py-2 px-3 rounded-xl border transition-all flex items-center justify-center bg-white ${
+                              selectedCard === "amex" ? "border-cyan-600 bg-cyan-50/50 shadow-sm ring-2 ring-cyan-500/20" : "border-slate-200 hover:border-slate-300"
+                            }`}
+                          >
+                            <div className="bg-[#2E77BB] text-white px-1 py-0.5 rounded-sm font-bold text-[9px] tracking-widest">
+                              AMEX
+                            </div>
+                          </button>
+
+                          {/* Discover */}
+                          <button
+                            type="button"
+                            onClick={() => setSelectedCard("discover")}
+                            className={`py-2 px-3 rounded-xl border transition-all flex items-center justify-center bg-white ${
+                              selectedCard === "discover" ? "border-orange-600 bg-orange-50/50 shadow-sm ring-2 ring-orange-500/20" : "border-slate-200 hover:border-slate-300"
+                            }`}
+                          >
+                            <span className="font-black text-[10px] tracking-tighter text-[#FF6000]">DISCOVER</span>
+                          </button>
+
+                          {/* UnionPay */}
+                          <button
+                            type="button"
+                            onClick={() => setSelectedCard("unionpay")}
+                            className={`py-2 px-3 rounded-xl border transition-all flex items-center justify-center bg-white ${
+                              selectedCard === "unionpay" ? "border-red-600 bg-red-50/50 shadow-sm ring-2 ring-red-500/20" : "border-slate-200 hover:border-slate-300"
+                            }`}
+                          >
+                            <span className="font-black text-[10px] tracking-tighter text-red-600">UnionPay</span>
+                          </button>
+
+                          {/* JCB */}
+                          <button
+                            type="button"
+                            onClick={() => setSelectedCard("jcb")}
+                            className={`py-2 px-3 rounded-xl border transition-all flex items-center justify-center bg-white ${
+                              selectedCard === "jcb" ? "border-blue-500 bg-blue-50/50 shadow-sm ring-2 ring-blue-500/20" : "border-slate-200 hover:border-slate-300"
+                            }`}
+                          >
+                            <span className="font-black text-[10px] tracking-tighter text-blue-700">JCB</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      <p className="text-[10px] text-slate-400 text-center px-1">
+                        Secured by Stripe for global card processing.
+                      </p>
                     </div>
-                  </div>
+                  )}
 
-                  <div className="pt-4 border-t border-slate-100">
+                  <div className="pt-6 border-t border-slate-100">
                     <div className="flex items-center justify-between mb-4 px-1">
                       <span className="text-sm text-slate-600 font-bold">Total Cost:</span>
                       <span className="text-xl font-serif font-black text-amber-500 drop-shadow-sm">
-                        KES {(voteCount * VOTE_COST_KES).toLocaleString()}
+                        {paymentMethod === "mpesa" 
+                          ? `KES ${mpesaTotalCost.toLocaleString()}` 
+                          : cardCurrency === "USD" 
+                            ? `$${safeCardAmount.toLocaleString()} USD` 
+                            : `KES ${safeCardAmount.toLocaleString()}`}
                       </span>
                     </div>
 
                     <button
                       type="submit"
-                      disabled={isProcessing}
-                      className="w-full py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-bold text-sm uppercase tracking-widest transition-all shadow-[0_5px_15px_rgba(16,185,129,0.3)] hover:shadow-[0_8px_20px_rgba(16,185,129,0.4)] active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                      disabled={isProcessing || isStripeLoading}
+                      className={`w-full py-4 rounded-xl text-white font-bold text-sm uppercase tracking-widest transition-all shadow-md active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 ${
+                        paymentMethod === "mpesa" 
+                          ? "bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 shadow-[0_5px_15px_rgba(16,185,129,0.3)]"
+                          : "bg-[#0F1611] hover:bg-[#635BFF]"
+                      }`}
                     >
-                      {isProcessing ? (
+                      {isProcessing || isStripeLoading ? (
                         <>
-                          <Loader2 className="w-5 h-5 animate-spin" /> Initiating Payment...
+                          <Loader2 className="w-5 h-5 animate-spin" /> Processing...
+                        </>
+                      ) : paymentMethod === "mpesa" ? (
+                        <>
+                          <Smartphone className="w-4 h-4" /> Pay KES {mpesaTotalCost.toLocaleString()} via M-Pesa
                         </>
                       ) : (
-                        `Pay KES ${voteCount * VOTE_COST_KES} via M-Pesa`
+                        <>
+                          <CreditCard className="w-4 h-4" /> Pay {cardCurrency === "USD" ? `$${safeCardAmount.toLocaleString()} USD` : `KES ${safeCardAmount.toLocaleString()}`} via Card
+                        </>
                       )}
                     </button>
                   </div>

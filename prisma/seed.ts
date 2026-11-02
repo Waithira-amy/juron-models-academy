@@ -8,6 +8,7 @@ const connectionString = process.env.DATABASE_URL || "postgresql://neondb_owner:
 const pool = new Pool({ connectionString });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
+
 // --- NEW: Commission Affiliates ---
 const AFFILIATES = [
   { name: "Travis Kilatya", code: "TRAVIS" },
@@ -102,7 +103,7 @@ const ALL_NOMINEES = [
   { name: "Margaret Wanja Mwangi", code: "KAN04", category: "kangundo", title: "Miss", photoUrl: "/nominees/margaret-wanja-mwangi.jpg" },
   { name: "Kuki Japhet", code: "KAN05", category: "kangundo", title: "Miss", photoUrl: "/nominees/kuki-japhet.jpg" },
   { name: "Gladys Ngatha", code: "KAN06", category: "kangundo", title: "Miss", photoUrl: "/nominees/gladys-ngatha.jpg" },
-  { name: "Joy Wanjeri", code: "KAN07", category: "kangundo", title: "Miss", photoUrl: "/nominees/joy-wanjeri.jpg" },
+  { name: "Joy Wanjeri", code: "KAN07", category: "kangundo", title: "Miss", photoUrl: "/nominees/joy-wanjeri-real.jpg" },
   { name: "Tracy Sitatian", code: "KAN08", category: "kangundo", title: "Miss", photoUrl: "/nominees/tracy-sitatian.jpg" },
   { name: "Rama Hassan", code: "KAN09", category: "kangundo", title: "Mr", photoUrl: "/nominees/rama-hassan.jpg" }
 ];
