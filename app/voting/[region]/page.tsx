@@ -191,7 +191,7 @@ export default function RegionVotingPage() {
   const mpesaTotalCost = safeVoteCount * VOTE_COST_KES;
   const safeCardAmount = typeof cardAmount === 'number' ? cardAmount : (parseInt(cardAmount) || 0);
 
-  // --- PAYSTACK HOOK CONFIGURATION (Fixed for KES restriction) ---
+  // --- PAYSTACK HOOK CONFIGURATION ---
   const exchangeRate = 130; 
   const finalAmountKES = cardCurrency === "USD" ? safeCardAmount * exchangeRate : safeCardAmount;
 
@@ -200,7 +200,7 @@ export default function RegionVotingPage() {
     email: email, 
     amount: finalAmountKES * 100, // Paystack lowest denomination in KES cents
     publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY as string,
-    currency: "KES", // Kenyan merchants strictly require KES
+    currency: "KES",
     metadata: {
       custom_fields: [
         { display_name: "Nominee Name", variable_name: "nominee_name", value: selectedNominee?.name || "" },
@@ -262,7 +262,6 @@ export default function RegionVotingPage() {
     e.preventDefault();
     if (!selectedNominee) return;
 
-    // --- PAYSTACK CARD PAYMENT HANDLER ---
     if (paymentMethod === "card") {
       if (!email) return alert("Please enter your email address for the payment receipt.");
       if (safeCardAmount <= 0) return alert("Please enter a valid amount.");
@@ -288,7 +287,8 @@ export default function RegionVotingPage() {
               setTimeout(() => {
                 setPaymentSuccess(false);
                 closeModal();
-              }, 6000);
+                router.refresh();
+              }, 4000);
             } else {
               alert("Payment was successful, but vote logging failed: " + verifyData.error);
             }
@@ -302,9 +302,7 @@ export default function RegionVotingPage() {
       });
       return;
     }
-    // -------------------------------------
 
-    // --- M-PESA STK PUSH HANDLER ---
     if (!phoneNumber) return alert("Please enter a valid M-Pesa phone number");
     setIsProcessing(true);
 
@@ -328,6 +326,7 @@ export default function RegionVotingPage() {
         setTimeout(() => {
           setPaymentSuccess(false);
           closeModal();
+          router.refresh();
         }, 6000); 
       } else {
         alert("Payment initialization failed: " + (resData.error || "Please verify your credentials and try again."));
