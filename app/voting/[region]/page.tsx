@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -142,7 +141,7 @@ const REGION_DATA: Record<string, { title: string; subtitle: string; theme: any;
       { id: "kan-4", name: "Margaret Wanja Mwangi", code: "KAN04", location: "Kangundo", gender: "miss", votes: 0, photoUrl: "/nominees/margaret-wanja-mwangi.jpg" },
       { id: "kan-5", name: "Kuki Japhet", code: "KAN05", location: "Kangundo", gender: "miss", votes: 0, photoUrl: "/nominees/kuki-japhet.jpg" },
       { id: "kan-6", name: "Gladys Ngatha", code: "KAN06", location: "Kangundo", gender: "miss", votes: 0, photoUrl: "/nominees/gladys-ngatha.jpg" },
-      { id: "kan-7", name: "Joy Wanjeri", code: "KAN07", location: "Kangundo", gender: "miss", votes: 0, photoUrl: "/nominees/tracy-sitatian.jpg" },
+      { id: "kan-7", name: "Joy Wanjeri", code: "KAN07", location: "Kangundo", gender: "miss", votes: 0, photoUrl: "/nominees/joy-wanjeri-real.jpg" },
       { id: "kan-8", name: "Tracy Sitatian", code: "KAN08", location: "Kangundo", gender: "miss", votes: 0, photoUrl: "/nominees/tracy-sitatian.jpg" },
       { id: "kan-9", name: "Rama Hassan", code: "KAN09", location: "Kangundo", gender: "mr", votes: 0, photoUrl: "/nominees/rama-hassan.jpg" }
     ]
@@ -206,7 +205,7 @@ export default function RegionVotingPage() {
         if (dbData.success && dbData.nominees) {
           setLiveNominees(prevNominees => prevNominees.map(nom => {
             const dbMatch = dbData.nominees.find((n: any) => n.code.toUpperCase() === nom.code.toUpperCase());
-            return dbMatch ? { ...nom, votes: dbMatch.votes } : nom;
+            return dbMatch ? { ...nom, votes: dbMatch.votes, photoUrl: dbMatch.photoUrl || nom.photoUrl } : nom;
           }));
         }
       } catch (error) {
