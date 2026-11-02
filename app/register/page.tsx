@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
-import { User, Calendar, MapPin, Phone, ArrowLeft, CheckCircle2, Crown, Loader2, AlertTriangle } from "lucide-react";
+import { User, Calendar, MapPin, Phone, ArrowLeft, CheckCircle2, Crown, Loader2, AlertTriangle, ExternalLink } from "lucide-react";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -152,6 +152,24 @@ export default function RegisterPage() {
                     placeholder="City / Area"
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-rose-400 transition-colors shadow-sm"
                   />
+                </div>
+              </div>
+
+              {/* Google Form Photo Upload Callout */}
+              <div className="p-4 bg-rose-50/50 border border-rose-100 rounded-2xl">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="text-left">
+                    <p className="text-xs font-bold uppercase tracking-wider text-rose-900 mb-1">Portfolio & Audition Photos</p>
+                    <p className="text-xs text-slate-600">Required for application review.</p>
+                  </div>
+                  <a
+                    href="https://docs.google.com/forms/d/e/1FAIpQLSecF_NVtpEESDbrQLBiEFeWRP-RTINj16w_CVUSAmNAZM8Row/viewform?usp=header"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-white border border-rose-200 hover:bg-rose-50 text-rose-700 px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors shadow-sm shrink-0"
+                  >
+                    Upload Photos <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
                 </div>
               </div>
 
