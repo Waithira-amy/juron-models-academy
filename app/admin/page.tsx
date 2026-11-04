@@ -37,6 +37,38 @@ export default function AdminPage() {
     }
   };
 
+  const handleDownloadCSV = () => {
+    if (!applicants || applicants.length === 0) {
+      alert("No data to download");
+      return;
+    }
+
+    const headers = ["Applicant Name", "Phone Number", "Age", "Location", "Date Applied"];
+    const csvRows = [headers.join(",")];
+
+    applicants.forEach((app) => {
+      const row = [
+        `"${app.fullName || ''}"`,
+        `"${app.phone || ''}"`,
+        `"${app.age || ''}"`,
+        `"${app.location || ''}"`,
+        `"${new Date(app.createdAt).toLocaleDateString()}"`
+      ];
+      csvRows.push(row.join(","));
+    });
+
+    const csvString = csvRows.join("\n");
+    const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Registered_Applicants_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 font-sans relative overflow-hidden">
@@ -98,9 +130,17 @@ export default function AdminPage() {
             <p className="text-slate-500 text-sm mt-2">Total Registrations: <span className="font-bold text-slate-900">{applicants.length}</span></p>
           </div>
 
-          <Link href="/" className="inline-flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-rose-600 px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm">
-            <ArrowLeft className="w-4 h-4" /> Exit Dashboard
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button 
+              onClick={handleDownloadCSV}
+              className="inline-flex items-center justify-center gap-2 bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm"
+            >
+              <Download className="w-4 h-4" /> Export CSV
+            </button>
+            <Link href="/" className="inline-flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-rose-600 px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm">
+              <ArrowLeft className="w-4 h-4" /> Exit Dashboard
+            </Link>
+          </div>
         </div>
 
         {/* Data Table */}
