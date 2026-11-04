@@ -60,7 +60,7 @@ const CATEGORY_DATA = [
     desc: "Kathiani, Masinga, Yatta, Kalama & Ndithini.",
     link: "/voting/environs",
     startDate: "2026-10-28T09:08:00+03:00", 
-    endDate: "2026-11-04T23:59:59+03:00",
+    endDate: "2026-11-30T23:59:59+03:00", // Updated to Nov 30th
     Icon: Compass,
     theme: { bg: "bg-teal-50", border: "border-teal-100", text: "text-teal-500" }
   },
@@ -70,7 +70,7 @@ const CATEGORY_DATA = [
     desc: "The most popular delegates across all regions.",
     link: "/voting/popularity",
     startDate: "2026-10-28T09:08:00+03:00", 
-    endDate: "2026-11-04T23:59:59+03:00",
+    endDate: "2026-11-30T23:59:59+03:00", // Updated to Nov 30th
     Icon: Star,
     theme: { bg: "bg-pink-50", border: "border-pink-100", text: "text-pink-500" }
   }
