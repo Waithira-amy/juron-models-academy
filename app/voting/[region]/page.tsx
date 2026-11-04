@@ -146,8 +146,52 @@ const REGION_DATA: Record<string, { title: string; subtitle: string; theme: any;
       { id: "kan-8", name: "Tracy Sitatian", code: "KAN08", location: "Kangundo", gender: "miss", votes: 0, photoUrl: "/nominees/tracy-sitatian.jpg" },
       { id: "kan-9", name: "Rama Hassan", code: "KAN09", location: "Kangundo", gender: "mr", votes: 0, photoUrl: "/nominees/rama-hassan.jpg" }
     ]
+  },
+  environs: {
+    title: "Mr & Miss Machakos - Environs",
+    subtitle: "Representing Kathiani, Masinga, Yatta, Kalama, and Ndithini",
+    theme: {
+      avatarBg: "bg-teal-100 border-teal-200", avatarText: "text-teal-500", hoverBorder: "hover:border-teal-400", hoverShadow: "hover:shadow-[0_8px_30px_rgba(20,184,166,0.12)]", nameHover: "group-hover:text-teal-600", pillBg: "bg-slate-100 text-slate-500 group-hover:bg-teal-50 group-hover:text-teal-600 group-hover:border-teal-200", arrowHover: "group-hover:text-teal-500"
+    },
+    nominees: [
+      { id: "env-1", name: "Kelvin", code: "ENV01", location: "Nairobi / Mlolongo", gender: "mr", votes: 0, photoUrl: "" },
+      { id: "env-2", name: "Samuel Karingithi Kagiri", code: "ENV02", location: "Aguthi", gender: "mr", votes: 0, photoUrl: "" },
+      { id: "env-3", name: "Glorious Nyakara", code: "ENV03", location: "Kenanie", gender: "miss", votes: 0, photoUrl: "" },
+      { id: "env-4", name: "Damaris Helen Akoth", code: "ENV04", location: "Eldoret", gender: "miss", votes: 0, photoUrl: "" },
+      { id: "env-5", name: "Daissy Anne Ogot", code: "ENV05", location: "Kakamega", gender: "miss", votes: 0, photoUrl: "" },
+      { id: "env-6", name: "Boniface Kipngetich", code: "ENV06", location: "Nairobi", gender: "mr", votes: 0, photoUrl: "" },
+      { id: "env-7", name: "Mereline Khayati", code: "ENV07", location: "Nairobi", gender: "miss", votes: 0, photoUrl: "" },
+      { id: "env-8", name: "Sherleen Jepkoech", code: "ENV08", location: "Nairobi", gender: "miss", votes: 0, photoUrl: "" },
+      { id: "env-9", name: "Wilson Muange Kyalo", code: "ENV09", location: "Machakos Athi River", gender: "mr", votes: 0, photoUrl: "" },
+      { id: "env-10", name: "Albert Otieno", code: "ENV10", location: "Nairobi", gender: "mr", votes: 0, photoUrl: "" },
+      { id: "env-11", name: "Allan Otieno Omondi", code: "ENV11", location: "Machakos", gender: "mr", votes: 0, photoUrl: "" },
+      { id: "env-12", name: "Emmanuel Ochieng Japheth", code: "ENV12", location: "Nairobi, Kahawa West", gender: "mr", votes: 0, photoUrl: "" },
+      { id: "env-13", name: "Isaac Muuo Siloni", code: "ENV13", location: "Kalama", gender: "mr", votes: 0, photoUrl: "" },
+      { id: "env-14", name: "Brian Mwema", code: "ENV14", location: "Machakos Township", gender: "mr", votes: 0, photoUrl: "" },
+      { id: "env-15", name: "Diana Neema", code: "ENV15", location: "Kalama", gender: "miss", votes: 0, photoUrl: "" },
+      { id: "env-16", name: "Victor Mwangi Kahenia", code: "ENV16", location: "Masinga", gender: "mr", votes: 0, photoUrl: "" },
+      { id: "env-17", name: "Mirriam Mutheu Kiio", code: "ENV17", location: "Kathama Subcounty", gender: "miss", votes: 0, photoUrl: "" },
+      { id: "env-18", name: "Stephen Gekonge", code: "ENV18", location: "Machakos", gender: "mr", votes: 0, photoUrl: "" },
+      { id: "env-19", name: "Jasmine Waithira Natalyia", code: "ENV19", location: "Masinga", gender: "miss", votes: 0, photoUrl: "" }
+    ]
+  },
+  popularity: {
+    title: "Mr & Miss Popularity",
+    subtitle: "The most popular delegates across eligible regions",
+    theme: {
+      avatarBg: "bg-pink-100 border-pink-200", avatarText: "text-pink-500", hoverBorder: "hover:border-pink-400", hoverShadow: "hover:shadow-[0_8px_30px_rgba(236,72,153,0.12)]", nameHover: "group-hover:text-pink-600", pillBg: "bg-slate-100 text-slate-500 group-hover:bg-pink-50 group-hover:text-pink-600 group-hover:border-pink-200", arrowHover: "group-hover:text-pink-500"
+    },
+    nominees: [] // Handled dynamically below
   }
 };
+
+// Global pool of eligible nominees for the Popularity Category
+const ELIGIBLE_FOR_POPULARITY = [
+  ...REGION_DATA.mavoko.nominees,
+  ...REGION_DATA.township.nominees,
+  ...REGION_DATA.mwala.nominees,
+  ...REGION_DATA.kangundo.nominees
+];
 
 export default function RegionVotingPage() {
   const params = useParams();
@@ -160,6 +204,8 @@ export default function RegionVotingPage() {
                       : rawRegion.includes("diaspora") ? "diaspora" 
                       : rawRegion.includes("mwala") ? "mwala"
                       : rawRegion.includes("kangundo") ? "kangundo"
+                      : rawRegion.includes("environs") ? "environs"
+                      : rawRegion.includes("popularity") ? "popularity"
                       : "mavoko";
                       
   const data = REGION_DATA[currentRegion];
@@ -167,13 +213,13 @@ export default function RegionVotingPage() {
   const [activeTab, setActiveTab] = useState<"mr" | "miss">("miss");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedNominee, setSelectedNominee] = useState<Nominee | null>(null);
-  const [liveNominees, setLiveNominees] = useState<Nominee[]>(data.nominees);
+  const [liveNominees, setLiveNominees] = useState<Nominee[]>([]);
   
   const posterRef = useRef<HTMLDivElement>(null);
 
   // Form State
   const [voteCount, setVoteCount] = useState<number | string>(10);
-  const [cardAmount, setCardAmount] = useState<number | string>(10); // Default 10 USD
+  const [cardAmount, setCardAmount] = useState<number | string>(10);
   const [cardCurrency, setCardCurrency] = useState<"USD" | "KES">("USD"); 
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState(""); 
@@ -191,14 +237,14 @@ export default function RegionVotingPage() {
   const mpesaTotalCost = safeVoteCount * VOTE_COST_KES;
   const safeCardAmount = typeof cardAmount === 'number' ? cardAmount : (parseInt(cardAmount) || 0);
 
-  // --- PAYSTACK HOOK CONFIGURATION ---
+  // --- PAYSTACK CONFIGURATION ---
   const exchangeRate = 130; 
   const finalAmountKES = cardCurrency === "USD" ? safeCardAmount * exchangeRate : safeCardAmount;
 
   const paystackConfig = {
     reference: (new Date()).getTime().toString(),
     email: email, 
-    amount: finalAmountKES * 100, // Paystack lowest denomination in KES cents
+    amount: finalAmountKES * 100, 
     publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY as string,
     currency: "KES",
     metadata: {
@@ -210,11 +256,13 @@ export default function RegionVotingPage() {
   };
 
   const initializePaystackPayment = usePaystackPayment(paystackConfig);
-  // -------------------------------------------------------------
 
   useEffect(() => {
-    setLiveNominees(data.nominees);
-    
+    // Initial static load to prevent flashing
+    if (currentRegion !== "popularity") {
+      setLiveNominees(data.nominees);
+    }
+
     const fetchLiveVotes = async () => {
       try {
         const res = await fetch('/api/dashboard', { 
@@ -224,10 +272,41 @@ export default function RegionVotingPage() {
         const dbData = await res.json();
         
         if (dbData.success && dbData.nominees) {
-          setLiveNominees(prevNominees => prevNominees.map(nom => {
-            const dbMatch = dbData.nominees.find((n: any) => n.code.toUpperCase() === nom.code.toUpperCase());
-            return dbMatch ? { ...nom, votes: dbMatch.votes, photoUrl: dbMatch.photoUrl || nom.photoUrl } : nom;
-          }));
+          
+          if (currentRegion === "popularity") {
+            // 1. DYNAMIC POPULARITY LOGIC
+            const dynamicPopularity = ELIGIBLE_FOR_POPULARITY
+              .map(nom => {
+                const dbMatch = dbData.nominees.find((n: any) => n.code.toUpperCase() === nom.code.toUpperCase());
+                const totalVotes = dbMatch ? dbMatch.votes : 0;
+                return { ...nom, votes: totalVotes, photoUrl: dbMatch?.photoUrl || nom.photoUrl };
+              })
+              .filter(nom => nom.votes >= 500) // Only those with 500+ votes
+              .map(nom => ({ ...nom, votes: nom.votes - 500 })); // Apply offset: 800 total = 300 displayed
+            
+            setLiveNominees(dynamicPopularity);
+
+            // Update modal if open
+            setSelectedNominee(prev => {
+              if (!prev) return prev;
+              const updated = dynamicPopularity.find(n => n.code === prev.code);
+              return updated || prev;
+            });
+
+          } else {
+            // 2. STANDARD CATEGORY LOGIC
+            setLiveNominees(data.nominees.map(nom => {
+              const dbMatch = dbData.nominees.find((n: any) => n.code.toUpperCase() === nom.code.toUpperCase());
+              return dbMatch ? { ...nom, votes: dbMatch.votes, photoUrl: dbMatch.photoUrl || nom.photoUrl } : nom;
+            }));
+
+            // Update modal if open
+            setSelectedNominee(prev => {
+              if (!prev) return prev;
+              const dbMatch = dbData.nominees.find((n: any) => n.code.toUpperCase() === prev.code.toUpperCase());
+              return dbMatch ? { ...prev, votes: dbMatch.votes, photoUrl: dbMatch.photoUrl || prev.photoUrl } : prev;
+            });
+          }
         }
       } catch (error) {
         console.error("Failed to fetch live votes", error);
@@ -237,11 +316,11 @@ export default function RegionVotingPage() {
     fetchLiveVotes();
     const interval = setInterval(fetchLiveVotes, 15000);
     return () => clearInterval(interval);
-  }, [data.nominees]);
+  }, [currentRegion, data.nominees]);
 
   useEffect(() => {
     const nomineeCode = searchParams?.get('nominee');
-    if (nomineeCode) {
+    if (nomineeCode && liveNominees.length > 0) {
       const found = liveNominees.find(n => n.code.toUpperCase() === nomineeCode.toUpperCase());
       if (found) {
         setSelectedNominee(found);
@@ -268,8 +347,6 @@ export default function RegionVotingPage() {
       
       initializePaystackPayment({
         onSuccess: async (reference: any) => {
-          console.log("Paystack payment successful!", reference);
-          
           try {
             const verifyRes = await fetch('/api/verify-payment', {
               method: 'POST',
@@ -296,9 +373,7 @@ export default function RegionVotingPage() {
             console.error("Error verifying payment on backend:", err);
           }
         },
-        onClose: () => {
-          console.log("User closed the Paystack modal.");
-        }
+        onClose: () => {}
       });
       return;
     }
@@ -457,7 +532,12 @@ export default function RegionVotingPage() {
         {filteredNominees.length === 0 ? (
           <div className="text-center py-20 bg-white border border-slate-200 rounded-3xl p-8 shadow-sm">
             <Crown className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-            <h3 className="text-lg font-bold text-slate-900 mb-1">No Nominees Found</h3>
+            <h3 className="text-lg font-bold text-slate-900 mb-1">
+              {currentRegion === "popularity" ? "No One Has Reached 500 Votes Yet" : "No Nominees Found"}
+            </h3>
+            {currentRegion === "popularity" && (
+              <p className="text-sm text-slate-500 font-medium">Keep voting in other categories to unlock nominees here!</p>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">

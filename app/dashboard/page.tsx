@@ -106,6 +106,34 @@ const REGION_DATA: Record<string, any> = {
       { id: "kan-8", name: "Tracy Sitatian", code: "KAN08", gender: "miss", votes: 0, photoUrl: "/nominees/tracy-sitatian.jpg" },
       { id: "kan-9", name: "Rama Hassan", code: "KAN09", gender: "mr", votes: 0, photoUrl: "/nominees/rama-hassan.jpg" }
     ]
+  },
+  environs: {
+    title: "Mr & Miss Machakos - Environs",
+    nominees: [
+      { id: "env-1", name: "Kelvin", code: "ENV01", gender: "mr", votes: 0, photoUrl: "" },
+      { id: "env-2", name: "Samuel Karingithi Kagiri", code: "ENV02", gender: "mr", votes: 0, photoUrl: "" },
+      { id: "env-3", name: "Glorious Nyakara", code: "ENV03", gender: "miss", votes: 0, photoUrl: "" },
+      { id: "env-4", name: "Damaris Helen Akoth", code: "ENV04", gender: "miss", votes: 0, photoUrl: "" },
+      { id: "env-5", name: "Daissy Anne Ogot", code: "ENV05", gender: "miss", votes: 0, photoUrl: "" },
+      { id: "env-6", name: "Boniface Kipngetich", code: "ENV06", gender: "mr", votes: 0, photoUrl: "" },
+      { id: "env-7", name: "Mereline Khayati", code: "ENV07", gender: "miss", votes: 0, photoUrl: "" },
+      { id: "env-8", name: "Sherleen Jepkoech", code: "ENV08", gender: "miss", votes: 0, photoUrl: "" },
+      { id: "env-9", name: "Wilson Muange Kyalo", code: "ENV09", gender: "mr", votes: 0, photoUrl: "" },
+      { id: "env-10", name: "Albert Otieno", code: "ENV10", gender: "mr", votes: 0, photoUrl: "" },
+      { id: "env-11", name: "Allan Otieno Omondi", code: "ENV11", gender: "mr", votes: 0, photoUrl: "" },
+      { id: "env-12", name: "Emmanuel Ochieng Japheth", code: "ENV12", gender: "mr", votes: 0, photoUrl: "" },
+      { id: "env-13", name: "Isaac Muuo Siloni", code: "ENV13", gender: "mr", votes: 0, photoUrl: "" },
+      { id: "env-14", name: "Brian Mwema", code: "ENV14", gender: "mr", votes: 0, photoUrl: "" },
+      { id: "env-15", name: "Diana Neema", code: "ENV15", gender: "miss", votes: 0, photoUrl: "" },
+      { id: "env-16", name: "Victor Mwangi Kahenia", code: "ENV16", gender: "mr", votes: 0, photoUrl: "" },
+      { id: "env-17", name: "Mirriam Mutheu Kiio", code: "ENV17", gender: "miss", votes: 0, photoUrl: "" },
+      { id: "env-18", name: "Stephen Gekonge", code: "ENV18", gender: "mr", votes: 0, photoUrl: "" },
+      { id: "env-19", name: "Jasmine Waithira Natalyia", code: "ENV19", gender: "miss", votes: 0, photoUrl: "" }
+    ]
+  },
+  popularity: {
+    title: "Mr & Miss Popularity (500+ Votes)",
+    nominees: [] // Populated dynamically
   }
 };
 
@@ -124,19 +152,40 @@ export default function AdminDashboard() {
       
       if (dbResult.success && dbResult.nominees) {
         const dbVotesMap = new Map(dbResult.nominees.map((n: any) => [n.code.toUpperCase(), n.votes]));
-        let newTotalVotes = 0;
+        
+        // Correct global total calculation to prevent double counting
+        const newTotalVotes = dbResult.nominees.reduce((sum: number, n: any) => sum + (n.votes || 0), 0);
         
         const updatedRegionData = JSON.parse(JSON.stringify(REGION_DATA));
 
+        // Update standard regions
         Object.keys(updatedRegionData).forEach(regionKey => {
+          if (regionKey === 'popularity') return;
           updatedRegionData[regionKey].nominees.forEach((nominee: any) => {
             const liveVotes = dbVotesMap.get(nominee.code.toUpperCase());
             if (liveVotes !== undefined) {
               nominee.votes = liveVotes;
             }
-            newTotalVotes += nominee.votes;
           });
         });
+
+        // Dynamic Popularity Logic
+        const ELIGIBLE_FOR_POPULARITY = [
+          ...updatedRegionData.mavoko.nominees,
+          ...updatedRegionData.township.nominees,
+          ...updatedRegionData.mwala.nominees,
+          ...updatedRegionData.kangundo.nominees
+        ];
+
+        const popularityNominees = ELIGIBLE_FOR_POPULARITY
+          .filter(nom => nom.votes >= 500)
+          .map(nom => ({
+            ...nom,
+            votes: nom.votes - 500 // Offset display
+          }))
+          .sort((a, b) => b.votes - a.votes); // Highest first
+
+        updatedRegionData.popularity.nominees = popularityNominees;
 
         setLiveData(updatedRegionData);
         setGlobalTotalVotes(newTotalVotes);
@@ -229,57 +278,63 @@ export default function AdminDashboard() {
                 </h2>
               </div>
               
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm">
-                  <thead>
-                    <tr className="text-slate-400 border-b border-slate-800 bg-slate-900/50">
-                      <th className="py-4 px-6 font-bold uppercase tracking-widest text-xs w-16">#</th>
-                      <th className="py-4 px-6 font-bold uppercase tracking-widest text-xs">Nominee Details</th>
-                      <th className="py-4 px-6 font-bold uppercase tracking-widest text-xs">Code</th>
-                      <th className="py-4 px-6 font-bold uppercase tracking-widest text-xs">Category</th>
-                      <th className="py-4 px-6 font-bold uppercase tracking-widest text-xs text-right">Votes</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-800">
-                    {region.nominees.map((nominee: any, index: number) => (
-                      <tr key={nominee.code} className="hover:bg-slate-800/50 transition-colors group">
-                        <td className="py-4 px-6 text-slate-500 font-medium">{index + 1}</td>
-                        <td className="py-4 px-6">
-                          <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 overflow-hidden flex-shrink-0">
-                              {nominee.photoUrl ? (
-                                <img src={nominee.photoUrl} alt={nominee.name} className="w-full h-full object-cover object-top" />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-slate-500 font-bold">
-                                  {nominee.name.charAt(0)}
-                                </div>
-                              )}
-                            </div>
-                            <span className="font-semibold text-slate-200 group-hover:text-amber-400 transition-colors">
-                              {nominee.name}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="py-4 px-6">
-                          <span className="bg-slate-800 text-slate-300 border border-slate-700 px-2.5 py-1 rounded-md font-mono text-xs font-bold tracking-widest">
-                            {nominee.code}
-                          </span>
-                        </td>
-                        <td className="py-4 px-6">
-                          <span className="uppercase text-xs font-bold tracking-widest text-slate-500">
-                            {nominee.gender === 'mr' ? 'Mr' : 'Miss'}
-                          </span>
-                        </td>
-                        <td className="py-4 px-6 text-right">
-                          <span className="bg-amber-500/10 text-amber-500 border border-amber-500/20 px-4 py-1.5 rounded-full font-black text-sm inline-block shadow-inner">
-                            {nominee.votes.toLocaleString()}
-                          </span>
-                        </td>
+              {region.nominees.length === 0 ? (
+                <div className="p-8 text-center text-slate-500 font-bold uppercase tracking-widest text-xs">
+                  {regionKey === 'popularity' ? "No one has reached 500 votes yet." : "No nominees found."}
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-sm">
+                    <thead>
+                      <tr className="text-slate-400 border-b border-slate-800 bg-slate-900/50">
+                        <th className="py-4 px-6 font-bold uppercase tracking-widest text-xs w-16">#</th>
+                        <th className="py-4 px-6 font-bold uppercase tracking-widest text-xs">Nominee Details</th>
+                        <th className="py-4 px-6 font-bold uppercase tracking-widest text-xs">Code</th>
+                        <th className="py-4 px-6 font-bold uppercase tracking-widest text-xs">Category</th>
+                        <th className="py-4 px-6 font-bold uppercase tracking-widest text-xs text-right">Votes</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800">
+                      {region.nominees.map((nominee: any, index: number) => (
+                        <tr key={nominee.code} className="hover:bg-slate-800/50 transition-colors group">
+                          <td className="py-4 px-6 text-slate-500 font-medium">{index + 1}</td>
+                          <td className="py-4 px-6">
+                            <div className="flex items-center gap-4">
+                              <div className="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 overflow-hidden flex-shrink-0">
+                                {nominee.photoUrl ? (
+                                  <img src={nominee.photoUrl} alt={nominee.name} className="w-full h-full object-cover object-top" />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-slate-500 font-bold">
+                                    {nominee.name.charAt(0)}
+                                  </div>
+                                )}
+                              </div>
+                              <span className="font-semibold text-slate-200 group-hover:text-amber-400 transition-colors">
+                                {nominee.name}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="py-4 px-6">
+                            <span className="bg-slate-800 text-slate-300 border border-slate-700 px-2.5 py-1 rounded-md font-mono text-xs font-bold tracking-widest">
+                              {nominee.code}
+                            </span>
+                          </td>
+                          <td className="py-4 px-6">
+                            <span className="uppercase text-xs font-bold tracking-widest text-slate-500">
+                              {nominee.gender === 'mr' ? 'Mr' : 'Miss'}
+                            </span>
+                          </td>
+                          <td className="py-4 px-6 text-right">
+                            <span className="bg-amber-500/10 text-amber-500 border border-amber-500/20 px-4 py-1.5 rounded-full font-black text-sm inline-block shadow-inner">
+                              {nominee.votes.toLocaleString()}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           ))}
         </div>

@@ -105,7 +105,28 @@ const ALL_NOMINEES = [
   { name: "Gladys Ngatha", code: "KAN06", category: "kangundo", title: "Miss", photoUrl: "/nominees/gladys-ngatha.jpg" },
   { name: "Joy Wanjeri", code: "KAN07", category: "kangundo", title: "Miss", photoUrl: "/nominees/joy-wanjeri-real.jpg" },
   { name: "Tracy Sitatian", code: "KAN08", category: "kangundo", title: "Miss", photoUrl: "/nominees/tracy-sitatian.jpg" },
-  { name: "Rama Hassan", code: "KAN09", category: "kangundo", title: "Mr", photoUrl: "/nominees/rama-hassan.jpg" }
+  { name: "Rama Hassan", code: "KAN09", category: "kangundo", title: "Mr", photoUrl: "/nominees/rama-hassan.jpg" },
+
+  // Environs (Extracted from all 3 dashboard screenshots)
+  { name: "Kelvin", code: "ENV01", category: "environs", title: "Mr", photoUrl: "" },
+  { name: "Samuel Karingithi Kagiri", code: "ENV02", category: "environs", title: "Mr", photoUrl: "" },
+  { name: "Glorious Nyakara", code: "ENV03", category: "environs", title: "Miss", photoUrl: "" },
+  { name: "Damaris Helen Akoth", code: "ENV04", category: "environs", title: "Miss", photoUrl: "" },
+  { name: "Daissy Anne Ogot", code: "ENV05", category: "environs", title: "Miss", photoUrl: "" },
+  { name: "Boniface Kipngetich", code: "ENV06", category: "environs", title: "Mr", photoUrl: "" },
+  { name: "Mereline Khayati", code: "ENV07", category: "environs", title: "Miss", photoUrl: "" },
+  { name: "Sherleen Jepkoech", code: "ENV08", category: "environs", title: "Miss", photoUrl: "" },
+  { name: "Wilson Muange Kyalo", code: "ENV09", category: "environs", title: "Mr", photoUrl: "" },
+  { name: "Albert Otieno", code: "ENV10", category: "environs", title: "Mr", photoUrl: "" },
+  { name: "Allan Otieno Omondi", code: "ENV11", category: "environs", title: "Mr", photoUrl: "" },
+  { name: "Emmanuel Ochieng Japheth", code: "ENV12", category: "environs", title: "Mr", photoUrl: "" },
+  { name: "Isaac Muuo Siloni", code: "ENV13", category: "environs", title: "Mr", photoUrl: "" },
+  { name: "Brian Mwema", code: "ENV14", category: "environs", title: "Mr", photoUrl: "" },
+  { name: "Diana Neema", code: "ENV15", category: "environs", title: "Miss", photoUrl: "" },
+  { name: "Victor Mwangi Kahenia", code: "ENV16", category: "environs", title: "Mr", photoUrl: "" },
+  { name: "Mirriam Mutheu Kiio", code: "ENV17", category: "environs", title: "Miss", photoUrl: "" },
+  { name: "Stephen Gekonge", code: "ENV18", category: "environs", title: "Mr", photoUrl: "" },
+  { name: "Jasmine Waithira Natalyia", code: "ENV19", category: "environs", title: "Miss", photoUrl: "" }
 ];
 
 async function main() {

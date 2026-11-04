@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Clock, ArrowRight, Camera, Globe, Crown, Map, Sparkles } from "lucide-react";
+import { Clock, ArrowRight, Camera, Globe, Crown, Map, Sparkles, Star, Compass } from "lucide-react";
 import Link from "next/link";
 
 const CATEGORY_DATA = [
@@ -10,7 +10,6 @@ const CATEGORY_DATA = [
     desc: "Syokimau, Mlolongo, Athi River, and Mavoko Sub-County.",
     link: "/voting/mavoko",
     startDate: null, 
-    // Extended by 3 days
     endDate: "2026-10-31T23:59:59+03:00", 
     Icon: Crown,
     theme: { bg: "bg-rose-50", border: "border-rose-100", text: "text-rose-500" }
@@ -21,7 +20,6 @@ const CATEGORY_DATA = [
     desc: "Machakos Town, University, and Central Environs.",
     link: "/voting/township",
     startDate: null, 
-    // Extended by 3 days
     endDate: "2026-10-31T23:59:59+03:00",
     Icon: Camera,
     theme: { bg: "bg-amber-50", border: "border-amber-100", text: "text-amber-500" }
@@ -32,7 +30,6 @@ const CATEGORY_DATA = [
     desc: "Global & Countrywide Ambassadors outside the County.",
     link: "/voting/diaspora",
     startDate: null, 
-    // Extended by 3 days
     endDate: "2026-10-31T23:59:59+03:00",
     Icon: Globe,
     theme: { bg: "bg-sky-50", border: "border-sky-100", text: "text-sky-500" }
@@ -43,7 +40,7 @@ const CATEGORY_DATA = [
     desc: "Mwala Sub-County and surrounding environs.",
     link: "/voting/mwala",
     startDate: "2026-10-28T09:08:00+03:00", 
-    endDate: "2026-11-04T23:59:59+03:00", // Ends in 21 days
+    endDate: "2026-11-04T23:59:59+03:00",
     Icon: Map,
     theme: { bg: "bg-emerald-50", border: "border-emerald-100", text: "text-emerald-500" }
   },
@@ -53,9 +50,29 @@ const CATEGORY_DATA = [
     desc: "Kangundo Sub-County and surrounding environs.",
     link: "/voting/kangundo",
     startDate: "2026-10-28T09:08:00+03:00", 
-    endDate: "2026-11-04T23:59:59+03:00", // Ends in 21 days
+    endDate: "2026-11-04T23:59:59+03:00",
     Icon: Sparkles,
     theme: { bg: "bg-purple-50", border: "border-purple-100", text: "text-purple-500" }
+  },
+  {
+    id: "environs",
+    name: "Machakos Environs",
+    desc: "Kathiani, Masinga, Yatta, Kalama & Ndithini.",
+    link: "/voting/environs",
+    startDate: "2026-10-28T09:08:00+03:00", 
+    endDate: "2026-11-04T23:59:59+03:00",
+    Icon: Compass,
+    theme: { bg: "bg-teal-50", border: "border-teal-100", text: "text-teal-500" }
+  },
+  {
+    id: "popularity",
+    name: "Popularity",
+    desc: "The most popular delegates across all regions.",
+    link: "/voting/popularity",
+    startDate: "2026-10-28T09:08:00+03:00", 
+    endDate: "2026-11-04T23:59:59+03:00",
+    Icon: Star,
+    theme: { bg: "bg-pink-50", border: "border-pink-100", text: "text-pink-500" }
   }
 ];
 
@@ -105,7 +122,6 @@ export default function Voting() {
       </div>
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
-        
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-6xl font-serif font-black text-slate-900 mb-4 tracking-tight drop-shadow-sm">
             Voting <span className="text-amber-500">Categories</span>
@@ -121,7 +137,6 @@ export default function Voting() {
             
             return (
               <Link key={cat.id} href={cat.link} className="group bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden flex flex-col">
-                
                 <div className={`w-14 h-14 ${cat.theme.bg} rounded-2xl flex items-center justify-center mb-5 border ${cat.theme.border} group-hover:scale-110 transition-transform`}>
                   <cat.Icon className={`w-7 h-7 ${cat.theme.text}`} />
                 </div>
@@ -162,7 +177,6 @@ export default function Voting() {
             );
           })}
         </div>
-        
       </div>
     </section>
   );
