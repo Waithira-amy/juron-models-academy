@@ -69,7 +69,9 @@ export default function TicketingDashboard() {
               <h2 className="text-lg font-bold text-white">Affiliate Earnings</h2>
             </div>
             <div className="divide-y divide-gray-100">
-              {data.affiliates.map((affiliate: any) => (
+              {data.affiliates
+                .sort((a: any, b: any) => b.commissionKES - a.commissionKES)
+                .map((affiliate: any) => (
                 <div key={affiliate.code} className="flex justify-between items-center p-6 hover:bg-gray-50 transition">
                   <div>
                     <p className="font-semibold text-gray-900">{affiliate.name}</p>

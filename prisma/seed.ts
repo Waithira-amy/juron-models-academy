@@ -15,6 +15,7 @@ const AFFILIATES = [
   { name: "Jane Njeri", code: "JANE" },
   { name: "Collins", code: "COLLINS" },
   { name: "Masco", code: "MASCO" },
+  { name: "Sir Dennis", code: "SIR_DENNIS" },
 ];
 
 const ALL_NOMINEES = [
