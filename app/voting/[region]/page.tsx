@@ -282,22 +282,24 @@ export default function RegionVotingPage() {
               .map(nom => ({ ...nom, votes: nom.votes - 500 })); 
 
           } else if (currentRegion === "environs") {
-            // ENVIRONS (Silver Tier): 19 original < 500 PLUS anyone 100-499
+            // ENVIRONS (Silver Tier): 19 original < 500 PLUS anyone 100-499 PLUS Special Passes
             displayList = updatedGlobalList.filter(nom => {
               const isOriginalEnvirons = nom.originalCategory === "environs";
+              const isSpecialPass = nom.code === "KAN04" || nom.code === "KAN07"; // Margaret & Joy VIP Pass
               
-              if (isOriginalEnvirons) {
+              if (isOriginalEnvirons || isSpecialPass) {
                 return nom.votes < 500;
               } else {
-                return nom.votes >= 100 && nom.votes < 500; // Updated to 100 threshold
+                return nom.votes >= 100 && nom.votes < 500;
               }
             });
 
           } else {
-            // REGIONAL (Base Tier): Only original category members with < 100 votes
-            displayList = updatedGlobalList.filter(nom => 
-              nom.originalCategory === currentRegion && nom.votes < 100 // Updated to 100 threshold
-            );
+            // REGIONAL (Base Tier): Only original category members with < 100 votes (excluding special passes)
+            displayList = updatedGlobalList.filter(nom => {
+              const isSpecialPass = nom.code === "KAN04" || nom.code === "KAN07";
+              return nom.originalCategory === currentRegion && nom.votes < 100 && !isSpecialPass;
+            });
           }
 
           setLiveNominees(displayList);

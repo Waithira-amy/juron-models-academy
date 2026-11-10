@@ -176,18 +176,22 @@ export default function AdminDashboard() {
           .map(nom => ({ ...nom, votes: nom.votes - 500 }))
           .sort((a, b) => b.votes - a.votes);
 
-        // 2. ENVIRONS TIER: Original Environs (< 500) PLUS Anyone Else (100 to 499)
+        // 2. ENVIRONS TIER: Original Environs (< 500) PLUS Special VIP Passes PLUS Anyone Else (100 to 499)
         updatedRegionData.environs.nominees = updatedGlobalList
           .filter(nom => {
-            if (nom.originalCategory === "environs") return nom.votes < 500;
+            const isSpecialPass = nom.code === "KAN04" || nom.code === "KAN07"; // Margaret & Joy exception
+            if (nom.originalCategory === "environs" || isSpecialPass) return nom.votes < 500;
             return nom.votes >= 100 && nom.votes < 500;
           })
           .sort((a, b) => b.votes - a.votes);
 
-        // 3. BASE TIERS: Only original members with < 100 votes
+        // 3. BASE TIERS: Only original members with < 100 votes (excluding special passes)
         ['mavoko', 'township', 'diaspora', 'mwala', 'kangundo'].forEach(regionKey => {
           updatedRegionData[regionKey].nominees = updatedGlobalList
-            .filter(nom => nom.originalCategory === regionKey && nom.votes < 100)
+            .filter(nom => {
+              const isSpecialPass = nom.code === "KAN04" || nom.code === "KAN07";
+              return nom.originalCategory === regionKey && nom.votes < 100 && !isSpecialPass;
+            })
             .sort((a, b) => b.votes - a.votes);
         });
 
