@@ -108,7 +108,7 @@ const REGION_DATA: Record<string, any> = {
     ]
   },
   environs: {
-    title: "Mr & Miss Machakos - Environs (200+ Votes)",
+    title: "Mr & Miss Machakos - Environs (100+ Votes)",
     nominees: [
       { id: "env-1", name: "Kelvin", code: "ENV01", gender: "mr", votes: 0, photoUrl: "/nominees/kelvin.jpg", originalCategory: "environs" },
       { id: "env-2", name: "Samuel Karingithi Kagiri", code: "ENV02", gender: "mr", votes: 0, photoUrl: "/nominees/samuel-karingithi-kagiri.jpg", originalCategory: "environs" },
@@ -137,7 +137,6 @@ const REGION_DATA: Record<string, any> = {
   }
 };
 
-// Compile master list for easy filtering
 const ALL_NOMINEES = [
   ...REGION_DATA.mavoko.nominees,
   ...REGION_DATA.township.nominees,
@@ -162,10 +161,8 @@ export default function AdminDashboard() {
       
       if (dbResult.success && dbResult.nominees) {
         
-        // Correct global total calculation
         const newTotalVotes = dbResult.nominees.reduce((sum: number, n: any) => sum + (n.votes || 0), 0);
         
-        // Map database votes to the global list
         const updatedGlobalList = ALL_NOMINEES.map(nom => {
           const dbMatch = dbResult.nominees.find((n: any) => n.code.toUpperCase() === nom.code.toUpperCase());
           return { ...nom, votes: dbMatch ? dbMatch.votes : 0 };
@@ -179,18 +176,18 @@ export default function AdminDashboard() {
           .map(nom => ({ ...nom, votes: nom.votes - 500 }))
           .sort((a, b) => b.votes - a.votes);
 
-        // 2. ENVIRONS TIER: Original Environs (< 500) PLUS Anyone Else (200 to 499)
+        // 2. ENVIRONS TIER: Original Environs (< 500) PLUS Anyone Else (100 to 499)
         updatedRegionData.environs.nominees = updatedGlobalList
           .filter(nom => {
             if (nom.originalCategory === "environs") return nom.votes < 500;
-            return nom.votes >= 200 && nom.votes < 500;
+            return nom.votes >= 100 && nom.votes < 500;
           })
           .sort((a, b) => b.votes - a.votes);
 
-        // 3. BASE TIERS: Only original members with < 200 votes
+        // 3. BASE TIERS: Only original members with < 100 votes
         ['mavoko', 'township', 'diaspora', 'mwala', 'kangundo'].forEach(regionKey => {
           updatedRegionData[regionKey].nominees = updatedGlobalList
-            .filter(nom => nom.originalCategory === regionKey && nom.votes < 200)
+            .filter(nom => nom.originalCategory === regionKey && nom.votes < 100)
             .sort((a, b) => b.votes - a.votes);
         });
 
@@ -289,7 +286,7 @@ export default function AdminDashboard() {
               {region.nominees.length === 0 ? (
                 <div className="p-8 text-center text-slate-500 font-bold uppercase tracking-widest text-xs">
                   {regionKey === 'popularity' ? "No one has reached 500 votes yet." 
-                  : regionKey === 'environs' ? "No one has reached 200 votes yet." 
+                  : regionKey === 'environs' ? "No one has reached 100 votes yet." 
                   : "All nominees have advanced to higher tiers!"}
                 </div>
               ) : (

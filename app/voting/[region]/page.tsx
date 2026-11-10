@@ -23,7 +23,6 @@ interface Nominee {
   originalCategory?: string;
 }
 
-// Add originalCategory to each nominee so we can track where they came from
 const REGION_DATA: Record<string, { title: string; subtitle: string; theme: any; nominees: Nominee[] }> = {
   mavoko: {
     title: "Mr & Miss Machakos - Mavoko",
@@ -151,7 +150,7 @@ const REGION_DATA: Record<string, { title: string; subtitle: string; theme: any;
   },
   environs: {
     title: "Mr & Miss Machakos - Environs",
-    subtitle: "Representing Top Candidates (200+ Votes) & Environs Regions",
+    subtitle: "Representing Top Candidates (100+ Votes) & Environs Regions",
     theme: {
       avatarBg: "bg-teal-100 border-teal-200", avatarText: "text-teal-500", hoverBorder: "hover:border-teal-400", hoverShadow: "hover:shadow-[0_8px_30px_rgba(20,184,166,0.12)]", nameHover: "group-hover:text-teal-600", pillBg: "bg-slate-100 text-slate-500 group-hover:bg-teal-50 group-hover:text-teal-600 group-hover:border-teal-200", arrowHover: "group-hover:text-teal-500"
     },
@@ -183,7 +182,7 @@ const REGION_DATA: Record<string, { title: string; subtitle: string; theme: any;
     theme: {
       avatarBg: "bg-pink-100 border-pink-200", avatarText: "text-pink-500", hoverBorder: "hover:border-pink-400", hoverShadow: "hover:shadow-[0_8px_30px_rgba(236,72,153,0.12)]", nameHover: "group-hover:text-pink-600", pillBg: "bg-slate-100 text-slate-500 group-hover:bg-pink-50 group-hover:text-pink-600 group-hover:border-pink-200", arrowHover: "group-hover:text-pink-500"
     },
-    nominees: [] // Handled dynamically below
+    nominees: [] 
   }
 };
 
@@ -270,7 +269,6 @@ export default function RegionVotingPage() {
         
         if (dbData.success && dbData.nominees) {
           
-          // Map latest DB votes to the global static list
           const updatedGlobalList = ALL_NOMINEES.map(nom => {
             const dbMatch = dbData.nominees.find((n: any) => n.code.toUpperCase() === nom.code.toUpperCase());
             return { ...nom, votes: dbMatch ? dbMatch.votes : 0, photoUrl: dbMatch?.photoUrl || nom.photoUrl };
@@ -279,33 +277,31 @@ export default function RegionVotingPage() {
           let displayList: Nominee[] = [];
 
           if (currentRegion === "popularity") {
-            // POPULARITY (Gold Tier): Anyone with 500+ votes
             displayList = updatedGlobalList
               .filter(nom => nom.votes >= 500)
               .map(nom => ({ ...nom, votes: nom.votes - 500 })); 
 
           } else if (currentRegion === "environs") {
-            // ENVIRONS (Silver Tier): 19 original < 500 PLUS anyone 200-499
+            // ENVIRONS (Silver Tier): 19 original < 500 PLUS anyone 100-499
             displayList = updatedGlobalList.filter(nom => {
               const isOriginalEnvirons = nom.originalCategory === "environs";
               
               if (isOriginalEnvirons) {
-                return nom.votes < 500; // Original environs stay until 500
+                return nom.votes < 500;
               } else {
-                return nom.votes >= 200 && nom.votes < 500; // Catch 200-499 from other towns
+                return nom.votes >= 100 && nom.votes < 500; // Updated to 100 threshold
               }
             });
 
           } else {
-            // REGIONAL (Base Tier): Only original category members with < 200 votes
+            // REGIONAL (Base Tier): Only original category members with < 100 votes
             displayList = updatedGlobalList.filter(nom => 
-              nom.originalCategory === currentRegion && nom.votes < 200
+              nom.originalCategory === currentRegion && nom.votes < 100 // Updated to 100 threshold
             );
           }
 
           setLiveNominees(displayList);
 
-          // Update modal if open
           setSelectedNominee(prev => {
             if (!prev) return prev;
             const updated = displayList.find(n => n.code === prev.code);

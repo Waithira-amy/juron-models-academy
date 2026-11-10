@@ -1,59 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Clock, ArrowRight, Camera, Globe, Crown, Map, Sparkles, Star, Compass } from "lucide-react";
+import { Clock, ArrowRight, Compass, Star } from "lucide-react";
 import Link from "next/link";
 
 const CATEGORY_DATA = [
-  {
-    id: "mavoko",
-    name: "Mavoko",
-    desc: "Syokimau, Mlolongo, Athi River, and Mavoko Sub-County.",
-    link: "/voting/mavoko",
-    startDate: null, 
-    endDate: "2026-10-31T23:59:59+03:00", 
-    Icon: Crown,
-    theme: { bg: "bg-rose-50", border: "border-rose-100", text: "text-rose-500" }
-  },
-  {
-    id: "township",
-    name: "Township",
-    desc: "Machakos Town, University, and Central Environs.",
-    link: "/voting/township",
-    startDate: null, 
-    endDate: "2026-10-31T23:59:59+03:00",
-    Icon: Camera,
-    theme: { bg: "bg-amber-50", border: "border-amber-100", text: "text-amber-500" }
-  },
-  {
-    id: "diaspora",
-    name: "Diaspora",
-    desc: "Global & Countrywide Ambassadors outside the County.",
-    link: "/voting/diaspora",
-    startDate: null, 
-    endDate: "2026-10-31T23:59:59+03:00",
-    Icon: Globe,
-    theme: { bg: "bg-sky-50", border: "border-sky-100", text: "text-sky-500" }
-  },
-  {
-    id: "mwala",
-    name: "Machakos-Mwala",
-    desc: "Mwala Sub-County and surrounding environs.",
-    link: "/voting/mwala",
-    startDate: "2026-10-28T09:08:00+03:00", 
-    endDate: "2026-11-04T23:59:59+03:00",
-    Icon: Map,
-    theme: { bg: "bg-emerald-50", border: "border-emerald-100", text: "text-emerald-500" }
-  },
-  {
-    id: "kangundo",
-    name: "Machakos-Kangundo",
-    desc: "Kangundo Sub-County and surrounding environs.",
-    link: "/voting/kangundo",
-    startDate: "2026-10-28T09:08:00+03:00", 
-    endDate: "2026-11-04T23:59:59+03:00",
-    Icon: Sparkles,
-    theme: { bg: "bg-purple-50", border: "border-purple-100", text: "text-purple-500" }
-  },
   {
     id: "environs",
     name: "Machakos Environs",
@@ -69,7 +19,7 @@ const CATEGORY_DATA = [
     name: "Popularity",
     desc: "The most popular delegates across all regions.",
     link: "/voting/popularity",
-    startDate: "2026-11-25T00:00:00+03:00", // Updated to start on Nov 25th
+    startDate: "2026-11-25T00:00:00+03:00", 
     endDate: "2026-11-30T23:59:59+03:00", 
     Icon: Star,
     theme: { bg: "bg-pink-50", border: "border-pink-100", text: "text-pink-500" }
@@ -131,7 +81,7 @@ export default function Voting() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           {CATEGORY_DATA.map((cat) => {
             const time = getTimeLeft(cat.startDate, cat.endDate);
             
