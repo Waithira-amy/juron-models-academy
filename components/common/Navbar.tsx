@@ -7,7 +7,6 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
 
-  /* STREAMING_CHUNK:Initializing scroll listeners... */
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
@@ -16,6 +15,7 @@ export default function Navbar() {
 
   const navLinks = [
     { href: "/", label: "Home" },
+    { href: "/gallery", label: "Gallery" },
     { href: "/about", label: "About Us" },
     { href: "/team", label: "The Team" },
     { href: "/programs", label: "Programs" },
@@ -23,7 +23,6 @@ export default function Navbar() {
     { href: "/voting", label: "Voting" }
   ];
 
-  /* STREAMING_CHUNK:Configuring dynamic styling variables... */
   const isScrolledBg = isScrolled;
   const isDarkText = isScrolled || pathname !== "/";
 

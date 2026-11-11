@@ -4,60 +4,52 @@ import { X, ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 
-// Array of 25 Images with Categories
+// Array of 25 Images
 const GALLERY_IMAGES = [
-  { id: 1, src: "/gallery/pic1.jpg", alt: "Crowning Moment", category: "Events" },
-  { id: 2, src: "/gallery/pic2.jpg", alt: "Evening Gown Walk", category: "Runway" },
-  { id: 3, src: "/gallery/pic3.jpg", alt: "Makeup Prep", category: "Backstage" },
-  { id: 4, src: "/gallery/pic4.jpg", alt: "Studio Portrait", category: "Photoshoots" },
-  { id: 5, src: "/gallery/pic5.jpg", alt: "Mr Machakos Finalists", category: "Runway" },
-  { id: 6, src: "/gallery/pic6.jpg", alt: "Red Carpet Arrival", category: "Events" },
-  { id: 7, src: "/gallery/pic7.jpg", alt: "Designer Wear Showcase", category: "Runway" },
-  { id: 8, src: "/gallery/pic8.jpg", alt: "Behind the Scenes", category: "Backstage" },
-  { id: 9, src: "/gallery/pic9.jpg", alt: "Outdoor Editorial", category: "Photoshoots" },
-  { id: 10, src: "/gallery/pic10.jpg", alt: "Award Presentation", category: "Events" },
-  { id: 11, src: "/gallery/pic11.jpg", alt: "Swimwear Segment", category: "Runway" },
-  { id: 12, src: "/gallery/pic12.jpg", alt: "Quick Changes", category: "Backstage" },
-  { id: 13, src: "/gallery/pic13.jpg", alt: "High Fashion Shoot", category: "Photoshoots" },
-  { id: 14, src: "/gallery/pic14.jpg", alt: "Gala Dinner", category: "Events" },
-  { id: 15, src: "/gallery/pic15.jpg", alt: "Stage Choreography", category: "Runway" },
-  { id: 16, src: "/gallery/pic16.jpg", alt: "Group Rehearsals", category: "Backstage" },
-  { id: 17, src: "/gallery/pic17.jpg", alt: "Brand Ambassador Shoot", category: "Photoshoots" },
-  { id: 18, src: "/gallery/pic18.jpg", alt: "VIP Section", category: "Events" },
-  { id: 19, src: "/gallery/pic19.jpg", alt: "Miss Machakos Walk", category: "Runway" },
-  { id: 20, src: "/gallery/pic20.jpg", alt: "Final Touches", category: "Backstage" },
-  { id: 21, src: "/gallery/pic21.jpg", alt: "Creative Wear Shoot", category: "Photoshoots" },
-  { id: 22, src: "/gallery/pic22.jpg", alt: "Afterparty Celebration", category: "Events" },
-  { id: 23, src: "/gallery/pic23.jpg", alt: "Top 10 Lineup", category: "Runway" },
-  { id: 24, src: "/gallery/pic24.jpg", alt: "Hair Styling", category: "Backstage" },
-  { id: 25, src: "/gallery/pic25.jpg", alt: "Winner's Portrait", category: "Photoshoots" },
+  { id: 1, src: "/gallery/pic1.jpg", alt: "Crowning Moment" },
+  { id: 2, src: "/gallery/pic2.jpg", alt: "Evening Gown Walk" },
+  { id: 3, src: "/gallery/pic3.jpg", alt: "Makeup Prep" },
+  { id: 4, src: "/gallery/pic4.jpg", alt: "Studio Portrait" },
+  { id: 5, src: "/gallery/pic5.jpg", alt: "Mr Machakos Finalists" },
+  { id: 6, src: "/gallery/pic6.jpg", alt: "Red Carpet Arrival" },
+  { id: 7, src: "/gallery/pic7.jpg", alt: "Designer Wear Showcase" },
+  { id: 8, src: "/gallery/pic8.jpg", alt: "Behind the Scenes" },
+  { id: 9, src: "/gallery/pic9.jpg", alt: "Outdoor Editorial" },
+  { id: 10, src: "/gallery/pic10.jpg", alt: "Award Presentation" },
+  { id: 11, src: "/gallery/pic11.jpg", alt: "Swimwear Segment" },
+  { id: 12, src: "/gallery/pic12.jpg", alt: "Quick Changes" },
+  { id: 13, src: "/gallery/pic13.jpg", alt: "High Fashion Shoot" },
+  { id: 14, src: "/gallery/pic14.jpg", alt: "Gala Dinner" },
+  { id: 15, src: "/gallery/pic15.jpg", alt: "Stage Choreography" },
+  { id: 16, src: "/gallery/pic16.jpg", alt: "Group Rehearsals" },
+  { id: 17, src: "/gallery/pic17.jpg", alt: "Brand Ambassador Shoot" },
+  { id: 18, src: "/gallery/pic18.jpg", alt: "VIP Section" },
+  { id: 19, src: "/gallery/pic19.jpg", alt: "Miss Machakos Walk" },
+  { id: 20, src: "/gallery/pic20.jpg", alt: "Final Touches" },
+  { id: 21, src: "/gallery/pic21.jpg", alt: "Creative Wear Shoot" },
+  { id: 22, src: "/gallery/pic22.jpg", alt: "Afterparty Celebration" },
+  { id: 23, src: "/gallery/pic23.jpg", alt: "Top 10 Lineup" },
+  { id: 24, src: "/gallery/pic24.jpg", alt: "Hair Styling" },
+  { id: 25, src: "/gallery/pic25.jpg", alt: "Winner's Portrait" },
 ];
 
-const CATEGORIES = ["All", "Runway", "Backstage", "Photoshoots", "Events"];
-
-export default function EnhancedGalleryPage() {
-  const [activeCategory, setActiveCategory] = useState("All");
+export default function GalleryPage() {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-
-  // Filter images based on category
-  const filteredImages = GALLERY_IMAGES.filter((img) => 
-    activeCategory === "All" ? true : img.category === activeCategory
-  );
 
   // Lightbox Navigation Controls
   const closeLightbox = () => setSelectedIndex(null);
   
   const showNext = useCallback(() => {
     if (selectedIndex !== null) {
-      setSelectedIndex((selectedIndex + 1) % filteredImages.length);
+      setSelectedIndex((selectedIndex + 1) % GALLERY_IMAGES.length);
     }
-  }, [selectedIndex, filteredImages.length]);
+  }, [selectedIndex]);
 
   const showPrev = useCallback(() => {
     if (selectedIndex !== null) {
-      setSelectedIndex((selectedIndex - 1 + filteredImages.length) % filteredImages.length);
+      setSelectedIndex((selectedIndex - 1 + GALLERY_IMAGES.length) % GALLERY_IMAGES.length);
     }
-  }, [selectedIndex, filteredImages.length]);
+  }, [selectedIndex]);
 
   // Keyboard navigation for Lightbox
   useEffect(() => {
@@ -92,7 +84,7 @@ export default function EnhancedGalleryPage() {
         <div className="max-w-[1400px] mx-auto">
           
           {/* Header Section */}
-          <div className="text-center mb-12">
+          <div className="text-center mb-16">
             <span className="inline-block text-amber-500 text-xs font-bold uppercase tracking-widest mb-3 bg-amber-50 border border-amber-100 px-4 py-1.5 rounded-full shadow-sm">
               Portfolio & Archives
             </span>
@@ -104,59 +96,33 @@ export default function EnhancedGalleryPage() {
             </p>
           </div>
 
-          {/* Filter Tabs */}
-          <div className="flex flex-wrap justify-center gap-3 mb-12">
-            {CATEGORIES.map((category) => (
-              <button
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                className={`px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 ${
-                  activeCategory === category
-                    ? "bg-slate-900 text-white shadow-lg scale-105"
-                    : "bg-white text-slate-500 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-700 shadow-sm"
-                }`}
+          {/* Masonry Grid */}
+          <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6">
+            {GALLERY_IMAGES.map((image, index) => (
+              <div 
+                key={image.id}
+                onClick={() => setSelectedIndex(index)}
+                className="break-inside-avoid relative group cursor-pointer overflow-hidden rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-500 border border-slate-200 bg-white"
               >
-                {category}
-              </button>
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  className="w-full h-auto object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out"
+                  loading="lazy"
+                />
+                
+                {/* Hover Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                  <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-md p-2 rounded-full opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 delay-100">
+                    <ZoomIn className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="text-white font-serif font-bold text-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75">
+                    {image.alt}
+                  </span>
+                </div>
+              </div>
             ))}
           </div>
-
-          {/* Masonry Grid */}
-          {filteredImages.length === 0 ? (
-            <div className="text-center py-20 bg-white rounded-3xl border border-slate-200">
-              <p className="text-slate-500 font-bold uppercase tracking-widest text-sm">No photos found in this category.</p>
-            </div>
-          ) : (
-            <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6">
-              {filteredImages.map((image, index) => (
-                <div 
-                  key={image.id}
-                  onClick={() => setSelectedIndex(index)}
-                  className="break-inside-avoid relative group cursor-pointer overflow-hidden rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-500 border border-slate-200 bg-white"
-                >
-                  <img
-                    src={image.src}
-                    alt={image.alt}
-                    className="w-full h-auto object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out"
-                    loading="lazy"
-                  />
-                  
-                  {/* Hover Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                    <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-md p-2 rounded-full opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 delay-100">
-                      <ZoomIn className="w-5 h-5 text-white" />
-                    </div>
-                    <span className="text-amber-400 font-bold text-[10px] uppercase tracking-widest mb-1 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                      {image.category}
-                    </span>
-                    <span className="text-white font-serif font-bold text-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75">
-                      {image.alt}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </section>
 
@@ -168,14 +134,9 @@ export default function EnhancedGalleryPage() {
           
           {/* Top Bar */}
           <div className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-50">
-            <div className="flex flex-col">
-              <span className="text-amber-400 text-[10px] font-bold uppercase tracking-widest">
-                {filteredImages[selectedIndex].category}
-              </span>
-              <span className="text-white font-serif text-lg">
-                {filteredImages[selectedIndex].alt}
-              </span>
-            </div>
+            <span className="text-white font-serif text-lg">
+              {GALLERY_IMAGES[selectedIndex].alt}
+            </span>
             
             <button 
               onClick={closeLightbox}
@@ -196,8 +157,8 @@ export default function EnhancedGalleryPage() {
           {/* Main Image */}
           <div className="w-full h-full p-4 md:p-20 flex items-center justify-center">
             <img 
-              src={filteredImages[selectedIndex].src} 
-              alt={filteredImages[selectedIndex].alt}
+              src={GALLERY_IMAGES[selectedIndex].src} 
+              alt={GALLERY_IMAGES[selectedIndex].alt}
               className="max-w-full max-h-full object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-300"
             />
           </div>
@@ -213,7 +174,7 @@ export default function EnhancedGalleryPage() {
           {/* Image Counter */}
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-slate-900/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/10">
             <span className="text-white text-xs font-bold font-mono tracking-widest">
-              {selectedIndex + 1} / {filteredImages.length}
+              {selectedIndex + 1} / {GALLERY_IMAGES.length}
             </span>
           </div>
 
