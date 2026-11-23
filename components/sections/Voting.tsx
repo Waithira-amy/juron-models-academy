@@ -19,7 +19,7 @@ const CATEGORY_DATA = [
     name: "Popularity",
     desc: "The most popular delegates across all regions.",
     link: "/voting/popularity",
-    startDate: "2026-11-25T00:00:00+03:00", 
+    startDate: "2026-11-24T00:00:00+03:00", 
     endDate: "2026-11-30T23:59:59+03:00", 
     Icon: Star,
     theme: { bg: "bg-pink-50", border: "border-pink-100", text: "text-pink-500" }
