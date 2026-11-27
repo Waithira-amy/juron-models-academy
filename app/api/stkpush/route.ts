@@ -46,7 +46,13 @@ export async function POST(req: Request) {
       process.env.MPESA_TILL_NUMBER || process.env.MPESA_SHORTCODE
     )?.trim();
 
-    if (!consumerKey || !consumerSecret || !passkey || !storeNumber || !tillNumber) {
+    if (
+      !consumerKey ||
+      !consumerSecret ||
+      !passkey ||
+      !storeNumber ||
+      !tillNumber
+    ) {
       console.error("Missing M-Pesa environment variables on Vercel");
       return NextResponse.json(
         { success: false, error: "Server M-Pesa configuration is incomplete." },
@@ -54,7 +60,9 @@ export async function POST(req: Request) {
       );
     }
 
-    const auth = Buffer.from(`${consumerKey}:${consumerSecret}`).toString("base64");
+    const auth = Buffer.from(`${consumerKey}:${consumerSecret}`).toString(
+      "base64"
+    );
     const oauthUrl =
       "https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials";
 
@@ -92,7 +100,7 @@ export async function POST(req: Request) {
       process.env.NEXT_PUBLIC_SITE_URL || "https://juronmodels.co.ke"
     ).replace(/\/$/, "");
     const callbackUrl = `${baseUrl}/api/callback?nomineeId=${encodeURIComponent(
-      nomineeId
+      String(nomineeId)
     )}&votes=${encodeURIComponent(String(votes ?? 1))}`;
 
     const stkPayload = {
@@ -145,13 +153,12 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-  } catch (error: any) {
-    console.error("STK Push Exception:", error?.message || error);
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : "Internal Server Error";
+    console.error("STK Push Exception:", message);
     return NextResponse.json(
-      {
-        success: false,
-        error: error?.message || "Internal Server Error",
-      },
+      { success: false, error: message },
       { status: 500 }
     );
   }
