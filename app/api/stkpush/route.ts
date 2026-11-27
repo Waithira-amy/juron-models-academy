@@ -1,19 +1,67 @@
 import { NextResponse } from "next/server";
+import https from "https";
 
 export const dynamic = "force-dynamic";
 
-async function parseSafaricomResponse(res: Response, step: string) {
-  const rawText = await res.text();
-  if (!rawText) {
+function cleanEnv(value?: string): string {
+  if (!value) return "";
+  let cleaned = value.trim();
+  if (/^MPESA_[A-Z_]+=/.test(cleaned)) {
+    cleaned = cleaned.replace(/^MPESA_[A-Z_]+=/, "");
+  }
+  return cleaned.replace(/^["']|["']$/g, "").trim();
+}
+
+function safaricomRequest(
+  urlString: string,
+  options: {
+    method: "GET" | "POST";
+    headers: Record<string, string>;
+    body?: string;
+  }
+): Promise<{ status: number; text: string }> {
+  return new Promise((resolve, reject) => {
+    const url = new URL(urlString);
+    const req = https.request(
+      {
+        hostname: url.hostname,
+        path: `${url.pathname}${url.search}`,
+        method: options.method,
+        headers: options.headers,
+      },
+      (res) => {
+        let data = "";
+        res.on("data", (chunk) => {
+          data += chunk;
+        });
+        res.on("end", () => {
+          resolve({ status: res.statusCode || 500, text: data });
+        });
+      }
+    );
+
+    req.on("error", reject);
+    if (options.body) {
+      req.write(options.body);
+    }
+    req.end();
+  });
+}
+
+function parseSafaricomJson(
+  res: { status: number; text: string },
+  step: string
+) {
+  if (!res.text) {
     throw new Error(
       `Safaricom ${step} returned an empty response (HTTP ${res.status})`
     );
   }
   try {
-    return JSON.parse(rawText);
+    return JSON.parse(res.text);
   } catch {
     throw new Error(
-      `Safaricom ${step} returned non-JSON (HTTP ${res.status}): ${rawText.slice(0, 200)}`
+      `Safaricom ${step} returned non-JSON (HTTP ${res.status}): ${res.text.slice(0, 200)}`
     );
   }
 }
@@ -36,15 +84,15 @@ export async function POST(req: Request) {
       formattedPhone = formattedPhone.substring(1);
     }
 
-    const consumerKey = process.env.MPESA_CONSUMER_KEY?.trim();
-    const consumerSecret = process.env.MPESA_CONSUMER_SECRET?.trim();
-    const passkey = process.env.MPESA_PASSKEY?.trim();
-    const storeNumber = (
+    const consumerKey = cleanEnv(process.env.MPESA_CONSUMER_KEY);
+    const consumerSecret = cleanEnv(process.env.MPESA_CONSUMER_SECRET);
+    const passkey = cleanEnv(process.env.MPESA_PASSKEY);
+    const storeNumber = cleanEnv(
       process.env.MPESA_STORE_NUMBER || process.env.MPESA_SHORTCODE
-    )?.trim();
-    const tillNumber = (
+    );
+    const tillNumber = cleanEnv(
       process.env.MPESA_TILL_NUMBER || process.env.MPESA_SHORTCODE
-    )?.trim();
+    );
 
     if (
       !consumerKey ||
@@ -66,20 +114,23 @@ export async function POST(req: Request) {
     const oauthUrl =
       "https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials";
 
-    const tokenResponse = await fetch(oauthUrl, {
+    const tokenResponse = await safaricomRequest(oauthUrl, {
       method: "GET",
       headers: {
         Authorization: `Basic ${auth}`,
         Accept: "application/json",
-        "User-Agent": "Mozilla/5.0",
       },
-      cache: "no-store",
     });
 
-    const tokenData = await parseSafaricomResponse(tokenResponse, "OAuth");
+    if (tokenResponse.status !== 200 || !tokenResponse.text) {
+      console.error(
+        `Safaricom OAuth Failed (HTTP ${tokenResponse.status}) | keyLen=${consumerKey.length} (${consumerKey.slice(0, 2)}...${consumerKey.slice(-2)}) | secretLen=${consumerSecret.length} | body=${tokenResponse.text}`
+      );
+    }
 
-    if (!tokenResponse.ok || !tokenData.access_token) {
-      console.error("Safaricom Auth Error:", tokenData);
+    const tokenData = parseSafaricomJson(tokenResponse, "OAuth");
+
+    if (!tokenData.access_token) {
       return NextResponse.json(
         { success: false, error: "Safaricom Auth Failed." },
         { status: 401 }
@@ -95,15 +146,11 @@ export async function POST(req: Request) {
       `${storeNumber}${passkey}${timestamp}`
     ).toString("base64");
 
-    // Must match your Primary non-redirecting domain in Vercel
-    const baseUrl = (
-      process.env.NEXT_PUBLIC_SITE_URL || "https://juronmodels.co.ke"
-    ).replace(/\/$/, "");
-    const callbackUrl = `${baseUrl}/api/callback?nomineeId=${encodeURIComponent(
+    const callbackUrl = `https://juronmodels.co.ke/api/callback?nomineeId=${encodeURIComponent(
       String(nomineeId)
     )}&votes=${encodeURIComponent(String(votes ?? 1))}`;
 
-    const stkPayload = {
+    const stkPayload = JSON.stringify({
       BusinessShortCode: storeNumber,
       Password: password,
       Timestamp: timestamp,
@@ -115,25 +162,24 @@ export async function POST(req: Request) {
       CallBackURL: callbackUrl,
       AccountReference: "Juron Models",
       TransactionDesc: "Juron Vote",
-    };
+    });
 
     const stkUrl =
-      process.env.MPESA_STKPUSH_URL?.trim() ||
+      cleanEnv(process.env.MPESA_STKPUSH_URL) ||
       "https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest";
 
-    const stkResponse = await fetch(stkUrl, {
+    const stkResponse = await safaricomRequest(stkUrl, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
         Accept: "application/json",
-        "User-Agent": "Mozilla/5.0",
+        "Content-Length": Buffer.byteLength(stkPayload).toString(),
       },
-      cache: "no-store",
-      body: JSON.stringify(stkPayload),
+      body: stkPayload,
     });
 
-    const stkData = await parseSafaricomResponse(stkResponse, "STK Push");
+    const stkData = parseSafaricomJson(stkResponse, "STK Push");
 
     if (stkData.ResponseCode === "0") {
       return NextResponse.json({
