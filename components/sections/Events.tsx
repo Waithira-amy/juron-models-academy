@@ -93,7 +93,9 @@ function EventTicketsContent() {
 
     if (isOmniTicket) {
       if (!recipientName.trim()) {
-        return alert("Please enter the name of the person receiving this ticket.");
+        return alert(
+          "Please enter the name of the person receiving this ticket."
+        );
       }
       if (!inviteCode.trim()) {
         return alert("Please enter the invite passcode.");
@@ -305,34 +307,34 @@ function EventTicketsContent() {
 
         {/* MODAL */}
         {selectedTicket && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
-            <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-md">
+            <div className="relative w-full max-w-sm bg-white rounded-3xl shadow-2xl overflow-y-auto max-h-[92vh]">
               <button
                 onClick={closeModal}
-                className="absolute top-4 right-4 z-50 bg-slate-100 p-2 rounded-full"
+                className="absolute top-3 right-3 z-50 bg-slate-100 hover:bg-slate-200 p-1.5 rounded-full transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
-              <div className="bg-slate-50 p-6 md:p-8 flex flex-col items-center justify-center text-center">
+              <div className="bg-slate-50 p-4 sm:p-5 flex flex-col items-center justify-center text-center">
                 {ticketStatus === "PAID" ? (
                   <div className="flex flex-col items-center w-full">
-                    <CheckCircle2 className="w-10 h-10 text-emerald-500 mb-2" />
-                    <h3 className="text-xl font-bold text-slate-900 mb-1">
+                    <CheckCircle2 className="w-7 h-7 text-emerald-500 mb-1" />
+                    <h3 className="text-lg font-bold text-slate-900 leading-tight">
                       {isOmniTicket ? "Complimentary Pass Ready!" : "Success!"}
                     </h3>
-                    <p className="text-[11px] mb-5 font-bold uppercase tracking-widest text-emerald-600">
+                    <p className="text-[10px] mb-3 font-bold uppercase tracking-widest text-emerald-600">
                       {isOmniTicket
                         ? "Official Partner & VIP Access"
                         : "Thank you for your support"}
                     </p>
 
-                    {/* Downloadable Ticket Card */}
+                    {/* Compact Downloadable Ticket Card */}
                     <div
                       ref={ticketRef}
-                      className="w-full bg-slate-950 rounded-2xl overflow-hidden relative shadow-lg mb-6 border border-slate-800"
+                      className="w-full bg-slate-950 rounded-2xl overflow-hidden relative shadow-lg mb-3.5 border border-slate-800"
                     >
                       <div
-                        className={`p-4 flex items-center justify-between ${
+                        className={`px-4 py-2.5 flex items-center justify-between ${
                           isOmniTicket
                             ? "bg-gradient-to-r from-emerald-400 to-teal-500"
                             : isSupportTicket
@@ -350,9 +352,9 @@ function EventTicketsContent() {
                         )}
                       </div>
 
-                      <div className="p-6 bg-slate-900 flex flex-col items-center border-b-2 border-dashed border-slate-700">
+                      <div className="p-4 bg-slate-900 flex flex-col items-center border-b-2 border-dashed border-slate-700">
                         <span
-                          className={`text-[10px] font-bold uppercase tracking-widest mb-1 ${
+                          className={`text-[9px] font-bold uppercase tracking-widest mb-0.5 ${
                             isOmniTicket
                               ? "text-emerald-400"
                               : isSupportTicket
@@ -366,37 +368,37 @@ function EventTicketsContent() {
                               ? "Official Supporter Pass"
                               : "Official Entry Pass"}
                         </span>
-                        <h2 className="text-2xl font-serif font-black text-white mb-3">
+                        <h2 className="text-xl font-serif font-black text-white mb-2">
                           {selectedTicket.name}
                         </h2>
 
                         {/* Recipient Nameplate on Ticket */}
                         {isOmniTicket && recipientName.trim() && (
-                          <div className="w-full bg-slate-950/90 border border-emerald-500/40 rounded-xl px-4 py-2.5 mb-4">
-                            <span className="block text-[9px] font-bold uppercase tracking-widest text-emerald-400">
+                          <div className="w-full bg-slate-950/90 border border-emerald-500/40 rounded-xl px-3 py-1.5 mb-2.5">
+                            <span className="block text-[8px] font-bold uppercase tracking-widest text-emerald-400">
                               Issued To
                             </span>
-                            <span className="block text-base font-serif font-bold text-white tracking-wide mt-0.5">
+                            <span className="block text-sm font-serif font-bold text-white tracking-wide">
                               {recipientName.trim()}
                             </span>
                           </div>
                         )}
 
-                        <div className="bg-white p-3 rounded-xl">
+                        <div className="bg-white p-2 rounded-xl">
                           <img
                             src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${currentTicketCode}`}
                             alt="Ticket QR"
                             crossOrigin="anonymous"
-                            className="w-32 h-32"
+                            className="w-24 h-24"
                           />
                         </div>
                       </div>
 
-                      <div className="bg-slate-950 p-4 flex flex-col items-center justify-center">
-                        <span className="text-[9px] text-slate-500 uppercase tracking-widest mb-1">
+                      <div className="bg-slate-950 py-2.5 px-4 flex flex-col items-center justify-center">
+                        <span className="text-[8px] text-slate-500 uppercase tracking-widest mb-0.5">
                           Ticket ID
                         </span>
-                        <span className="font-mono text-xl font-black tracking-widest text-slate-200">
+                        <span className="font-mono text-base font-black tracking-widest text-slate-200">
                           {currentTicketCode}
                         </span>
                       </div>
@@ -404,7 +406,7 @@ function EventTicketsContent() {
 
                     <button
                       onClick={downloadTicket}
-                      className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all"
+                      className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all"
                     >
                       <Download className="w-4 h-4" /> Save Ticket
                     </button>
@@ -412,10 +414,10 @@ function EventTicketsContent() {
                 ) : (
                   <form
                     onSubmit={handlePurchaseSubmit}
-                    className="w-full text-left space-y-5"
+                    className="w-full text-left space-y-4"
                   >
                     <div>
-                      <h3 className="text-2xl font-serif font-bold text-slate-900">
+                      <h3 className="text-xl font-serif font-bold text-slate-900">
                         {isOmniTicket
                           ? "Generate Omni Ticket"
                           : `Buy ${selectedTicket.name}`}
@@ -431,7 +433,7 @@ function EventTicketsContent() {
                     {isOmniTicket && (
                       <>
                         <div>
-                          <label className="block text-[11px] font-bold uppercase text-slate-500 mb-2">
+                          <label className="block text-[11px] font-bold uppercase text-slate-500 mb-1.5">
                             Recipient's Full Name:
                           </label>
                           <div className="relative">
@@ -441,14 +443,14 @@ function EventTicketsContent() {
                               value={recipientName}
                               onChange={(e) => setRecipientName(e.target.value)}
                               placeholder="Enter full name for the ticket"
-                              className="w-full border border-slate-200 rounded-xl py-3.5 pl-11 pr-4 text-sm focus:outline-none focus:ring-2 focus:border-emerald-400 focus:ring-emerald-100"
+                              className="w-full border border-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm focus:outline-none focus:ring-2 focus:border-emerald-400 focus:ring-emerald-100"
                               required
                             />
                           </div>
                         </div>
 
                         <div>
-                          <label className="block text-[11px] font-bold uppercase text-slate-500 mb-2">
+                          <label className="block text-[11px] font-bold uppercase text-slate-500 mb-1.5">
                             Invite / Admin Passcode:
                           </label>
                           <div className="relative">
@@ -458,7 +460,7 @@ function EventTicketsContent() {
                               value={inviteCode}
                               onChange={(e) => setInviteCode(e.target.value)}
                               placeholder="Enter invite code"
-                              className="w-full border border-slate-200 rounded-xl py-3.5 pl-11 pr-4 text-sm focus:outline-none focus:ring-2 focus:border-emerald-400 focus:ring-emerald-100"
+                              className="w-full border border-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm focus:outline-none focus:ring-2 focus:border-emerald-400 focus:ring-emerald-100"
                               required
                             />
                           </div>
@@ -469,10 +471,10 @@ function EventTicketsContent() {
                     {/* CUSTOM AMOUNT SELECTOR (Only shows for Support Fund) */}
                     {isSupportTicket && (
                       <div>
-                        <label className="block text-[11px] font-bold uppercase text-slate-500 mb-3">
+                        <label className="block text-[11px] font-bold uppercase text-slate-500 mb-2">
                           Select Contribution (KES):
                         </label>
-                        <div className="grid grid-cols-4 gap-2 mb-3">
+                        <div className="grid grid-cols-4 gap-2 mb-2.5">
                           {[100, 500, 1000, 5000].map((amt) => (
                             <button
                               key={amt}
@@ -499,14 +501,14 @@ function EventTicketsContent() {
                             onChange={(e) =>
                               setCustomAmount(Number(e.target.value))
                             }
-                            className="w-full bg-white border border-slate-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 rounded-xl py-3 pl-12 pr-4 text-lg font-black text-slate-900 shadow-sm"
+                            className="w-full bg-white border border-slate-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 rounded-xl py-2.5 pl-12 pr-4 text-lg font-black text-slate-900 shadow-sm"
                           />
                         </div>
                       </div>
                     )}
 
                     <div>
-                      <label className="block text-[11px] font-bold uppercase text-slate-500 mb-2">
+                      <label className="block text-[11px] font-bold uppercase text-slate-500 mb-1.5">
                         {isOmniTicket
                           ? "Recipient Phone Number:"
                           : "M-Pesa Number:"}
@@ -518,7 +520,7 @@ function EventTicketsContent() {
                           value={phoneNumber}
                           onChange={(e) => setPhoneNumber(e.target.value)}
                           placeholder="0712345678"
-                          className={`w-full border border-slate-200 rounded-xl py-3.5 pl-11 pr-4 text-sm focus:outline-none focus:ring-2 ${
+                          className={`w-full border border-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm focus:outline-none focus:ring-2 ${
                             isOmniTicket
                               ? "focus:border-emerald-400 focus:ring-emerald-100"
                               : isSupportTicket
@@ -533,7 +535,7 @@ function EventTicketsContent() {
                     <button
                       type="submit"
                       disabled={isProcessing}
-                      className="w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-bold uppercase flex justify-center items-center gap-2 shadow-[0_5px_15px_rgba(16,185,129,0.3)] transition-colors"
+                      className="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-bold uppercase flex justify-center items-center gap-2 shadow-[0_5px_15px_rgba(16,185,129,0.3)] transition-colors"
                     >
                       {isProcessing ? (
                         <>
