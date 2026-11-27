@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import https from "https";
+import prisma from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
@@ -77,6 +78,8 @@ export async function POST(req: Request) {
       );
     }
 
+    const cleanNomineeCode = String(nomineeId).trim().toUpperCase();
+
     let formattedPhone = String(phone).replace(/\s+/g, "");
     if (formattedPhone.startsWith("0")) {
       formattedPhone = `254${formattedPhone.substring(1)}`;
@@ -146,21 +149,24 @@ export async function POST(req: Request) {
       `${storeNumber}${passkey}${timestamp}`
     ).toString("base64");
 
-    const callbackUrl = `https://juronmodels.co.ke/api/callback?nomineeId=${encodeURIComponent(
-      String(nomineeId)
+    // Must use www.juronmodels.co.ke directly so Safaricom does not hit a 307/308 redirect
+    const callbackUrl = `https://www.juronmodels.co.ke/api/callback?nomineeId=${encodeURIComponent(
+      cleanNomineeCode
     )}&votes=${encodeURIComponent(String(votes ?? 1))}`;
+
+    const roundedAmount = Math.round(Number(amount));
 
     const stkPayload = JSON.stringify({
       BusinessShortCode: storeNumber,
       Password: password,
       Timestamp: timestamp,
       TransactionType: "CustomerBuyGoodsOnline",
-      Amount: Math.round(Number(amount)),
+      Amount: roundedAmount,
       PartyA: formattedPhone,
       PartyB: tillNumber,
       PhoneNumber: formattedPhone,
       CallBackURL: callbackUrl,
-      AccountReference: "Juron Models",
+      AccountReference: cleanNomineeCode,
       TransactionDesc: "Juron Vote",
     });
 
@@ -182,6 +188,23 @@ export async function POST(req: Request) {
     const stkData = parseSafaricomJson(stkResponse, "STK Push");
 
     if (stkData.ResponseCode === "0") {
+      // Store pending CheckoutRequestID in Neon so /api/callback can identify the nominee even if Daraja strips query params
+      if (stkData.CheckoutRequestID) {
+        try {
+          await (prisma as any).voteTransaction.create({
+            data: {
+              amount: roundedAmount,
+              votesAwarded: 0,
+              phone: formattedPhone,
+              receiptNumber: `PENDING_${stkData.CheckoutRequestID}`,
+              nomineeCode: cleanNomineeCode,
+            },
+          });
+        } catch (dbErr) {
+          console.error("Failed to store pending CheckoutRequestID:", dbErr);
+        }
+      }
+
       return NextResponse.json({
         success: true,
         message: "STK Push sent to phone",
