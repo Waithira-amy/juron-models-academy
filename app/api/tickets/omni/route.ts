@@ -48,7 +48,7 @@ export async function POST(req: Request) {
         quantity: 1,
         status: "PAID",
         source: "COMPLIMENTARY",
-        affiliateCode: cleanRecipientName,
+        affiliateCode: null,
       },
     });
 
